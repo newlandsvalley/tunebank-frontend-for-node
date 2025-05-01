@@ -1,0 +1,933 @@
+/* GENERAL
+---------------------------------------------- */
+body {
+	color: #1d3d76;
+	font: 100% "Trebuchet MS", Verdana, sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	color: #b74e07;
+	font-weight: bold;
+}
+
+h1 {
+	font-size: 1.5em; /* 24px/16px */
+	margin-bottom: .75em;
+	text-transform: lowercase;
+}
+
+h2 {
+	font-size: 1.375em; /* 22px/16px */
+	margin-bottom: .50em;
+}
+
+.center {
+	text-align: center;
+}
+
+.center-image {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+	width: 40%
+}
+
+/* Solid borders - for example to discriminate hamburger menu from actual page */
+#section-divider { 
+  width:100%; 
+  height:5px; 
+  background: black;
+  content:"";
+  margin-bottom: 20px;
+}
+
+
+/* navigation */
+
+.nav {
+  color: #cccc99; /* light greenish grey */
+  display: block;
+  width: 100%;
+}
+
+/* give a bit of clearance to menu letters in big screen nav bars*/
+.nav > .main-menu {
+  padding-top: 2px;
+  padding-bottom: 5px;
+}
+
+/* the children of this div separate the LHS and RHS elements.  Separate them with flex. */
+.navdiv {
+  display: flex;
+}
+
+/* the navigation default (small screens) is just the app name and the hamburger icon */
+.hamburger-nav {
+  display: flex;
+  background-color: #224422; /* hard dark green */
+  color: #cccc99; /* light greenish grey */
+  list-style-type: none; /* don't display the bullets in the nav bar itself */
+  height: 40px;
+  padding-top: 10px;
+}
+
+/* the hamburger navigation div element for small screens */
+.hamburger-navdiv {
+  display: flex;
+}
+
+.hamburger-appname {
+  font-size: 1.5em;
+}
+
+.hamburger-genre {
+  font-size: 1.3em;
+  margin-left: 10px;
+  padding-top: 3px;
+	color: #e69900;
+}
+
+/* set the hamburger icon towards the RHS of the bar */
+.hamburger-icon {
+  margin-left: auto;
+  margin-right: 20px;
+  padding-top: 6px;
+}
+
+/* hamburger menu activation */
+.hamburger-btn {
+  background-color: #224422; /* hard dark green */
+}
+
+/* hamburger menu deactivation */
+.hamburger-btn-cross {
+  background-color: #224422; /* hard dark green */
+}
+
+/* don't display the main navigation bar on default small screens */
+.main-menu {
+  background-color: #224422; /* hard dark green */
+  overflow: hidden;
+  display: none;
+  list-style-type: none;  /* don't display the bullets in the nav bar */
+  height: 40px;
+}
+
+/* don't display the hamburger menu by default - it needs to be switched on by the icon*/
+.hamburger-menu {
+  display: none;
+  flex-direction: column;
+  font-weight: bold;
+}
+
+.hamburger-menu-list {
+  list-style-type: none;  /* don't display the bullets in the menu*/
+}
+
+.mobnavitem>a:hover {
+  color: #cccc99; /* light greenish grey */
+}
+
+/* set the text and background colour for main menu items when selected */
+.navdiv > li > a.current,
+.navdiv > li > a:hover {
+  color: white;
+  background-color: #224422; /* hard dark green */
+}
+
+/* Additional information (such as current genre) in the nav bar to the links themselves */
+.navdiv > li {
+	color: #e69900;
+  font-size: 1.3em;
+}
+
+.navdiv li:last-child {
+	padding-right: 30px;
+}
+
+/* links in the navigation - big screens */
+.navdiv > li > a { 
+  color: #cccc99; /* light greenish grey */
+  display: inline;
+  margin: 0 8px 0 8px;
+  font-size: 1.5em;
+  text-decoration: none;    
+  white-space: nowrap;
+  transition-delay: 250ms;
+  transition-timing-function: ease-in-out;
+} 
+
+/* links in the navigation - small (mobile) screens */
+.mobile-navdiv > li > a {
+  color: #224422; /* hard dark green */
+  font-size: 1.5em;
+  text-decoration: none;   
+  margin-bottom: 10px;
+  transition-delay: 250ms;
+  transition-timing-function: ease-in-out;
+}
+
+/* allow visibility on mobile devices to be toggled easily.  This hides the display  */
+.hidden {
+  display: none;
+}
+
+/* allow visibility on mobile devices to be toggled easily.  This shows the display in flex mode */
+.flex {
+  display: flex;
+}
+
+/* buttons */
+
+.hoverable {
+  border: none;
+  border-radius: 6px;
+  padding: 2px 10px;
+  margin: 10px 20px 10px 0;
+  font-size: 1.1em;
+  background-color: #67d665;  /* lighter green */
+  color: black;
+  box-shadow: 3px 3px #669966;  /* darker green */
+  transition: 500ms;
+}
+
+.hoverable:hover {
+  box-shadow: 0 0;
+  background-color: #669966;   /* darker green */
+}
+
+/* unhoverable means greyed and disabled */
+.unhoverable {
+  border: none;
+  border-radius: 6px;
+  padding: 2px 10px;
+  margin: 10px 20px 10px 0;
+  font-size: 1.1em;
+  background-color: lightGray;
+  color: darkGray;
+  transition: 500ms;
+}
+
+#include-intro-button {
+	margin-left: 15px;
+}
+
+#canvas:hover {
+  box-shadow: 0 0;
+  background-color: #daffa4;   /* very light green */
+  transition: 750ms;
+}
+
+/* dropdown menus within the navigation bar */
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #224422; /* hard dark green */
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+
+.dropdown-content a {
+    color: black;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* FOOTER
+---------------------------------------------- */
+
+.footer {
+	display: block;
+}
+
+.footer-menu {
+	display: inline;
+	float: left;
+}
+
+.footer-nav {
+  float: left;
+  margin: 20px 0 0 20px;
+  padding-top: 1.5%;
+}
+
+/* don't display footer logo on small screens */
+.mainlogo {
+  display: none;
+}
+
+
+/* FORMS
+---------------------------------------------- */
+
+fieldset {
+  background-color: #f1f1f1;
+  border: none;
+  border-radius: 2px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  padding: 0 10px;
+}
+
+legend ul {
+  background-color: #fff;
+  border: 1px solid #eaeaea;
+  list-style: none;
+  margin: 12px;
+  padding: 12px;
+}
+
+
+fieldset ul li {
+  margin: 5px auto 5px auto;
+  list-style-type: none;
+}
+
+fieldset ul li:first-child {
+   padding-top: 0.5em;
+}
+
+label {
+  display: inline-block;
+  padding: 3px 6px;
+  text-align: right;
+  width: 100px;
+  vertical-align: top;
+	font-size: 1.25em;
+	margin-top: 8px; /* match with select (dropdown) */
+}
+
+/* reduce the width for advanced search and comment form labels
+   we need to preserve space for mobiles 
+*/
+#advancedsearchform fieldset div label, 
+#commentform fieldset div label {
+  width: 80px;
+}
+
+
+/* label alignment in forms */
+legend {
+  background-color: #669966; /* dark green */
+  border-top: 1px solid #d4d4d4;
+  border-bottom: 1px solid #d4d4d4;
+  -moz-box-shadow: 3px 3px 3px #ccc;
+  -webkit-box-shadow: 3px 3px 3px #ccc;
+  box-shadow: 3px 3px 3px #ccc;
+  font-size: 1.25em;
+  padding: 0.3em 1em;
+}
+
+
+input[type="email"],
+input[type="password"],
+input[type="text"] {
+	padding: 2px 3px;
+  color: black;
+  background: #f3f6c6;
+	width: 200px;
+	margin-top: 8px;   /* match with label */
+  font-size: 1.25em;
+}
+
+/* override default text input width for advanced search criteria */
+#search-criteria {
+	width: 200px;
+}
+
+/* select dropdown on forms */
+select {
+   background-color: #cccc99;
+	 margin-top: 8px;   /* match with label */
+   font-size: 1.25em;
+}
+
+.fileInputLabel {
+	max-width: 90px;
+  display: inline-block;
+	text-align: left;
+}
+
+/* the upload file label */
+#uploadselectfile label {
+	width: 150px;
+}
+
+/* the upload file button */
+#uploadform div p {
+	font-size: 1.25em;
+}
+
+/* the submit (and other) buttons */
+.button-link,
+input[type='submit'] {
+	background: #66cc66;
+	border: none;
+	border-radius: 4px;
+	box-shadow: 2px 2px 2px #333;
+	cursor: pointer;
+    font-size: 100%;
+	color: black;
+	margin: 12px;
+	padding: 5px;
+  -webkit-transition-duration: 0.2s;
+  -moz-transition-duration: 0.2s;
+  transition-duration: 0.2s;
+}
+
+/* individual forms */
+#loginform,
+#logout,
+#registrationform,
+#searchform {
+  width: 350px;
+  text-align: middle;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#uploadform {
+  width: 400px;
+  text-align: middle;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#genreform {
+  width: 250px;
+  text-align: middle;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* mobiles - width is overridden for larger screens */
+#commentform,
+#advancedsearchform {
+  width: 335px;
+  text-align: middle;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* comment textarea */
+#comment-textinput-div textarea {
+  height: 9em;
+  width: 12.5em;
+	padding: 2px 3px;
+	background: #f3f6c6;
+	margin-top: 8px;   /* match with label */
+  font-size: 1.25em;
+}
+
+/* center search examples in advanced search page */
+#search-examples-div {
+  width: 500px;
+	margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+/* link states */
+a {
+	padding: .2em;
+}
+
+a:link {
+	color: #597dbd;
+	text-decoration: underline;
+}
+
+a:visited {
+	text-decoration: none;
+	color: #597dbd;
+}
+
+a:focus,
+a:hover,
+a:active {
+  color: black;
+	background: #f3f6c6;
+	text-decoration: none;
+}
+
+
+a:hover.current {
+	cursor: default;
+	text-decoration: none;
+}
+
+/* an a link without an href but with an OnClick action
+   referring to a Halogen action on the same page */
+.a-internal-link {
+	color: #597dbd;
+	text-decoration: underline;
+}
+
+/** definition lists */
+
+dl {
+    padding: 0.5em;
+  }
+  dt {
+    float: left;
+    clear: left;
+    font-weight: bold;
+    color: blue;
+  }
+  dt:after {
+    content: ":";
+  }
+  dd {
+    margin: 0 0 0 110px;
+    width: 400px;
+    padding: 0 0 0.3em 0;
+  }
+
+/* override dl settings for advanced search examples */
+#search-examples dt {
+	width: 200px;
+	padding: 0 0, 0.3em 0;
+	margin-left: 10px;
+}
+
+#search-examples dd {
+	width: 600px;
+}
+
+/* override dl settings for credits page examples */
+#credits-examples dt {
+	width: 250px;
+	padding: 0 0, 0.3em 0;
+}
+
+/* links alignment */
+#download {
+    float: left;
+}
+
+
+/* TABLES
+---------------------------------------------- */
+
+table#samplesearch {
+    margin: 12px;
+    table-layout: fixed;
+    border-collapse:separate;
+    border-spacing:10px 2px;
+}
+
+table tr td {
+   padding: 0.25em 1em;
+	 white-space: nowrap;
+}
+
+table tr td a:hover {
+   color: black;
+   text-decoration: underline;
+   background: transparent;
+}
+
+table.textalign tr td  {
+   padding-left: 2em;
+   padding-right: 2em;
+}
+
+/** navigation for pagination */
+
+.pagination ul {
+    padding-left: 15px;
+}
+
+.pagination li {
+   float: left;
+   padding: 3.5px 4px 3.5px 4px;
+   /* font-size: .90em; */
+   font-size: 1.3em;
+   list-style-type: none;
+   display: inline;
+}
+
+.pagination li:last-child {
+    float: left;
+    padding-right: 20px;
+}
+
+.pagination li a {
+   color: blue;
+   text-decoration: none;
+   display: inline-block;
+}
+
+.pagination li a:hover {
+   color: black;
+   text-decoration: underline;
+   background: transparent;
+}
+
+.pagination li a.current {
+   color: black;
+   text-decoration: none;
+}
+
+/* static pages */
+#aboutdiv,
+#helpdiv,
+#contactusdiv,
+#creditsdiv {
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#tune-metadata {
+	margin-left: auto;
+	margin-right: auto;
+	width: 400px; 
+	display: block;
+}
+
+/* tune lists with thumbnail images */
+
+.tunelist {
+	margin: 0 auto;
+	width: 95%;
+	text-align: left;
+}
+
+div.thumbnail > svg {
+  overflow: hidden;
+}
+
+div.thumbnail-highlighted > svg {
+  overflow: hidden;
+	background: #f3f6c6;
+}
+
+.thumbnail > div {
+  height: 60px;
+}
+
+/* the add thumbnails button */
+#add-thumbnails {
+  display: block;
+  margin-left: 50px;
+}
+
+/* the tune page */
+
+/* set the maximum width on the generated SVG score */
+#score > div > svg {
+  max-width: 100vw;
+}
+
+#player-div {
+  margin-top: 15px;
+}
+
+/* polska metronome */
+
+/* metronome center encompasses both the controls and the display */
+.metronome-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 360px;
+  max-width: 100vw;
+}
+
+#metronome-display {
+  width: 350px;
+}
+
+#metronome-controls label {
+  margin-right: 10px;
+}
+
+#polska-menu {
+  background-color: #cccc99;
+  font-size: 1.0em;
+}
+
+#canvas {
+  display: block;
+  margin-left: 10px;
+  max-width: 90vw;
+}
+
+#polskaMetronome .labelAlignment {
+  /* align labels at the LHS of a frame */
+  display: inline-block;
+  width: 150px;
+  font-size: 1.1em;
+}
+
+/* common to Metronome, ABC Editor and Tune page */
+
+.slider {
+  width: 160px;
+	margin-top: 8px; 
+}
+
+.slider-state {
+  display: inline-block;
+  margin-left: 5px;
+	margin-top: 8px; 
+}
+
+/* common to both the ABC Editor and Tutorial */
+
+.rightPane {
+  float: left;
+}
+
+.abcEdit {
+  padding-bottom: 10px;
+  margin: 0px 2px 10px 2px;
+  font-size: 1.5em;
+  font-family: "Times New Roman", "monospace";
+  background-color: rgb 243 246 198;
+  text-align: left;
+  display: block;
+}
+
+/* ABC tutorial */
+
+#instruction, #hint {
+  font-size: 1.3em;
+  font-family: "Times New Roman", "monospace";
+  text-align:  left;
+  margin: 10px 5px 20px 5px;
+  display: block;
+}
+
+#hint {
+  width: 25em;
+}
+
+#abcTutorial > .leftPane {
+  float: left;
+  width: 100%;
+}
+
+#abcTutorial .leftPanelComponent {
+  float: left;
+  margin: 0px 0px 10px 5px;
+}
+
+#abcTutorial Textarea {
+  height: 5em;
+  width: 16em;
+  max-width: 90vw;
+}
+
+#tutorialPlayer {
+  clear: left;
+  padding-left: 0px;
+}
+
+#tutorialScore {
+  display: block;
+  max-width: 95vw;
+}
+
+#tutorialButtons {
+  padding-left: 0px;
+}
+
+/* ABC Editor */
+
+#transposition-menu {
+  background-color: #cccc99;
+  font-size: 1.0em;
+}
+
+#tune-title {
+  width: 800px;
+  float: left;
+  text-align: left;
+  margin: 12px 0px 0px 0px;
+}
+
+#abcEditor .fileInputLabel {
+  /* the label for a file input */
+  margin: 10px 20px 0 0;
+  /* padding: 1px 8px 0 8px; */
+  font-size: 1.1em;
+	max-width: 100px;
+  display: inline-block;
+}
+
+#abcEditor .labelAlignment {
+  /* align labels at the LHS of a frame */
+  display: inline-block;
+  width: 165px;
+}
+
+#abcEditor > .leftPane {
+  width: 400px;
+  float: left;
+}
+
+#abcEditor .leftPanelComponent {
+  /* align items in the LHS panel */
+  margin: 10px 0 0 0;
+}
+
+/* the ABC editor text area */
+.abcEdit {
+	border:2px solid green;
+}
+
+
+/* mobile first stuff 
+   on larger screens, deactivate the default values and replace with these.
+   It mostly affects the headers and hamburger menu and the layout of some other pages
+*/
+
+/* tablets */
+@media (min-width: 520px) {
+
+  #commentform,
+  #advancedsearchform {
+    width: 500px;
+  }
+  
+  /* comment textarea */
+  #comment-textinput-div textarea {
+    height: 13em;
+    width: 21em;
+  }
+
+  /* advanced search crieria */
+  #search-criteria {
+    width: 340px;
+  }
+
+  #metronome-display {
+    width: 450px;
+  }  
+  
+  #abcTutorial .leftPanelComponent {
+    margin: 0px 0px 10px 50px;
+  }
+
+  #tutorialPlayer {
+    padding-left: 24px;
+  }
+
+  #tutorialButtons {
+    padding-left: 24px;
+  }
+}
+
+
+/* laptops. desktops etc */
+@media (min-width: 725px) {
+  .hamburger-menu {
+    display: none;
+  }
+
+  .hamburger-nav {
+    display: none
+  }
+
+  .main-menu {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  #advancedsearchform {
+    width: 640px;
+  }
+
+  #search-criteria {
+    width: 480px;
+  }
+
+  /* center search examples in advanced search page */
+  #search-examples-div {
+    width: 640px;
+  }
+  
+  #abcTutorial > .leftPane {
+    float: left;
+    width: 800px;
+  }  
+
+  /* in the ABC tutorial, allow larger edit windows */
+  #abcTutorial Textarea {
+    height: 13em;
+    width: 25em;
+  }
+
+  /* hints and instructions in the tutorial */
+  #instruction, #hint {
+    margin: 10px 20px 20px 20px;
+  }
+
+  #commentform {
+    width: 650px;
+  }
+
+  /* in the comment form, allow larger edit windows */
+  #comment-textinput-div Textarea {
+    height: 13em;
+    width: 30em;
+  }
+
+  /* comment text input (subject) */
+  input.comment-textinput-subject {
+    width: 23em;
+  }
+
+  /* produces wider left-hand margins */
+  .tunelist {
+    width: 90%;
+  }
+
+  #metronome-display {
+    width: 750px;
+  }
+  
+  /* Footer Logo */
+  .mainlogo {
+     clear: both;
+     margin: 0;
+     font-family: 'Fondamento', cursive;
+     display:block;
+     font-weight: bold;
+     height:56px; 
+     line-height:50px; 
+  }
+  
+  .mainlogo-prefix {
+     float: left;
+     color: green;
+     font-size: 250%;
+     vertical-align: bottom;
+  }
+  
+  .mainlogo-suffix {
+    float: left;
+    color: black;
+    font-size: 125%;
+    vertical-align: bottom;
+    margin-top: 6px;
+  }  
+}
+
