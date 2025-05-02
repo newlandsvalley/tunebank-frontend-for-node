@@ -23,7 +23,7 @@ import TuneBank.Api.Request (postTune)
 import TuneBank.Data.Credentials (Credentials)
 import TuneBank.Data.Genre (Genre(..))
 import TuneBank.Data.Session (Session)
-import TuneBank.Data.TuneId (tuneIdFromString)
+import TuneBank.Data.TuneId (TuneId(..))
 import TuneBank.Data.Types (BaseURL(..))
 import TuneBank.HTML.Utils (css)
 import TuneBank.Navigation.Navigate (class Navigate, navigate)
@@ -145,20 +145,10 @@ component =
             errorText = either identity (const "") postResult
           H.modify_ (\st -> st { errorText = errorText } )
           case postResult of
-            -- we posted OK and got a good response
+            -- we posted OK and got a good response with the title in the response
             Right resultStr -> do
-              let
-                eTuneId = tuneIdFromString resultStr
-              case eTuneId of
-                -- the response is not a valid tuneId - shouldn't happen -
-                Left err -> do
-                  -- _ <- navigate HomepostResult
-                  H.modify_ (\st -> st { errorText = err } )
-                  pure (Just next)
-                -- we got a valid tuneId so navigate to that tune
-                Right tuneId -> do
-                  _ <- navigate $ Tune state.genre tuneId
-                  pure (Just next)
+              _ <- navigate $ Tune state.genre (TuneId resultStr)
+              pure (Just next)
             Left err -> do
               H.modify_ (\st -> st { errorText = err } )
               pure (Just next)
@@ -177,7 +167,7 @@ renderAdvisoryText state =
          " genre. (The file extension should be "  <>
          ".abc although .txt is also allowed.)"
     text2 =
-       "The file should contain a single tune."
+       "The file should contain a single tune without chord symbols."
   in
     HH.div_
       [ HH.p_

@@ -3,7 +3,7 @@ module TuneBank.Api.Request where
 import Prelude
 
 import Affjax (Request, printError)
-import Affjax.RequestBody (formURLEncoded)
+import Affjax.RequestBody (formURLEncoded, string)
 import Affjax.RequestHeader (RequestHeader(..))
 import Affjax.ResponseFormat as RF
 import Affjax.Web (defaultRequest, request)
@@ -12,15 +12,14 @@ import Data.Argonaut.Decode.Error (printJsonDecodeError)
 import Data.Array (fromFoldable)
 import Data.Bifunctor (bimap, lmap)
 import Data.Either (Either(..))
-import Data.FormURLEncoded (FormURLEncoded, fromArray) as FUE
+import Data.FormURLEncoded (FormURLEncoded) as FUE
 import Data.HTTP.Method (Method(..))
 import Data.Maybe (Maybe(..))
 import Data.MediaType (MediaType(..))
 import Data.MediaType.Common (applicationJSON)
 import Data.Newtype (unwrap)
-import Data.Tuple (Tuple(..))
 import Effect.Aff.Class (class MonadAff)
-import Effect.Class.Console (log, logShow)
+import Effect.Class.Console (log)
 import Effect.Class (liftEffect)
 import Halogen as H
 import Routing.Duplex (print)
@@ -77,6 +76,7 @@ defaultJsonAsStrGetRequest (BaseURL baseUrl) mCredentials endpoint =
   in 
     defaultRequest { url = url, headers = headers, responseFormat = responseFormat }
    
+-- a default POST request for form URL-encoded data
 defaultPostRequest :: BaseURL -> Maybe Credentials -> FUE.FormURLEncoded -> Endpoint -> Request String
 defaultPostRequest (BaseURL baseUrl) mCredentials fue endpoint  =
   let 
@@ -91,6 +91,24 @@ defaultPostRequest (BaseURL baseUrl) mCredentials fue endpoint  =
                    , headers = headers
                    , content = content
                    , responseFormat = responseFormat }
+
+-- a default POST request for simple strings
+defaultPostStringRequest :: BaseURL -> Maybe Credentials -> String -> Endpoint -> Request String
+defaultPostStringRequest (BaseURL baseUrl) mCredentials s endpoint  =
+  let 
+    method = Left POST
+    url = baseUrl <> print endpointCodec endpoint
+    headers = fromFoldable $ authorizationHeader mCredentials
+    content = Just $ string s
+    responseFormat = RF.string
+  in  
+    defaultRequest { method = method
+                   , url = url
+                   , headers = headers
+                   , content = content
+                   , responseFormat = responseFormat }
+
+
 
 
 defaultDeleteRequest :: BaseURL -> Maybe Credentials -> Endpoint -> Request String
@@ -213,9 +231,7 @@ requestCommentsStr baseUrl genre tuneId = do
 postTune :: forall m. MonadAff m => String -> BaseURL -> Genre -> Credentials -> m (Either String String)
 postTune tuneAbc baseUrl genre credentials =
   H.liftAff do
-    let
-      formData = FUE.fromArray [ Tuple "abc"  (Just tuneAbc)]
-    res <- requestTheBody $ defaultPostRequest baseUrl (Just credentials) formData (NewTune genre)
+    res <- requestTheBody $ defaultPostStringRequest baseUrl (Just credentials) tuneAbc (NewTune genre)
     pure res
 
 postNewUser :: forall m. MonadAff m => Register.Submission -> BaseURL -> m (Either String String)
