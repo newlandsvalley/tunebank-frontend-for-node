@@ -129,7 +129,7 @@ renderAdvisoryText =
     text2 =
        Keys.title <> ", " <> Keys.rhythm <> ", " <> Keys.composer <> ", " <>
        Keys.key <> ", " <> Keys.origin <> ", " <> Keys.source <> ", " <>
-       Keys.submitter <> ", " <> Keys.transcriber <> ", " <> Keys.abc <> " "
+       Keys.submitter <> ", " <> Keys.transcriber <> " "
     text3 =
        "and join them together with "
     text4 =
@@ -163,9 +163,8 @@ renderSearchExamples =
         [ renderKV "title=Sligo" "'sligo' in the tune name"
         , renderKV "rhythm=slip jig" "slip jigs"
         , renderKV "rhythm=jig" "jigs"
-        , renderKV "abc=fedd" "tunes with this succession of notes (irrespective of octave)"
         , renderKV "transcriber=Fred" "tunes transcribed by Fred"
-        , renderKV "submitterer=Fred" "tunes submitted by Fred"
+        , renderKV "submitter=Fred" "tunes submitted by Fred"
         , renderKV "rhythm=reel&key=BMin" "reels in B Minor"
         ]
     ]

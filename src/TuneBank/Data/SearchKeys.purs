@@ -32,7 +32,3 @@ submitter =
 transcriber :: String
 transcriber =
   "transcriber"
-
-abc :: String
-abc =
-  "abc"

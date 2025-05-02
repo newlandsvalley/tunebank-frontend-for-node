@@ -27,7 +27,7 @@ type SearchParams =
   , origin :: Maybe String
   , composer :: Maybe String
   , transcriber :: Maybe String
-  , abc :: Maybe String
+  , submitter :: Maybe String
   , page :: Int
   , sort :: String }
 
@@ -40,7 +40,7 @@ defaultSearchParams =
   , origin : Nothing
   , composer : Nothing
   , transcriber : Nothing
-  , abc : Nothing
+  , submitter : Nothing
   , page: 1
   , sort: "alpha" }
 
@@ -82,8 +82,8 @@ buildParams kvs =
           params { origin = Just v }
         "composer" ->
           params { composer = Just v }
-        "abc" ->
-          params { abc = Just v }
+        "submitter" ->
+          params { submitter = Just v }
         _ ->
           params
   in
@@ -101,7 +101,7 @@ paramsSummary sps =
       , map (\t -> "origin=" <> t) sps.origin
       , map (\t -> "composer=" <> t) sps.composer
       , map (\t -> "transcriber=" <> t) sps.transcriber
-      , map (\t -> "abc=" <> t) sps.abc
+      , map (\t -> "submitter=" <> t) sps.submitter
       , Just ("sort by " <> sps.sort)
       ]
   in

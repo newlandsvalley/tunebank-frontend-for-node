@@ -64,7 +64,7 @@ endpointCodec = root $ sum
        , origin : optional <<< string
        , composer : optional <<< string
        , transcriber : optional <<< string
-       , abc : optional <<< string
+       , submitter : optional <<< string
        , page: int
        , sort : string }
   , "Users": "user" ? { page: int }
