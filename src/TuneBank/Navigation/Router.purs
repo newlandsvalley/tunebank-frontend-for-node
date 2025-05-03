@@ -23,7 +23,6 @@ import TuneBank.Page.UserList as UserList
 import TuneBank.Page.Tune as Tune
 import TuneBank.Page.TuneList as TuneList
 import TuneBank.Page.Comment as Comment
-import TuneBank.Data.CommentId (commentKey)
 import TuneBank.Data.Session (Session)
 import TuneBank.Data.Types (BaseURL)
 import TuneBank.Data.Genre (Genre(..))
@@ -168,9 +167,9 @@ component =
           TuneList searchParams ->
             HH.slot (Proxy :: _ "tunelist") unit TuneList.component { searchParams, instruments : state.instruments } absurd
           Comments genre tuneId  ->
-            HH.slot (Proxy :: _ "comment") unit Comment.component { genre, tuneId, key : Nothing } absurd
-          Comment genre tuneId user cid ->
-            HH.slot (Proxy :: _ "comment") unit Comment.component { genre, tuneId, key : (Just $ commentKey user cid) } absurd
+            HH.slot (Proxy :: _ "comment") unit Comment.component { genre, tuneId, commentId: Nothing } absurd
+          Comment genre tuneId commentId ->
+            HH.slot (Proxy :: _ "comment") unit Comment.component { genre, tuneId, commentId: Just commentId } absurd
           Metronome ->
             HH.slot (Proxy :: _ "metronome") unit Metronome.component unit absurd
           Tutorial ->

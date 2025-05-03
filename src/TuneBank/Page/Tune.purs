@@ -437,7 +437,7 @@ component =
             ]
             [ HH.text "delete comment" ]
           , HH.a
-            [ safeHref $ Comment state.genre state.tuneId comment.submitter comment.commentId ]
+            [ safeHref $ Comment state.genre state.tuneId comment.commentId ]
             [ HH.text "edit comment" ]
           ]
       false ->

@@ -29,10 +29,9 @@ import TuneBank.Api.Codec.Register (Submission, encodeFormData) as Register
 import TuneBank.Api.Codec.Tune (TuneMetadata, decodeTune)
 import TuneBank.Api.Codec.TunesPage (TunesPage, decodeTunesPage)
 import TuneBank.Api.Codec.UsersPage (UsersPage, decodeUsersPage)
-import TuneBank.Api.Codec.Utils (unsafeEncodeURIComponent)
 import TuneBank.Authorization.BasicAuth (authorizationHeader)
 import TuneBank.BugFix.Backend (fixSearchParams)
-import TuneBank.Data.CommentId (CommentId, CommentKey)
+import TuneBank.Data.CommentId (CommentId)
 import TuneBank.Data.Credentials (Credentials)
 import TuneBank.Data.Genre (Genre)
 import TuneBank.Data.TuneId (TuneId)
@@ -218,12 +217,10 @@ requestComments baseUrl genre tuneId = do
         comments = lmap printJsonDecodeError $ decodeComments json
       pure $ comments
 
-requestComment :: forall m. MonadAff m => BaseURL -> Genre -> TuneId -> CommentKey -> Credentials -> m (Either String Comment)
-requestComment baseUrl genre tuneId key credentials =
+requestComment :: forall m. MonadAff m => BaseURL -> Genre -> TuneId -> CommentId -> Credentials -> m (Either String Comment)
+requestComment baseUrl genre tuneId commentId credentials =
   H.liftAff do
-    let
-      encodedUser = unsafeEncodeURIComponent key.user
-    res <- requestTheBody $ defaultJsonGetRequest baseUrl (Just credentials) (Comment genre tuneId encodedUser key.commentId)
+    res <- requestTheBody $ defaultJsonGetRequest baseUrl (Just credentials) (Comment commentId)
     case res of
       Left err ->
         pure $ Left err
@@ -270,13 +267,23 @@ postComment baseUrl genre tuneId comment credentials =
     res <- requestTheBody $ defaultPostRequest baseUrl (Just credentials) formData (Comments genre tuneId)
     pure res
 -}
-postComment :: forall m. MonadAff m => BaseURL -> Genre -> TuneId -> Comments.NewComment -> Credentials -> m (Either String String)
-postComment baseUrl genre tuneId comment credentials =
+postNewComment :: forall m. MonadAff m => BaseURL -> Genre -> TuneId -> Comments.NewComment -> Credentials -> m (Either String String)
+postNewComment baseUrl genre tuneId comment credentials =
   H.liftAff do
     let
       json = Comments.encodeNewComment comment
     res <- requestTheBody $ defaultPostJsonRequest baseUrl (Just credentials) json (Comments genre tuneId)
     pure res
+
+
+postUpdatedComment :: forall m. MonadAff m => BaseURL -> CommentId -> Comments.NewComment -> Credentials -> m (Either String String)
+postUpdatedComment baseUrl commentId comment credentials =
+  H.liftAff do
+    let
+      json = Comments.encodeNewComment comment
+    res <- requestTheBody $ defaultPostJsonRequest baseUrl (Just credentials) json (Comment commentId)
+    pure res
+
 
 -- | DELETE
 deleteTune :: forall m. MonadAff m => BaseURL -> Genre -> TuneId -> Credentials -> m (Either String String)
@@ -289,9 +296,7 @@ deleteTune baseUrl genre tuneId credentials =
 deleteComment :: forall m. MonadAff m => BaseURL -> Genre -> TuneId -> CommentId -> Credentials -> m (Either String String)
 deleteComment baseUrl genre tuneId commentId credentials =
   H.liftAff do
-    let
-      encodedUser = unsafeEncodeURIComponent credentials.user
-    res <- requestTheBody $ defaultDeleteRequest baseUrl (Just credentials) (Comment genre tuneId encodedUser commentId)
+    res <- requestTheBody $ defaultDeleteRequest baseUrl (Just credentials) (Comment commentId)
     pure res
 
 deleteUser :: forall m. MonadAff m => BaseURL -> UserId -> Credentials -> m (Either String String)

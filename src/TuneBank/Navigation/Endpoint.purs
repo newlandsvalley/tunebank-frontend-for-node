@@ -42,7 +42,7 @@ data Endpoint
   | Tune Genre TuneId
   | NewTune Genre
   | Comments Genre TuneId
-  | Comment Genre TuneId String CommentId
+  | Comment CommentId
 
 
 derive instance genericEndpoint :: Generic Endpoint _
@@ -74,6 +74,6 @@ endpointCodec = root $ sum
   , "Tune": "genre" /  (genre segment) / "tune" / (tuneId segment)
   , "NewTune": "genre" / (genre segment) / "tune"
   , "Comments": "genre" / (genre segment) / "tune" / (tuneId segment) / "comments"
-  , "Comment": "genre" / (genre segment) / "tune" / (tuneId segment) / "comment" / segment / (commentId segment)
+  , "Comment":  "comment" / (commentId segment)
   , "Root" : noArgs
   }

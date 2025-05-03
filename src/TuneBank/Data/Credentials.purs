@@ -5,7 +5,7 @@ module TuneBank.Data.Credentials
   , roleFromString
   ) where
 
-import Prelude (class Eq, (==))
+import Prelude (class Eq, class Ord, class Show, (==))
 
 -- | the user role
 data Role =
@@ -13,6 +13,11 @@ data Role =
   | Administrator
 
 derive instance eqRole :: Eq Role
+derive instance ordRole :: Ord Role
+
+instance showRole :: Show Role where
+  show NormalUser = "normal user"
+  show Administrator = "administrator"
 
 roleFromString :: String -> Role 
 roleFromString s = 
