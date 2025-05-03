@@ -3,7 +3,7 @@ module TuneBank.Api.Request where
 import Prelude
 
 import Affjax (Request, printError)
-import Affjax.RequestBody (formURLEncoded, string)
+import Affjax.RequestBody (formURLEncoded, json, string)
 import Affjax.RequestHeader (RequestHeader(..))
 import Affjax.ResponseFormat as RF
 import Affjax.Web (defaultRequest, request)
@@ -24,7 +24,7 @@ import Effect.Class (liftEffect)
 import Halogen as H
 import Routing.Duplex (print)
 import TuneBank.Api.Codec.Comments (Comment, Comments, decodeComment, decodeComments)
-import TuneBank.Api.Codec.Comments (Comment, encodeFormData) as Comments
+import TuneBank.Api.Codec.Comments (NewComment, encodeNewComment) as Comments
 import TuneBank.Api.Codec.Register (Submission, encodeFormData) as Register
 import TuneBank.Api.Codec.Tune (TuneMetadata, decodeTune)
 import TuneBank.Api.Codec.TunesPage (TunesPage, decodeTunesPage)
@@ -92,7 +92,25 @@ defaultPostRequest (BaseURL baseUrl) mCredentials fue endpoint  =
                    , content = content
                    , responseFormat = responseFormat }
 
--- a default POST request for simple strings
+
+-- A default POST request for JSON bodies
+defaultPostJsonRequest :: BaseURL -> Maybe Credentials -> Json -> Endpoint -> Request String
+defaultPostJsonRequest (BaseURL baseUrl) mCredentials body endpoint  =
+  let 
+    method = Left POST
+    url = baseUrl <> print endpointCodec endpoint
+    headers = fromFoldable $ authorizationHeader mCredentials
+    content = Just $ json body
+    responseFormat = RF.string
+  in  
+    defaultRequest { method = method
+                   , url = url
+                   , headers = headers
+                   , content = content
+                   , responseFormat = responseFormat }
+
+
+-- a default POST request for simple string bodies
 defaultPostStringRequest :: BaseURL -> Maybe Credentials -> String -> Endpoint -> Request String
 defaultPostStringRequest (BaseURL baseUrl) mCredentials s endpoint  =
   let 
@@ -242,12 +260,22 @@ postNewUser submission baseUrl =
     res <- requestTheBody $ defaultPostRequest baseUrl Nothing formData Register
     pure res
 
+
+{-}
 postComment :: forall m. MonadAff m => BaseURL -> Genre -> TuneId -> Comments.Comment -> Credentials -> m (Either String String)
 postComment baseUrl genre tuneId comment credentials =
   H.liftAff do
     let
       formData = Comments.encodeFormData comment
     res <- requestTheBody $ defaultPostRequest baseUrl (Just credentials) formData (Comments genre tuneId)
+    pure res
+-}
+postComment :: forall m. MonadAff m => BaseURL -> Genre -> TuneId -> Comments.NewComment -> Credentials -> m (Either String String)
+postComment baseUrl genre tuneId comment credentials =
+  H.liftAff do
+    let
+      json = Comments.encodeNewComment comment
+    res <- requestTheBody $ defaultPostJsonRequest baseUrl (Just credentials) json (Comments genre tuneId)
     pure res
 
 -- | DELETE

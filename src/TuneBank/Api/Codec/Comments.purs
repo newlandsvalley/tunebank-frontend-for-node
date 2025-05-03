@@ -1,24 +1,23 @@
 module TuneBank.Api.Codec.Comments
   ( Comments
   , Comment
+  , NewComment
   , cleanComment
+  , encodeNewComment
   , defaultComment
   , decodeComment
-  , decodeComments
-  , encodeFormData) where
+  , decodeComments) where
 
 
 import Prelude
 
 import Data.Argonaut (Json, decodeJson, (.:))
 import Data.Argonaut.Decode.Error (JsonDecodeError)
+import Data.Argonaut.Encode.Class (encodeJson)
 import Data.Either (Either)
-import Data.FormURLEncoded (FormURLEncoded, fromArray)
-import Data.Maybe (Maybe(..))
 import Data.String (replaceAll)
 import Data.String.Pattern (Pattern(..), Replacement(..))
 import Data.Traversable (traverse)
-import Data.Tuple (Tuple(..))
 import TuneBank.Data.CommentId (CommentId(..))
 
 -- | the type of a comment when returned from the server
@@ -30,8 +29,18 @@ type Comment =
   , timestamp :: Int
   }
 
+-- | the type of a new or edited comment sent to the server
+type NewComment = 
+  { subject :: String
+  , text :: String
+  }
+
+encodeNewComment :: NewComment -> Json 
+encodeNewComment = 
+  encodeJson
+
 -- | remove any unwanted text which may invalidate any JSON representation
-cleanComment :: Comment -> Comment
+cleanComment :: NewComment -> NewComment
 cleanComment comment =
   let 
     subject = cleanText comment.subject
@@ -46,13 +55,10 @@ cleanComment comment =
   cleanText =
      replaceAll (Pattern "\"") (Replacement "'")
 
-defaultComment :: Comment
+defaultComment :: NewComment
 defaultComment =
-  { submitter : ""
-  , commentId : CommentId 0
-  , subject : ""
+  { subject : ""
   , text : ""
-  , timestamp : 0
   }
 
 -- | decode a JSON comment
@@ -66,8 +72,6 @@ decodeComment json = do
     timestamp <- obj .: "timestamp"
     pure $ { submitter, commentId : CommentId id, subject, text, timestamp }
 
-
-
 type Comments = Array Comment
 
 decodeCommentArray :: Json -> Either JsonDecodeError Comments
@@ -76,24 +80,3 @@ decodeCommentArray json = decodeJson json >>= traverse decodeComment
 
 decodeComments :: Json -> Either JsonDecodeError Comments
 decodeComments = decodeCommentArray
-{-}
-decodeComments :: Json -> Either JsonDecodeError Comments
-decodeComments json = do
-  obj <- decodeJson json
-  comments <- obj .: "comment" >>= decodeCommentArray
-  pure comments
--}
-
-
--- TO DO
-encodeFormData :: Comment -> FormURLEncoded
-encodeFormData comment =
-  let
-    (CommentId timestamp) = comment.commentId
-  in
-    fromArray
-       [ Tuple "submitter"  (Just comment.submitter)
-       , Tuple "timestamp"  (Just (show timestamp))
-       , Tuple "subject"  (Just comment.subject)
-       , Tuple "text"  (Just comment.text)
-       ]
