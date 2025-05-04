@@ -222,7 +222,7 @@ component =
               H.put newState
               pure unit
             Just commentId -> do
-              eComment <- H.liftAff $ requestComment baseURL state.genre state.tuneId commentId credentials
+              eComment <- H.liftAff $ requestComment baseURL commentId credentials
               case eComment of
                 Right comment -> do
                   -- we have a full comment back from the database, allowing us to edit the subject or text

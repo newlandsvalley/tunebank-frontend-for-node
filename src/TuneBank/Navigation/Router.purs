@@ -137,7 +137,7 @@ component =
         ,  footer
         ]
 
-  -- | Note - links are not well-typed.  Sproxy names must also match the
+  -- | Note - links are not well-typed.  Proxy names must also match the
   -- | child slot names AND the route codec initial URI name.
   renderRoute :: State -> H.ComponentHTML Action ChildSlots m
   renderRoute state =

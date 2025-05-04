@@ -217,8 +217,8 @@ requestComments baseUrl genre tuneId = do
         comments = lmap printJsonDecodeError $ decodeComments json
       pure $ comments
 
-requestComment :: forall m. MonadAff m => BaseURL -> Genre -> TuneId -> CommentId -> Credentials -> m (Either String Comment)
-requestComment baseUrl genre tuneId commentId credentials =
+requestComment :: forall m. MonadAff m => BaseURL -> CommentId -> Credentials -> m (Either String Comment)
+requestComment baseUrl commentId credentials =
   H.liftAff do
     res <- requestTheBody $ defaultJsonGetRequest baseUrl (Just credentials) (Comment commentId)
     case res of
