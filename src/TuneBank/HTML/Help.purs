@@ -22,12 +22,12 @@ help =
     , HH.text $
         ("At the moment, TradTuneDb recognises English, Irish, Klezmer, Scottish and (especially) Scandinavian tunes. " <>
         " These are kept in separate collections and you must select your chosen genre before searching for tunes." <>
-        " Each tune has a distinct name (consisting of the tune name and its type) which is used in its URL. " <>
+        " Each tune has a distinct name (consisting of the tune title) which is used in its URL. " <>
         " Also, each tune must have a key signature and a rhythm " <>
         "(the tune type). The rhythms available are appropriate for the genre (so, for example, Irish tunes use jigs, " <>
         " reels etc. whilst Scandi tunes use polska, gånglåt etc.).  You can optionally use the keys or the rhythms " <>
         " when searching for tunes. The search dropdowns show the rhythms and keys that are supported for each genre." <>
-        " If you want to, you can also use an advanced search where (for example) you can look for a particular sequence of notes.")
+        " If you want to, you can also use an advanced search where (for example) you can look for a composer or transcriber.")
     , HH.h2_
        [ HH.text "How do I search for a tune that I can hum but don't know anything about?" ]
     , HH.text $
