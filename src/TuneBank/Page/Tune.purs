@@ -573,7 +573,7 @@ component =
       baseURL <- getBaseURL
       case currentUser of
         Just credentials -> do
-          result <- deleteComment baseURL state.genre state.tuneId commentId credentials
+          result <- deleteComment baseURL commentId credentials
           case result of
             Right _ -> do
               let

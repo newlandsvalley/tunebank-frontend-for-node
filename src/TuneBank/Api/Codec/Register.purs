@@ -1,8 +1,11 @@
 module TuneBank.Api.Codec.Register
   ( Submission
   , defaultSubmission
-  , encodeFormData ) where
+  , encodeSubmission ) where
 
+
+import Data.Argonaut (Json)
+import Data.Argonaut.Encode.Class (encodeJson)
 import Data.Tuple (Tuple(..))
 import Data.Maybe (Maybe(..))
 import TuneBank.Navigation.Route (Route(..), routeCodec)
@@ -18,6 +21,10 @@ type Submission =
   , refererUrl :: String
   }
 
+encodeSubmission :: Submission -> Json 
+encodeSubmission = 
+  encodeJson
+
 defaultSubmission :: Submission
 defaultSubmission =
   { name : ""
@@ -27,6 +34,8 @@ defaultSubmission =
   , refererUrl : print routeCodec Register
   }
 
+
+{-}
 encodeFormData :: Submission -> FormURLEncoded
 encodeFormData submission =
   fromArray
@@ -36,3 +45,4 @@ encodeFormData submission =
      , Tuple "password2"  (Just submission.password2)
      , Tuple "refererUrl"  (Just submission.refererUrl)
      ]
+-}

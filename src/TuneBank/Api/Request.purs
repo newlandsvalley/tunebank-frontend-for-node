@@ -41,7 +41,7 @@ import Halogen as H
 import Routing.Duplex (print)
 import TuneBank.Api.Codec.Comments (Comment, Comments, decodeComment, decodeComments)
 import TuneBank.Api.Codec.Comments (NewComment, encodeNewComment) as Comments
-import TuneBank.Api.Codec.Register (Submission, encodeFormData) as Register
+import TuneBank.Api.Codec.Register (Submission, encodeSubmission) as Register
 import TuneBank.Api.Codec.Tune (TuneMetadata, decodeTune)
 import TuneBank.Api.Codec.TunesPage (TunesPage, decodeTunesPage)
 import TuneBank.Api.Codec.UsersPage (UsersPage, decodeUsersPage)
@@ -90,6 +90,8 @@ defaultJsonAsStrGetRequest (BaseURL baseUrl) mCredentials endpoint =
     defaultRequest { url = url, headers = headers, responseFormat = responseFormat }
 -}
    
+
+{-}
 -- a default POST request for form URL-encoded data
 defaultPostRequest :: BaseURL -> Maybe Credentials -> FUE.FormURLEncoded -> Endpoint -> Request String
 defaultPostRequest (BaseURL baseUrl) mCredentials fue endpoint  =
@@ -105,6 +107,7 @@ defaultPostRequest (BaseURL baseUrl) mCredentials fue endpoint  =
                    , headers = headers
                    , content = content
                    , responseFormat = responseFormat }
+-}
 
 
 -- A default POST request for JSON bodies
@@ -271,8 +274,8 @@ postNewUser :: forall m. MonadAff m => Register.Submission -> BaseURL -> m (Eith
 postNewUser submission baseUrl =
   H.liftAff do
     let
-      formData = Register.encodeFormData submission
-    res <- requestTheBody $ defaultPostRequest baseUrl Nothing formData Register
+      json = Register.encodeSubmission submission
+    res <- requestTheBody $ defaultPostJsonRequest baseUrl Nothing json Register
     pure res
 
 
@@ -311,8 +314,8 @@ deleteTune baseUrl genre tuneId credentials =
     pure res
 
 
-deleteComment :: forall m. MonadAff m => BaseURL -> Genre -> TuneId -> CommentId -> Credentials -> m (Either String String)
-deleteComment baseUrl genre tuneId commentId credentials =
+deleteComment :: forall m. MonadAff m => BaseURL -> CommentId -> Credentials -> m (Either String String)
+deleteComment baseUrl commentId credentials =
   H.liftAff do
     res <- requestTheBody $ defaultDeleteRequest baseUrl (Just credentials) (Comment commentId)
     pure res
