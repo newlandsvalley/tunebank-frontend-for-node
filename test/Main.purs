@@ -15,15 +15,12 @@ import TuneBank.Data.Types (BaseURL(..))
 import TuneBank.Data.TuneId (TuneId(..))
 import TuneBank.Data.Genre (Genre(..))
 import TuneBank.Data.Credentials (Role(..), Credentials)
-import TuneBank.Api.Request (requestTune, requestTuneAbc, requestTuneStr,
-       requestTuneSearch, requestTuneSearchStr, checkUser, requestUsers, requestComments,
-       requestCommentsStr)
+import TuneBank.Api.Request (requestTune, requestTuneAbc, requestTuneSearch, checkUser, 
+       requestUsers, requestComments)
 import TuneBank.Api.Codec.Utils ( unsafeEncodeURIComponent, unsafeDecodeURIComponent) 
 import TuneBank.Navigation.Endpoint (PageParams)
 import TuneBank.Navigation.Route (Route(..), routeCodec)
 import TuneBank.Navigation.SearchParams (SearchParams, defaultSearchParams, parseParams)
-
-import Debug (spy, trace)
 
 assertRight :: forall a b. Either a b -> Test
 assertRight either =
@@ -33,10 +30,7 @@ assertRight either =
 
 baseURL :: BaseURL
 -- production server
-baseURL = BaseURL "http://212.71.250.216:8080/musicrest"
--- baseURL = BaseURL "http://192.168.0.3:8080/musicrest"
--- baseURL = BaseURL "http://192.168.0.113:8080/musicrest"  (London)
--- baseURL = BaseURL "http://192.168.0.3:8080/musicrest"  (Edinburgh)
+baseURL = BaseURL "http://localhost"
 
 sampleTune :: TuneId
 sampleTune =
@@ -105,11 +99,6 @@ apiSuite =
     test "get tune" do
       resource <- requestTune baseURL Irish sampleTune
       assertRight resource
-    {-
-    test "get tune" do
-      resource <- requestTuneStr baseURL "irish" sampleTune
-      Assert.equal (Left "error") resource
-    -}
     test "get tune ABC" do
       resource <- requestTuneAbc baseURL Irish sampleTune
       assertRight resource
@@ -135,27 +124,12 @@ apiSuite =
     test "check bad user" do
       userCheck <- checkUser baseURL unknownUser
       Assert.equal (Right "The supplied authentication is invalid") userCheck
-   {-
-    test "get tune comments" do
-      resource <- requestCommentsStr baseURL "scandi" sampleCommentedTune
-      Assert.equal (Left "error") resource
-    -}
     test "get tune comments" do
       comments <- requestComments baseURL Scandi sampleCommentedTune
       Assert.equal (Right 1) $ rmap A.length comments
     test "get tune empty comments" do
       comments <- requestComments baseURL Scandi sampleTune
       Assert.equal (Right 0) $ rmap A.length comments
-
-    test "complex search str" do
-      response <- requestTuneSearchStr baseURL "scandi" complexSearch
-      _foo <- case response of
-          Right tunes ->
-            pure $ spy "tunes list" tunes
-          Left _ ->
-            pure ""
-      -- Assert.equal (Left "error") $ response
-      assertRight response
 
 codecSuite :: Free TestF Unit
 codecSuite =
@@ -193,18 +167,3 @@ routesSuite =
     test "UserList" do
       Assert.equal "/users?page=1" (print routeCodec $ UserList { page : 1 })
 
-{-}
-predicateSuite :: Free TestF Unit
-predicateSuite =
-  suite "Search predicate" do
-    test "round trip string" do
-      Assert.equal samplePredicateString $ (printPredicate <<< parsePredicateHushed) samplePredicateString
-    test "round trip predicate" do
-      Assert.equal samplePredicate $ (parsePredicateHushed <<< printPredicate) samplePredicate
-
-
-
-parsePredicateHushed :: String -> SearchPredicate
-parsePredicateHushed s =
-  fromMaybe [] $ hush $ parsePredicate s
--}

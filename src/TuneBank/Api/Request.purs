@@ -1,4 +1,20 @@
-module TuneBank.Api.Request where
+module TuneBank.Api.Request 
+  ( checkUser
+  , checkService
+  , deleteComment
+  , deleteTune
+  , deleteUser
+  , postNewComment
+  , postNewUser  
+  , postTune
+  , postUpdatedComment
+  , requestComment
+  , requestComments
+  , requestTune
+  , requestTuneAbc
+  , requestTuneSearch
+  , requestUsers
+  ) where
 
 import Prelude
 
@@ -16,7 +32,7 @@ import Data.FormURLEncoded (FormURLEncoded) as FUE
 import Data.HTTP.Method (Method(..))
 import Data.Maybe (Maybe(..))
 import Data.MediaType (MediaType(..))
-import Data.MediaType.Common (applicationJSON)
+-- import Data.MediaType.Common (applicationJSON)
 import Data.Newtype (unwrap)
 import Effect.Aff.Class (class MonadAff)
 import Effect.Class.Console (log)
@@ -30,7 +46,6 @@ import TuneBank.Api.Codec.Tune (TuneMetadata, decodeTune)
 import TuneBank.Api.Codec.TunesPage (TunesPage, decodeTunesPage)
 import TuneBank.Api.Codec.UsersPage (UsersPage, decodeUsersPage)
 import TuneBank.Authorization.BasicAuth (authorizationHeader)
-import TuneBank.BugFix.Backend (fixSearchParams)
 import TuneBank.Data.CommentId (CommentId)
 import TuneBank.Data.Credentials (Credentials)
 import TuneBank.Data.Genre (Genre)
@@ -44,8 +59,7 @@ import Unsafe.Coerce (unsafeCoerce)
 defaultJsonGetRequest :: BaseURL -> Maybe Credentials -> Endpoint -> Request Json
 defaultJsonGetRequest (BaseURL baseUrl) mCredentials endpoint =
   let
-    -- foo = spy "endpoint" $ fixSearchParams endpoint $ print endpointCodec endpoint
-    url = baseUrl <> (fixSearchParams endpoint $ print endpointCodec endpoint)
+    url = baseUrl <> print endpointCodec endpoint
     headers = [  Accept (MediaType "application/json; charset=UTF-8")
               ] <> (fromFoldable $ authorizationHeader mCredentials)
     responseFormat = RF.json 
@@ -63,17 +77,18 @@ defaultStringGetRequest (BaseURL baseUrl) mCredentials endpoint mediaType =
   in 
     defaultRequest { url = url, headers = headers, responseFormat = responseFormat }
 
+{-}
 -- | only needed against pre v1.2.0 musicrest which exhibits JSON errors
 defaultJsonAsStrGetRequest :: BaseURL -> Maybe Credentials -> Endpoint -> Request String
 defaultJsonAsStrGetRequest (BaseURL baseUrl) mCredentials endpoint =
   let
-    -- foo = spy "endpoint" $ fixSearchParams endpoint $ print endpointCodec endpoint
-    url = baseUrl <> (fixSearchParams endpoint $ print endpointCodec endpoint)
+    url = baseUrl <> print endpointCodec endpoint
     headers = [Accept applicationJSON ]<>
                 (fromFoldable $ authorizationHeader mCredentials)
     responseFormat = RF.string
   in 
     defaultRequest { url = url, headers = headers, responseFormat = responseFormat }
+-}
    
 -- a default POST request for form URL-encoded data
 defaultPostRequest :: BaseURL -> Maybe Credentials -> FUE.FormURLEncoded -> Endpoint -> Request String
@@ -156,10 +171,12 @@ requestTune baseUrl genre tuneId = do
       pure $ tune
 
 
+{-}
 requestTuneStr :: forall m. MonadAff m => BaseURL -> Genre -> TuneId -> m (Either String String)
 requestTuneStr baseUrl genre tuneId = do
   res <- H.liftAff $ requestTheBody $ defaultJsonAsStrGetRequest baseUrl Nothing (Tune genre tuneId)
   pure res
+-}
 
 requestTuneAbc :: forall m. MonadAff m => BaseURL -> Genre -> TuneId -> m (Either String String)
 requestTuneAbc baseUrl genre tuneId = do
@@ -230,7 +247,7 @@ requestComment baseUrl commentId credentials =
           comment = lmap printJsonDecodeError $ decodeComment json
         pure $ comment
 
-
+{-}
 requestTuneSearchStr :: forall m. MonadAff m => BaseURL -> String -> SearchParams -> m (Either String String)
 requestTuneSearchStr baseUrl genre searchParams = do
   res <- H.liftAff $ requestTheBody $ defaultJsonAsStrGetRequest baseUrl Nothing (Search genre searchParams)
@@ -240,6 +257,7 @@ requestCommentsStr :: forall m. MonadAff m => BaseURL -> Genre -> TuneId -> m (E
 requestCommentsStr baseUrl genre tuneId = do
   res <- H.liftAff $ requestTheBody $ defaultJsonAsStrGetRequest baseUrl Nothing (Comments genre tuneId) 
   pure $ lmap show res
+-}
 
 -- | POST
 
