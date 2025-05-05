@@ -1,10 +1,16 @@
 module TuneBank.Api.Codec.Utils
   ( containsDigit
+  , showJsonErrorResponse
   , unsafeEncodeURIComponent
   , unsafeDecodeURIComponent
   , safeSlice) where
 
-import Prelude (($), (>=), (<=), (&&))
+
+import Data.Argonaut (Json, decodeJson, (.:))
+import Data.Argonaut.Decode.Error (JsonDecodeError, printJsonDecodeError)
+import Data.Argonaut.Decode.Parser (parseJson)
+import Prelude (($), (>=), (<=), (&&), bind, identity, pure)
+import Data.Either (Either(..), either)
 import Data.Maybe (fromJust)
 import Data.Foldable (any)
 import Data.String.CodeUnits (slice)
@@ -32,3 +38,20 @@ isDigit cp =
 containsDigit :: String -> Boolean
 containsDigit s =
   any isDigit $ toCodePointArray s
+
+showJsonErrorResponse :: String -> String 
+showJsonErrorResponse jsonString = 
+  case (parseJson jsonString) of 
+    Left err -> 
+      printJsonDecodeError err 
+    Right json ->
+      either printJsonDecodeError identity $ decodeErrorResponse json
+
+  where
+  -- | decode a JSON error response from the tunebank server
+  decodeErrorResponse :: Json -> Either JsonDecodeError String
+  decodeErrorResponse json = do
+    obj <-  decodeJson json
+    message <- obj .: "message"
+    pure message
+

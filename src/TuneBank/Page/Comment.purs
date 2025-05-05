@@ -15,6 +15,7 @@ import Halogen.HTML.Properties as HP
 import Web.Event.Event (preventDefault)
 import Web.UIEvent.MouseEvent (MouseEvent, toEvent)
 import TuneBank.Api.Codec.Comments (NewComment, cleanComment, defaultComment)
+import TuneBank.Api.Codec.Utils (showJsonErrorResponse)
 import TuneBank.Api.Request (postNewComment, postUpdatedComment, requestComment)
 import TuneBank.Data.Credentials (Credentials)
 import TuneBank.Data.Genre (Genre)
@@ -200,7 +201,7 @@ component =
   renderSubmissionError ::  State -> H.ComponentHTML Action ChildSlots m
   renderSubmissionError state =
     let
-      errorText = either (\c -> "comment update failed: " <> c) (const "") state.submitCommentResult
+      errorText = either (\c -> "comment update failed: " <> showJsonErrorResponse c) (const "") state.submitCommentResult
     in
       HH.div_
         [ HH.text errorText ]

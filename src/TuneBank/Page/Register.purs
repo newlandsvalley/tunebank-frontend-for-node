@@ -19,7 +19,7 @@ import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
 import TuneBank.Api.Codec.Register (Submission, defaultSubmission)
-import TuneBank.Api.Codec.Utils (containsDigit)
+import TuneBank.Api.Codec.Utils (containsDigit, showJsonErrorResponse)
 import TuneBank.Api.Request (postNewUser)
 import TuneBank.Data.Session (Session)
 import TuneBank.Data.Types (Validated, BaseURL)
@@ -164,9 +164,9 @@ component =
       registrationOK :: String -> String
       registrationOK msg =
           msg <>
-            "-- the last part of the registration process is to reply to an" <>
+            " The last part of the registration process is to reply to an" <>
             " email confirmation message that has been sent to you."
-      registrationText = either identity registrationOK state.userRegisterResult
+      registrationText = either showJsonErrorResponse registrationOK state.userRegisterResult
     in
       HH.div_
         [

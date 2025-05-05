@@ -19,6 +19,7 @@ import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
 import Prelude (Unit, Void, ($), (<>), bind, const, discard, identity, pure, show, unit)
+import TuneBank.Api.Codec.Utils (showJsonErrorResponse)
 import TuneBank.Api.Request (postTune)
 import TuneBank.Data.Credentials (Credentials)
 import TuneBank.Data.Genre (Genre(..))
@@ -150,7 +151,7 @@ component =
               _ <- navigate $ Tune state.genre (TuneId resultStr)
               pure (Just next)
             Left err -> do
-              H.modify_ (\st -> st { errorText = err } )
+              H.modify_ (\st -> st { errorText = showJsonErrorResponse err } )
               pure (Just next)
         (Tuple _ (Left err) ) -> do
           H.modify_ (\st -> st { errorText = err } )
