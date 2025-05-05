@@ -29,7 +29,7 @@ import Html.Renderer.Halogen as RH
 import TuneBank.Api.Codec.Comments (Comments, Comment)
 import TuneBank.Api.Codec.Tune (TuneMetadata, nullTuneMetadata)
 import TuneBank.Api.Request (requestTune, requestComments, deleteComment, deleteTune)
-import TuneBank.Data.CommentId (CommentId, commentIdToString)
+import TuneBank.Data.CommentId (CommentId)
 import TuneBank.Data.Credentials (Credentials, Role(..))
 import TuneBank.Data.Genre (Genre, asUriComponent)
 import TuneBank.Data.Session (Session)

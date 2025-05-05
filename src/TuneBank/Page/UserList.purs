@@ -15,7 +15,7 @@ import TuneBank.Data.Credentials (Credentials)
 import TuneBank.Data.Session (Session)
 import TuneBank.Data.Types (BaseURL)
 import TuneBank.Data.UserId (UserId(..))
-import TuneBank.HTML.Utils (css)
+import TuneBank.HTML.Utils (css, tsToDateString)
 import TuneBank.Navigation.Endpoint (PageParams)
 import TuneBank.Navigation.Navigate (class Navigate)
 import TuneBank.Navigation.Route (Route(..))
@@ -114,7 +114,7 @@ component =
           , HH.td_
             [ HH.text userRef.valid]
           , HH.td_
-            [ HH.text $ show userRef.timestamp]
+            [ HH.text $ tsToDateString userRef.timestamp]
           , HH.td_ 
             [ renderDeleteUser userRef ]
           ]

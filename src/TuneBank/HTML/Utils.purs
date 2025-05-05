@@ -58,7 +58,7 @@ truncateTo maxLen s =
 tsToDateString :: Int -> String
 tsToDateString ts =
   let
-     mInstant = instant $ Milliseconds $ toNumber ts
+     mInstant = instant $ Milliseconds $ (toNumber ts) * 1000.0
      -- mInstant = instant $ Milliseconds $ readFloat tsString
      dateTime = maybe (bottom) (toDateTime) mInstant
   in
