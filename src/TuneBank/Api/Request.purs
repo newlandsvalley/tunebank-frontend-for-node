@@ -34,7 +34,6 @@ import Data.MediaType (MediaType(..))
 -- import Data.MediaType.Common (applicationJSON)
 import Data.Newtype (unwrap)
 import Effect.Aff.Class (class MonadAff)
-import Effect.Class.Console (log)
 import Effect.Class (liftEffect)
 import Halogen as H
 import Routing.Duplex (print)
@@ -145,13 +144,11 @@ requestTuneSearch baseUrl genre searchParams = do
   res <- H.liftAff $ requestTheBody $ defaultJsonGetRequest baseUrl Nothing (Search genre searchParams)
   case res of
     Left err -> do
-      _ <- liftEffect $ log ("we got an Affjax error: " <> err)
       pure $ Left err
     Right json -> do
       let
         -- tunesPage :: Either String TunesPage
         tunesPage = lmap printJsonDecodeError $ decodeTunesPage json
-      _ <- liftEffect $ log ("we got some JSON: ")
       pure $ tunesPage
 
 
