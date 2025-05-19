@@ -9,7 +9,7 @@ This is the browser frontend code for [tunebank-node](https://github.com/newland
 
 ## To Test
 
-    fire up a tunebank-node development server then:
+    fire up a tunebank-node development server make sure its test suite has been run and then:
 
     npm run test
 

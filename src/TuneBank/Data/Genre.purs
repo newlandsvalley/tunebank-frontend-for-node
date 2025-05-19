@@ -1,6 +1,5 @@
 module TuneBank.Data.Genre
   ( Genre(..)
-  , asUriComponent
   , readGenre
   , genreFromString
   , genreToString
@@ -70,7 +69,7 @@ toEnum i =
 
 genreToString :: Genre -> String
 genreToString =
-  asUriComponent
+  toLower <<< show
 
 genreFromString :: String -> Either String Genre
 genreFromString s =
@@ -107,6 +106,9 @@ pred genre =
     Scandi   -> Just Klezmer
     Scottish -> Just Scandi
 
+
+{-}
 asUriComponent :: Genre -> String
 asUriComponent =
   toLower <<< show
+-}

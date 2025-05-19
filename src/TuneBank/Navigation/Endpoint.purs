@@ -34,7 +34,7 @@ userId = as userIdToString userIdFromString
 
 data Endpoint
   = Root
-  | Search String SearchParams
+  | Search Genre SearchParams
   | Users PageParams
   | User UserId
   | UserCheck
@@ -56,7 +56,7 @@ instance showEndpoint :: Show Endpoint where
 -- | Our codec will cause a compile-time error if we fail to handle any of our endpoint cases.
 endpointCodec :: RouteDuplex' Endpoint
 endpointCodec = root $ sum
-  { "Search": "genre" / segment / "search" ?
+  { "Search": "genre" / (genre segment) / "search" ?
        { key : optional <<< string
        , rhythm : optional <<< string
        , title : optional <<< string

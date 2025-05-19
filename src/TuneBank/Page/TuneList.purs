@@ -26,7 +26,7 @@ import Halogen.ThumbnailPlayerComponent (Query(..), Slot, component) as TNP
 import Partial.Unsafe (unsafePartial)
 import TuneBank.Api.Codec.TunesPage (TunesPage, TuneRef, TuneRefArray)
 import TuneBank.Api.Request (requestTuneSearch)
-import TuneBank.Data.Genre (Genre(..), asUriComponent)
+import TuneBank.Data.Genre (Genre(..))
 import TuneBank.Data.Session (Session)
 import TuneBank.Data.TuneId (TuneId(..), decodeTuneIdURIComponent)
 import TuneBank.Data.Types (BaseURL)
@@ -388,7 +388,7 @@ component =
       state <- H.get
       -- live server testing only baseURL <- getCorsBaseURL
       baseURL <- getBaseURL
-      searchResult <- requestTuneSearch baseURL (asUriComponent state.genre) state.searchParams
+      searchResult <- requestTuneSearch baseURL state.genre state.searchParams
       H.modify_ (\st -> st { searchResult = searchResult } )
       -- handleQuery (InitializeVex next)
       pure (Just next)

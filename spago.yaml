@@ -63,9 +63,12 @@ package:
   test:
     main: Test.Main
     dependencies:
+      - aff
+      - affjax-node
       - console
       - effect
-      - test-unit
+      - spec
+      - spec-node
 workspace:
   extraPackages:
     abc-parser:

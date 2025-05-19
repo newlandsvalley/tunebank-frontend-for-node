@@ -31,7 +31,7 @@ import TuneBank.Api.Codec.Tune (TuneMetadata, nullTuneMetadata)
 import TuneBank.Api.Request (requestTune, requestComments, deleteComment, deleteTune)
 import TuneBank.Data.CommentId (CommentId)
 import TuneBank.Data.Credentials (Credentials, Role(..))
-import TuneBank.Data.Genre (Genre, asUriComponent)
+import TuneBank.Data.Genre (Genre)
 import TuneBank.Data.Session (Session)
 import TuneBank.Data.TuneId (TuneId, tuneIdToString)
 import TuneBank.Data.Types (BaseURL(..))
@@ -640,7 +640,7 @@ urlPreface :: State -> String
 urlPreface state =
   (show state.baseURL)
   <> "/genre/"
-  <> (asUriComponent state.genre)
+  <> (show state.genre) -- (asUriComponent state.genre)
   <> "/tune/"
   <> tuneIdToString state.tuneId
 
