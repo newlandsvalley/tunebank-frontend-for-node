@@ -217,18 +217,6 @@ component =
             ]
             [ HH.text "abc"]
 
-         , HH.a
-            [ HP.href (urlPreface state <> "/pdf")
-            , HP.type_ (MediaType "application/pdf")
-            ]
-            [ HH.text "pdf"]
-
-         , HH.a
-            [ HP.href (urlPreface state <> "/ps")
-            , HP.type_ (MediaType "application/postscript")
-            ]
-            [ HH.text "postscript"]
-
           , HH.a
             [ HP.href (urlPreface state <> "/midi")
             , HP.type_ (MediaType "audio/midi")
