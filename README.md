@@ -13,6 +13,32 @@ This is the browser frontend code for [tunebank-node](https://github.com/newland
 
     npm run test
 
+## SSL, CORS and a Reverse-Proxy
+
+We want communication between `tunebank-frontend-for-node` and `tunebank-node` (the backend) to be as simple and seemless as possible.  In particular, we want the frontend to use SSL and to be configured to use HTTPS and still use HTTP to communicate to the backend. If we do this, we don't then need the CORS response headers from the backend at all.
+
+By far the most straightforward way to achieve this is to use a reverse-proxy.  This can be used to make browsers think that the backend is co-hosted alongside the frontend, and so that both also appear to use HTTPS.  In our case, we use `nginx` as a reverse proxy and configure our service to have an extra location route describing the backend which we'll call `tunebank` and which passes on traffic to the actual backend server on port 8080. Here's the addition we need to nginx configuration:
+
+```
+location /tunebank/ {
+     proxy_pass http://localhost:8080/;
+     proxy_http_version 1.1;
+     proxy_set_header Upgrade $http_upgrade;
+     proxy_set_header Connection 'upgrade';
+     proxy_set_header Host $host;
+     proxy_cache_bypass $http_upgrade;
+     }
+```
+
+All we then need to do is to change the baseURL reference in index.html to point to this location instead of the actual backend:
+
+
+```
+<script>
+   localStorage.setItem('baseURL', 'https://localhost/tunebank')
+</script>
+```
+
 ## Key Differences from the original tunebank-frontend
 
   * Tunes in search URLs are identified uniquely by the tune title rather than the combination of title and rhythm.
@@ -20,6 +46,12 @@ This is the browser frontend code for [tunebank-node](https://github.com/newland
   * Search URLs are no longer required to supply search terms in lower-case.  For example, search terms of `title`, `rhythm`, `origin`, `source` etc. can all be supplied using any combination of case.  This means that tune titles in tune lists are correctly capitalised.
   * It is no longer possible to search by the tune notes in the ABC itself.  This facility rarely worked.
   * Any user may be made into an administrator (at the discretion of the owner of tunebank-node).  This is invisible to most users but can allow some users to see extra options previously available only to the user named `Administrator`.
+
+
+
+
+
+
 
 
 
