@@ -13,6 +13,7 @@ import Prelude (($), (>=), (<=), (&&), bind, identity, pure)
 import Data.Either (Either(..), either)
 import Data.Maybe (fromJust)
 import Data.Foldable (any)
+import Data.String (null)
 import Data.String.CodeUnits (slice)
 import Data.String.CodePoints (CodePoint, codePointFromChar, toCodePointArray)
 import Partial.Unsafe (unsafePartial)
@@ -41,11 +42,14 @@ containsDigit s =
 
 showJsonErrorResponse :: String -> String 
 showJsonErrorResponse jsonString = 
-  case (parseJson jsonString) of 
-    Left err -> 
-      printJsonDecodeError err 
-    Right json ->
-      either printJsonDecodeError identity $ decodeErrorResponse json
+  if (null jsonString)
+    then ""
+  else
+    case (parseJson jsonString) of 
+      Left err -> 
+        printJsonDecodeError err 
+      Right json ->
+        either printJsonDecodeError identity $ decodeErrorResponse json
 
   where
   -- | decode a JSON error response from the tunebank server

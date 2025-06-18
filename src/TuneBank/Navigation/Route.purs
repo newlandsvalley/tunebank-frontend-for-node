@@ -15,10 +15,8 @@ import Routing.Duplex.Generic.Syntax ((/), (?))
 import TuneBank.Data.TuneId (TuneId, tuneIdFromString, tuneIdToString)
 import TuneBank.Data.CommentId (CommentId, commentIdFromString, commentIdToString)
 import TuneBank.Navigation.SearchParams (SearchParams)
-import TuneBank.Data.Credentials (Credentials)
 import TuneBank.Navigation.Endpoint (PageParams)
 import TuneBank.Data.Genre (Genre, genreFromString, genreToString)
-
 
 tuneId :: RouteDuplex' String -> RouteDuplex' TuneId
 tuneId = as tuneIdToString tuneIdFromString

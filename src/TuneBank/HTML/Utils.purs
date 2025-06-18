@@ -2,10 +2,9 @@ module TuneBank.HTML.Utils where
 
 import Prelude
 import TuneBank.Navigation.Route (Route, routeCodec)
-import Data.Maybe (Maybe(..), fromMaybe, maybe)
+import Data.Maybe (Maybe(..), maybe)
 import Data.Either (either)
 import Data.Int (toNumber)
-import Data.Number (fromString) as Number
 import Data.String (length, take)
 import Data.DateTime.Instant (instant, toDateTime)
 import Data.Time.Duration (Milliseconds(..))
