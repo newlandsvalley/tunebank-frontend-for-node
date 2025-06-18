@@ -9,7 +9,7 @@ module TuneBank.Api.Codec.Utils
 import Data.Argonaut (Json, decodeJson, (.:))
 import Data.Argonaut.Decode.Error (JsonDecodeError, printJsonDecodeError)
 import Data.Argonaut.Decode.Parser (parseJson)
-import Prelude (($), (>=), (<=), (&&), bind, identity, pure)
+import Prelude (($), (>=), (<=), (<>), (&&), bind, identity, pure, show)
 import Data.Either (Either(..), either)
 import Data.Maybe (fromJust)
 import Data.Foldable (any)
@@ -46,8 +46,8 @@ showJsonErrorResponse jsonString =
     then ""
   else
     case (parseJson jsonString) of 
-      Left err -> 
-        printJsonDecodeError err 
+      Left _err -> 
+        show jsonString 
       Right json ->
         either printJsonDecodeError identity $ decodeErrorResponse json
 
