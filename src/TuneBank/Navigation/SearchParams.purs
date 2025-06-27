@@ -2,7 +2,8 @@ module TuneBank.Navigation.SearchParams
   ( SearchParams
   , defaultSearchParams
   , parseParams
-  , paramsSummary)  where
+  , paramsSummary
+  ) where
 
 -- | search parameters in common to the Router and the Endpoint
 
@@ -29,20 +30,22 @@ type SearchParams =
   , transcriber :: Maybe String
   , submitter :: Maybe String
   , page :: Int
-  , sort :: String }
+  , sort :: String
+  }
 
 defaultSearchParams :: SearchParams
 defaultSearchParams =
   { key: Nothing
   , rhythm: Nothing
-  , title : Nothing
-  , source : Nothing
-  , origin : Nothing
-  , composer : Nothing
-  , transcriber : Nothing
-  , submitter : Nothing
+  , title: Nothing
+  , source: Nothing
+  , origin: Nothing
+  , composer: Nothing
+  , transcriber: Nothing
+  , submitter: Nothing
   , page: 1
-  , sort: "alpha" }
+  , sort: "alpha"
+  }
 
 -- pare search parameters presented as a simple String
 parseParams :: String -> Either String SearchParams
@@ -66,7 +69,7 @@ buildParams :: List (Tuple String String) -> SearchParams
 buildParams kvs =
   let
     f :: SearchParams -> Tuple String String -> SearchParams
-    f params (Tuple k v ) =
+    f params (Tuple k v) =
       case k of
         "key" ->
           params { key = Just v }

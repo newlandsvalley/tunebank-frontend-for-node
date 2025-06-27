@@ -12,6 +12,7 @@ derive instance newtypeKey :: Newtype Key _
 derive instance genericKey :: Generic Key _
 derive instance eqKey :: Eq Key
 derive instance ordKey :: Ord Key
+
 keys :: Array String
 keys =
   [ "any"
@@ -44,14 +45,14 @@ keySearchTerm' :: Key -> Maybe String
 keySearchTerm' (Key k) =
   case k of
     "any" ->
-       Nothing
+      Nothing
     _ ->
-       Just $ slice 0 4 k
+      Just $ slice 0 4 k
 
 keySearchTerm :: String -> Maybe String
 keySearchTerm k =
   case k of
     "any" ->
-       Nothing
+      Nothing
     _ ->
-       Just $ slice 0 4 k
+      Just $ slice 0 4 k

@@ -2,7 +2,6 @@ module TuneBank.Page.Utils.Environment where
 
 import Prelude
 
-
 import Control.Monad.Reader (class MonadAsk, asks)
 import Data.Maybe (Maybe)
 import Effect.Class (class MonadEffect, liftEffect)
@@ -11,7 +10,7 @@ import TuneBank.Data.Credentials (Credentials)
 import TuneBank.Data.Session (Session)
 import TuneBank.Data.Types (BaseURL(..))
 import TuneBank.Data.Genre (Genre)
-import Audio.SoundFont (Instrument)--
+import Audio.SoundFont (Instrument) --
 
 -- | while developing we'll sidestep CORS errors by querying through a
 -- | CORS proxy server
@@ -50,7 +49,6 @@ getCorsBaseURL = do
   (BaseURL base) <- getBaseURL
   pure $ BaseURL (corsAnywhere <> base)
 
-
 -- | get the current genre
 getCurrentGenre
   :: forall m r
@@ -68,7 +66,7 @@ getInstruments
    . MonadEffect m
   => MonadAsk { session :: Session, baseURL :: BaseURL | r } m
   => m (Array Instrument)
-getInstruments= do
+getInstruments = do
   session <- asks _.session
   instruments <- (Ref.read >>> liftEffect) session.instruments
   pure instruments

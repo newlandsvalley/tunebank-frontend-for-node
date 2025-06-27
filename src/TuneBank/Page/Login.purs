@@ -24,7 +24,6 @@ import TuneBank.Navigation.Navigate (class Navigate, navigate)
 import TuneBank.Navigation.Route (Route(..))
 import TuneBank.Page.Utils.Environment (getBaseURL)
 
-
 type Slot = H.Slot Query Void
 
 type State =
@@ -49,8 +48,9 @@ data Action
   | LoginUser MouseEvent
   | LogoutUser MouseEvent
 
-component :: ∀ o m r
-  . MonadAff m
+component
+  :: ∀ o m r
+   . MonadAff m
   => MonadAsk { session :: Session, baseURL :: BaseURL | r } m
   => Navigate m
   => H.Component Query Input o m
@@ -69,9 +69,9 @@ component =
 
   initialState :: Input -> State
   initialState input =
-    { credentials : blankCredentials
-    , currentUser : input.currentUser
-    , userCheckResult : Left ""
+    { credentials: blankCredentials
+    , currentUser: input.currentUser
+    , userCheckResult: Left ""
     }
 
   render :: State -> H.ComponentHTML Action ChildSlots m
@@ -87,32 +87,32 @@ component =
         HH.form
           [ HP.id "loginform" ]
           [ HH.fieldset
-            []
-            [ HH.legend_ [HH.text "Login"]
-            , renderUserName state
-            , renderPassword state
-            , renderLoginOutButton  state.currentUser
-            ]
+              []
+              [ HH.legend_ [ HH.text "Login" ]
+              , renderUserName state
+              , renderPassword state
+              , renderLoginOutButton state.currentUser
+              ]
           , renderLoginError state
           , renderLinks
           ]
       Just cred ->
         HH.div
-         [ HP.id "logout" ]
-         [ HH.text ("log out " <> cred.user <> " ? ")
-         , renderLoginOutButton state.currentUser
-         ]
+          [ HP.id "logout" ]
+          [ HH.text ("log out " <> cred.user <> " ? ")
+          , renderLoginOutButton state.currentUser
+          ]
 
   renderUserName :: State -> H.ComponentHTML Action ChildSlots m
   renderUserName _state =
     HH.div
       [ css "textinput-div" ]
       [ HH.label
-        [ css "textinput-label" ]
-        [ HH.text "name:" ]
+          [ css "textinput-label" ]
+          [ HH.text "name:" ]
       , HH.input
           [ css "textinput"
-          , HE.onValueInput  HandleUserName
+          , HE.onValueInput HandleUserName
           , HP.value ""
           , HP.type_ HP.InputText
           ]
@@ -123,11 +123,11 @@ component =
     HH.div
       [ css "textinput-div" ]
       [ HH.label
-        [ css "textinput-label" ]
-        [ HH.text "password:" ]
+          [ css "textinput-label" ]
+          [ HH.text "password:" ]
       , HH.input
           [ css "textinput"
-          , HE.onValueInput  HandlePassword
+          , HE.onValueInput HandlePassword
           , HP.value ""
           , HP.type_ HP.InputPassword
           ]
@@ -146,70 +146,66 @@ component =
         ]
         [ HH.text buttonText ]
 
-  renderLoginError ::  State -> H.ComponentHTML Action ChildSlots m
+  renderLoginError :: State -> H.ComponentHTML Action ChildSlots m
   renderLoginError state =
     let
       f :: String -> String
       f errorMsg =
-         if (null errorMsg)
-           then ""
+        if (null errorMsg) then ""
         else
           "login failed"
       errorText = either f (const "login OK") state.userCheckResult
     in
       HH.div_
-        [
-          HH.text errorText
+        [ HH.text errorText
         ]
 
-  renderLinks ::  H.ComponentHTML Action ChildSlots m
+  renderLinks :: H.ComponentHTML Action ChildSlots m
   renderLinks =
     HH.a
       [ safeHref Register ]
-      [ HH.text "register"]
+      [ HH.text "register" ]
 
   handleAction ∷ Action -> H.HalogenM State Action ChildSlots o m Unit
   handleAction = case _ of
     HandleInput input -> do
-      _ <- H.modify (\state -> state { currentUser = input.currentUser } )
+      _ <- H.modify (\state -> state { currentUser = input.currentUser })
       pure unit
     HandleUserName name -> do
-      if (length name > 0)
-        then do
-          state <- H.get
-          let
-            credentials = state.credentials { user = name }
-          H.modify_ (\st -> st { credentials = credentials } )
-        else pure unit
+      if (length name > 0) then do
+        state <- H.get
+        let
+          credentials = state.credentials { user = name }
+        H.modify_ (\st -> st { credentials = credentials })
+      else pure unit
     HandlePassword pass -> do
-      if (length pass > 0)
-        then do
-          state <- H.get
-          let
-            credentials = state.credentials { pass = pass }
-          H.modify_ (\st -> st { credentials = credentials } )
-        else pure unit
+      if (length pass > 0) then do
+        state <- H.get
+        let
+          credentials = state.credentials { pass = pass }
+        H.modify_ (\st -> st { credentials = credentials })
+      else pure unit
     LoginUser event -> do
       _ <- H.liftEffect $ preventDefault $ toEvent event
       state <- H.get
       baseURL <- getBaseURL
       userCheckResult <- checkUser baseURL state.credentials
-      _ <- H.modify_ (\st -> st { userCheckResult = userCheckResult } )
-      case (userCheckResult) of 
-        Right roleString -> do 
-          let 
+      _ <- H.modify_ (\st -> st { userCheckResult = userCheckResult })
+      case (userCheckResult) of
+        Right roleString -> do
+          let
             role = roleFromString roleString
             credentials = state.credentials { role = role }
           session <- asks _.session
           _ <- H.liftEffect $ Ref.write (Just credentials) session.user
           -- if the user logs in, we MUST navigate in order to update the headers
           navigate Home
-        Left _ -> 
-          pure unit          
+        Left _ ->
+          pure unit
     LogoutUser event -> do
       _ <- H.liftEffect $ preventDefault $ toEvent event
       session <- asks _.session
       _ <- H.liftEffect $ Ref.write Nothing session.user
-      _ <- H.modify (\st -> st { currentUser = Nothing } )
+      _ <- H.modify (\st -> st { currentUser = Nothing })
       -- again, we MUST navigate in order to update the headers
       navigate Home

@@ -1,15 +1,13 @@
-module Test.Request 
+module Test.Request
   ( requestComments
   , requestTune
   , requestTuneAbc
   , requestTuneSearch
   , requestUsers
   , checkUser
-  ) 
-    where
+  ) where
 
 import Prelude
-
 
 import Affjax (Request, printError)
 import Affjax.RequestHeader (RequestHeader(..))
@@ -45,7 +43,6 @@ import Unsafe.Coerce (unsafeCoerce)
 -- | This makes the tests more fragile than they would have been without the disparity
 -- | It's important that this is kept in lockstep with TuneBank.Api.Request
 
-
 requestTune :: forall m. MonadAff m => BaseURL -> Genre -> TuneId -> m (Either String TuneMetadata)
 requestTune baseUrl genre tuneId = do
   _ <- liftEffect $ log $ "request tune url: " <> show baseUrl <> print endpointCodec (Tune genre tuneId)
@@ -59,12 +56,10 @@ requestTune baseUrl genre tuneId = do
         tune = lmap printJsonDecodeError $ decodeTune json
       pure $ tune
 
-
 requestTuneAbc :: forall m. MonadAff m => BaseURL -> Genre -> TuneId -> m (Either String String)
 requestTuneAbc baseUrl genre tuneId = do
-  res <- liftAff $ request $ defaultStringGetRequest baseUrl Nothing (Tune genre tuneId)  (MediaType "text/vnd.abc")
+  res <- liftAff $ request $ defaultStringGetRequest baseUrl Nothing (Tune genre tuneId) (MediaType "text/vnd.abc")
   pure $ bimap printError _.body res
-
 
 requestTuneSearch :: forall m. MonadAff m => BaseURL -> Genre -> SearchParams -> m (Either String TunesPage)
 requestTuneSearch baseUrl genre searchParams = do
@@ -78,7 +73,7 @@ requestTuneSearch baseUrl genre searchParams = do
         tunesPage = lmap printJsonDecodeError $ decodeTunesPage json
       pure $ tunesPage
 
-requestUsers :: forall m. MonadAff m => BaseURL -> Maybe Credentials-> PageParams -> m (Either String UsersPage)
+requestUsers :: forall m. MonadAff m => BaseURL -> Maybe Credentials -> PageParams -> m (Either String UsersPage)
 requestUsers baseUrl mCredentials pageParams = do
   res <- liftAff $ requestTheBody $ defaultJsonGetRequest baseUrl mCredentials (Users pageParams)
   case res of
@@ -90,11 +85,9 @@ requestUsers baseUrl mCredentials pageParams = do
         usersPage = lmap printJsonDecodeError $ decodeUsersPage json
       pure $ usersPage
 
-
-checkUser :: forall m. MonadAff m => BaseURL -> Credentials-> m (Either String String)
+checkUser :: forall m. MonadAff m => BaseURL -> Credentials -> m (Either String String)
 checkUser baseUrl credentials = do
   liftAff $ requestTheBody $ defaultStringGetRequest baseUrl (Just credentials) UserCheck (MediaType "text/plain; charset=UTF-8")
-  
 
 requestComments :: forall m. MonadAff m => BaseURL -> Genre -> TuneId -> m (Either String Comments)
 requestComments baseUrl genre tuneId = do
@@ -113,49 +106,47 @@ defaultJsonGetRequest (BaseURL baseUrl) mCredentials endpoint =
   let
     url = baseUrl <> print endpointCodec endpoint
 
-    headers = [  Accept (MediaType "application/json; charset=UTF-8")
-              ] <> (fromFoldable $ authorizationHeader mCredentials)
-    responseFormat = RF.json 
+    headers =
+      [ Accept (MediaType "application/json; charset=UTF-8")
+      ] <> (fromFoldable $ authorizationHeader mCredentials)
+    responseFormat = RF.json
   in
     defaultRequest { url = url, headers = headers, responseFormat = responseFormat }
 
-
 defaultStringGetRequest :: BaseURL -> Maybe Credentials -> Endpoint -> MediaType -> Request String
 defaultStringGetRequest (BaseURL baseUrl) mCredentials endpoint mediaType =
-  let 
+  let
     url = baseUrl <> print endpointCodec endpoint
-    headers = [ Accept mediaType] <>
-               (fromFoldable $ authorizationHeader mCredentials)
+    headers = [ Accept mediaType ] <>
+      (fromFoldable $ authorizationHeader mCredentials)
     responseFormat = RF.string
-  in 
+  in
     defaultRequest { url = url, headers = headers, responseFormat = responseFormat }
-
-
 
 -- | The default manner of attempting a request. We're only interested in the
 -- | response body and all errors will be converted to strings
 requestTheBody :: ∀ a m. MonadAff m => Request a -> m (Either String a)
 requestTheBody r = liftAff do
-  response <- request r 
-  case response of 
+  response <- request r
+  case response of
     -- Aff error (unlikely)
     Left err ->
-      pure $ Left $ printError err 
+      pure $ Left $ printError err
     Right result ->
-      let 
+      let
         -- get the HTTP status range - e.g. 2xx is represented as 2
         statusRange :: Int
         statusRange = (unwrap result.status) / 100
       in
-      -- HTTP error ranges
-      case statusRange of 
-        -- bad request 4xx.  likely in uploading ABC tunes which induce validation on the server
-        4 ->
-          pure $ Left $ unsafeCoerce result.body
-        -- success 2xx.
-        2 ->
-          pure $ Right result.body
-        -- other stuff - chaos or less likely
-        _ ->
-          pure $ Left $ result.statusText
+        -- HTTP error ranges
+        case statusRange of
+          -- bad request 4xx.  likely in uploading ABC tunes which induce validation on the server
+          4 ->
+            pure $ Left $ unsafeCoerce result.body
+          -- success 2xx.
+          2 ->
+            pure $ Right result.body
+          -- other stuff - chaos or less likely
+          _ ->
+            pure $ Left $ result.statusText
 

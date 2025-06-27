@@ -48,17 +48,16 @@ data Query a =
   PostTune a
 
 type ChildSlots =
-   ( abcfile :: FIC.Slot Unit )
-
+  (abcfile :: FIC.Slot Unit)
 
 _abcfile = Proxy :: Proxy "abcfile"
 
 abcFileInputCtx :: FIC.Context
 abcFileInputCtx =
-  { componentId : "abcinput"
-  , isBinary : false
-  , prompt : "choose file"
-  , accept :  mediaType (MediaType ".abc")
+  { componentId: "abcinput"
+  , isBinary: false
+  , prompt: "choose file"
+  , accept: mediaType (MediaType ".abc")
   }
 
 data Action
@@ -67,11 +66,11 @@ data Action
   | UploadFile MouseEvent
 
 component
-   :: ∀ i o m r
-    . MonadAff m
-   => MonadAsk { session :: Session, baseURL :: BaseURL | r } m
-   => Navigate m
-   => H.Component Query i o m
+  :: ∀ i o m r
+   . MonadAff m
+  => MonadAsk { session :: Session, baseURL :: BaseURL | r } m
+  => Navigate m
+  => H.Component Query i o m
 component =
   H.mkComponent
     { initialState
@@ -86,28 +85,28 @@ component =
 
   initialState :: i -> State
   initialState _ =
-    { genre : Scandi
-    , currentUser : Nothing
-    , baseURL : BaseURL ""
-    , fileName : Nothing
-    , abc : ""
-    , errorText : ""
+    { genre: Scandi
+    , currentUser: Nothing
+    , baseURL: BaseURL ""
+    , fileName: Nothing
+    , abc: ""
+    , errorText: ""
     }
 
   render :: State -> H.ComponentHTML Action ChildSlots m
   render state =
     HH.div_
       [ HH.form
-        [ HP.id "uploadform" ]
-        [ HH.fieldset
-            []
-            [ HH.legend_ [HH.text "Upload Tune"]
-            , renderAdvisoryText state
-            , renderSelectFile state
-            , renderUploadButton state
-            ]
-        , renderError state
-        ]
+          [ HP.id "uploadform" ]
+          [ HH.fieldset
+              []
+              [ HH.legend_ [ HH.text "Upload Tune" ]
+              , renderAdvisoryText state
+              , renderSelectFile state
+              , renderUploadButton state
+              ]
+          , renderError state
+          ]
       ]
 
   handleAction ∷ Action -> H.HalogenM State Action ChildSlots o m Unit
@@ -116,14 +115,22 @@ component =
       baseURL <- getBaseURL
       mUser <- getUser
       genre <- getCurrentGenre
-      _ <- H.modify (\state -> state { genre = genre
-                                     , currentUser = mUser
-                                     , baseURL = baseURL } )
+      _ <- H.modify
+        ( \state -> state
+            { genre = genre
+            , currentUser = mUser
+            , baseURL = baseURL
+            }
+        )
       pure unit
     HandleABCFile (FIC.FileLoaded filespec) -> do
-      _ <- H.modify (\st -> st { fileName = Just filespec.name
-                                ,  abc = filespec.contents
-                                , errorText = "" } )
+      _ <- H.modify
+        ( \st -> st
+            { fileName = Just filespec.name
+            , abc = filespec.contents
+            , errorText = ""
+            }
+        )
       pure unit
     UploadFile event -> do
       _ <- H.liftEffect $ preventDefault $ toEvent event
@@ -140,21 +147,21 @@ component =
       let
         eTuneTitle = validateTune state.abc
       case (Tuple state.currentUser eTuneTitle) of
-        (Tuple (Just credentials) (Right _title) ) -> do
+        (Tuple (Just credentials) (Right _title)) -> do
           postResult <- postTune state.abc baseURL state.genre credentials
           let
             errorText = either identity (const "") postResult
-          H.modify_ (\st -> st { errorText = errorText } )
+          H.modify_ (\st -> st { errorText = errorText })
           case postResult of
             -- we posted OK and got a good response with the title in the response
             Right resultStr -> do
               _ <- navigate $ Tune state.genre (TuneId resultStr)
               pure (Just next)
             Left err -> do
-              H.modify_ (\st -> st { errorText = showJsonErrorResponse err } )
+              H.modify_ (\st -> st { errorText = showJsonErrorResponse err })
               pure (Just next)
-        (Tuple _ (Left err) ) -> do
-          H.modify_ (\st -> st { errorText = err } )
+        (Tuple _ (Left err)) -> do
+          H.modify_ (\st -> st { errorText = err })
           pure (Just next)
         _ ->
           pure (Just next)
@@ -163,18 +170,19 @@ renderAdvisoryText :: forall m. State -> H.ComponentHTML Action ChildSlots m
 renderAdvisoryText state =
   let
     text1 =
-       "Upload an ABC file to the " <>
-        (show state.genre) <>
-         " genre. (The file extension should be "  <>
-         ".abc although .txt is also allowed.)"
+      "Upload an ABC file to the "
+        <> (show state.genre)
+        <> " genre. (The file extension should be "
+        <>
+          ".abc although .txt is also allowed.)"
     text2 =
-       "The file should contain a single tune without chord symbols."
+      "The file should contain a single tune without chord symbols."
   in
     HH.div_
       [ HH.p_
-          [HH.text text1]
+          [ HH.text text1 ]
       , HH.p_
-          [HH.text text2]
+          [ HH.text text2 ]
       ]
 
 renderSelectFile :: forall m. MonadAff m => State -> H.ComponentHTML Action ChildSlots m
@@ -184,19 +192,19 @@ renderSelectFile _state =
     , HP.id "uploadselectfile"
     ]
     [ HH.label
-      [ css "fileinput-label" ]
-      [ HH.text "load ABC file:" ]
+        [ css "fileinput-label" ]
+        [ HH.text "load ABC file:" ]
     , HH.slot _abcfile unit (FIC.component abcFileInputCtx) unit HandleABCFile
     ]
 
 renderUploadButton :: forall m. State -> H.ComponentHTML Action ChildSlots m
 renderUploadButton _state =
-    HH.button
-      [ HE.onClick UploadFile
-      , css "hoverable"
-      , HP.enabled true
-      ]
-      [ HH.text "upload" ]
+  HH.button
+    [ HE.onClick UploadFile
+    , css "hoverable"
+    , HP.enabled true
+    ]
+    [ HH.text "upload" ]
 
 renderError :: forall m. State -> H.ComponentHTML Action ChildSlots m
 renderError state =
@@ -206,16 +214,17 @@ renderError state =
 
 validateTune :: String -> Either String String
 validateTune abc =
-  if (textContainsQuotes abc)
-    then
-      Left ("Embedded double quotes are not supported" <>
-         " - i.e. ABC containing chord symbols is rejected")
-    else
-      validTuneTitle abc
+  if (textContainsQuotes abc) then
+    Left
+      ( "Embedded double quotes are not supported" <>
+          " - i.e. ABC containing chord symbols is rejected"
+      )
+  else
+    validTuneTitle abc
 
 validTuneTitle :: String -> Either String String
 validTuneTitle abc =
-  case parse (abc <> "\r\n")  of
+  case parse (abc <> "\r\n") of
     Left err -> Left ("invalid ABC: " <> show err)
     Right tune ->
       maybe (Left "No tune title present") (\t -> Right t) $ getTitle tune

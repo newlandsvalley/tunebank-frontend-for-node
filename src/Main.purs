@@ -26,14 +26,13 @@ import Routing.Hash (matchesWith)
 import Audio.SoundFont (loadPianoSoundFont)
 import AppM (runAppM)
 
-
 -- | production Musicrest server
 -- |  baseURL = BaseURL "http://www.tradtunedb.org.uk:8080/musicrest"
 -- | dev server
 -- |  baseURL = BaseURL "http://192.168.0.113:8080/musicrest"
 productionServer :: String
 productionServer =
-   "http://www.tradtunedb.org.uk:8080/musicrest"
+  "http://www.tradtunedb.org.uk:8080/musicrest"
 
 -- | we pass parameters to the application by means of local storage.
 -- | if there is no baseURL item, then we automatically fall back
@@ -50,7 +49,7 @@ main = HA.runHalogenAff do
   body <- HA.awaitBody
   let
     bodyNode = toNode body
-    
+
   -- loading the piano soundfont may take time - issue a warning
   liftEffect $ setTextContent "Loading piano soundfont - please wait" bodyNode
   instrument <- loadPianoSoundFont "assets/soundfonts"
@@ -66,15 +65,15 @@ main = HA.runHalogenAff do
   let
     session = { user, genre, instruments }
     logLevel = Dev
+
     -- the basic environment
     environment :: Env
     environment = { session, baseURL, logLevel }
 
-
     rootComponent :: H.Component Router.Query RouterTypes.Input Void Aff
     rootComponent = H.hoist (runAppM environment) Router.component
 
-  halogenIO <- runUI rootComponent { instruments : singleton instrument } body
+  halogenIO <- runUI rootComponent { instruments: singleton instrument } body
 
   -- The app is running. All that's left is to notify the router
   -- any time the location changes in the URL.
@@ -90,7 +89,7 @@ main = HA.runHalogenAff do
   -- https://github.com/natefaubion/purescript-routing-duplex/blob/v0.2.0/README.md
   void $ liftEffect $ matchesWith (parse routeCodec) \old new ->
     when (old /= Just new) do
-      launchAff_ do 
+      launchAff_ do
         _response <- halogenIO.query $ H.mkTell $ Router.Navigate new
         pure unit
 

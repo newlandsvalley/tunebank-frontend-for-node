@@ -8,8 +8,8 @@ module TuneBank.Data.Credentials
 import Prelude (class Eq, class Ord, class Show, (==))
 
 -- | the user role
-data Role =
-    NormalUser
+data Role
+  = NormalUser
   | Administrator
 
 derive instance eqRole :: Eq Role
@@ -19,13 +19,12 @@ instance showRole :: Show Role where
   show NormalUser = "normal user"
   show Administrator = "administrator"
 
-roleFromString :: String -> Role 
-roleFromString s = 
-  if (s == "administrator") then 
+roleFromString :: String -> Role
+roleFromString s =
+  if (s == "administrator") then
     Administrator
-  else 
+  else
     NormalUser
-
 
 -- | the credentials of a user
 type Credentials =
@@ -37,8 +36,8 @@ type Credentials =
 -- | blanked out (uninitialised) credentials
 blankCredentials :: Credentials
 blankCredentials =
-  { user : ""
-  , pass : ""
-  , role : NormalUser
+  { user: ""
+  , pass: ""
+  , role: NormalUser
   }
 

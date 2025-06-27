@@ -2,7 +2,6 @@ module AppM (AppM, runAppM) where
 
 -- | our monad is just Aff with Navigation attached to it
 
-
 import Prelude
 import Effect.Aff (Aff)
 import Effect.Aff.Class (class MonadAff)
@@ -44,7 +43,6 @@ derive newtype instance monadAffAppM :: MonadAff AppM
 -- | ```
 instance monadAskAppM :: TypeEquals e Env => MonadAsk e AppM where
   ask = AppM $ asks from
-
 
 instance navigateAppM :: Navigate AppM where
   navigate =

@@ -12,7 +12,7 @@ import Data.Either (Either(..))
 import Data.Generic.Rep (class Generic)
 import TuneBank.Api.Codec.Utils (unsafeEncodeURIComponent)
 
-newtype TuneId = TuneId String 
+newtype TuneId = TuneId String
 
 derive instance genericTuneId :: Generic TuneId _
 derive instance eqTuneId :: Eq TuneId
@@ -22,7 +22,7 @@ instance showTuneid :: Show TuneId where
   show = tuneIdToString
 
 tuneIdToString :: TuneId -> String
-tuneIdToString (TuneId title ) =
+tuneIdToString (TuneId title) =
   title
 
 tuneIdFromString :: String -> Either String TuneId
@@ -33,7 +33,8 @@ tuneIdFromString s =
 decodeTuneIdURIComponent :: String -> TuneId
 decodeTuneIdURIComponent s =
   TuneId s
-  -- tuneIdFromString
+
+-- tuneIdFromString
 
 encodeTuneIdURIComponent :: TuneId -> String
 encodeTuneIdURIComponent =

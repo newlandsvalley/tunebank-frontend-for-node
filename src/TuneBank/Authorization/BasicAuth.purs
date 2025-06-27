@@ -1,6 +1,6 @@
 module TuneBank.Authorization.BasicAuth
-  (authorizationHeader) where
-
+  ( authorizationHeader
+  ) where
 
 import Prelude ((<>), map)
 import Affjax.RequestHeader (RequestHeader(..))

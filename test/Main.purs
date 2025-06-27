@@ -25,7 +25,6 @@ import TuneBank.Navigation.Endpoint (PageParams)
 import TuneBank.Navigation.Route (Route(..), routeCodec)
 import TuneBank.Navigation.SearchParams (SearchParams, defaultSearchParams, parseParams)
 
-
 baseURL :: BaseURL
 -- production server
 baseURL = BaseURL "http://localhost:8080"
@@ -48,7 +47,7 @@ simpleSearch =
 
 complexSearch :: SearchParams
 complexSearch =
-  simpleSearch { key = Just "Dmaj", rhythm = Just "polska"}
+  simpleSearch { key = Just "Dmaj", rhythm = Just "polska" }
 
 page1 :: PageParams
 page1 =
@@ -56,21 +55,20 @@ page1 =
 
 adminUser :: Credentials
 adminUser =
-  { user : "administrator"
-  , pass : "changeit"
-  , role : Administrator
+  { user: "administrator"
+  , pass: "changeit"
+  , role: Administrator
   }
 
 unknownUser :: Credentials
 unknownUser =
-  { user : "unknown"
-  , pass : "xyz123"
-  , role : NormalUser
+  { user: "unknown"
+  , pass: "xyz123"
+  , role: NormalUser
   }
 
-
 main :: Effect Unit
-main = runSpecAndExitProcess [ specReporter] do
+main = runSpecAndExitProcess [ specReporter ] do
   describe "tunebank frontend" do
     apiSpec
     codecSpec
@@ -82,50 +80,50 @@ apiSpec =
   describe "Endpoint API" do
     it "gets tune" do
       eRes :: (Either String TuneMetadata) <- requestTune baseURL Scandi sampleTune
-      case eRes of 
-        Left err -> fail err 
+      case eRes of
+        Left err -> fail err
         Right metadata -> do
           metadata.title `shouldEqual` "Elverumspols"
-    
+
     it "gets tune ABC" do
       eRes :: (Either String String) <- requestTuneAbc baseURL Scandi sampleTune
-      case eRes of 
-        Left err -> fail err 
+      case eRes of
+        Left err -> fail err
         Right abc -> do
-          abc `shouldSatisfy` contains (Pattern "Elverumspols")     
+          abc `shouldSatisfy` contains (Pattern "Elverumspols")
 
     it "does simple search" do
       response <- requestTuneSearch baseURL Scandi simpleSearch
       -- these tests below now fail
       rmap (\tunes -> tunes.pagination.size) response `shouldEqual` (Right 15)
-      rmap (\tunes -> tunes.pagination.page) response `shouldEqual` (Right 1) 
-      rmap (\tunes -> tunes.pagination.maxPages) response `shouldEqual` (Right 2) 
+      rmap (\tunes -> tunes.pagination.page) response `shouldEqual` (Right 1)
+      rmap (\tunes -> tunes.pagination.maxPages) response `shouldEqual` (Right 2)
 
     it "does complex search" do
       response <- requestTuneSearch baseURL Scandi complexSearch
-      rmap (\tunes -> tunes.pagination.size) response `shouldEqual` (Right 15) 
-      rmap (\tunes -> tunes.pagination.maxPages) response `shouldEqual` (Right 1) 
+      rmap (\tunes -> tunes.pagination.size) response `shouldEqual` (Right 15)
+      rmap (\tunes -> tunes.pagination.maxPages) response `shouldEqual` (Right 1)
 
     it "gets users" do
-      response  <- requestUsers baseURL (Just adminUser) page1
-      rmap (\users -> users.pagination.size) response `shouldEqual` (Right 15) 
-      rmap (\users -> users.pagination.page) response `shouldEqual` (Right 1) 
-    
+      response <- requestUsers baseURL (Just adminUser) page1
+      rmap (\users -> users.pagination.size) response `shouldEqual` (Right 15)
+      rmap (\users -> users.pagination.page) response `shouldEqual` (Right 1)
+
     it "checks good user" do
       userCheck <- checkUser baseURL adminUser
-      userCheck `shouldEqual` (Right "administrator") 
-    
+      userCheck `shouldEqual` (Right "administrator")
+
     it "checks bad user" do
       userCheck <- checkUser baseURL unknownUser
-      userCheck `shouldSatisfy` isLeft 
-    
+      userCheck `shouldSatisfy` isLeft
+
     it "gets tune comments" do
       comments <- requestComments baseURL Scandi sampleCommentedTune
-      rmap A.length comments `shouldEqual` (Right 1) 
+      rmap A.length comments `shouldEqual` (Right 1)
 
     it "gets tune empty comments" do
       comments <- requestComments baseURL Scandi sampleUncommentedTune
-      rmap A.length comments `shouldEqual` (Right 0) 
+      rmap A.length comments `shouldEqual` (Right 0)
 
 codecSpec :: Spec Unit
 codecSpec =
@@ -148,18 +146,21 @@ routesSpec =
     it "has Login route" do
       shouldEqual "/login" (print routeCodec Login)
     it "has TuneList route" do
-      shouldEqual "/tunelist?sort=alpha&page=1" (print routeCodec $
-        TuneList
-             { key : Nothing
-             , rhythm : Nothing
-             , title : Nothing
-             , source : Nothing
-             , origin : Nothing
-             , composer : Nothing
-             , transcriber : Nothing
-             , submitter : Nothing
-             , page: 1
-             , sort : "alpha" })
+      shouldEqual "/tunelist?sort=alpha&page=1"
+        ( print routeCodec $
+            TuneList
+              { key: Nothing
+              , rhythm: Nothing
+              , title: Nothing
+              , source: Nothing
+              , origin: Nothing
+              , composer: Nothing
+              , transcriber: Nothing
+              , submitter: Nothing
+              , page: 1
+              , sort: "alpha"
+              }
+        )
     it "has UserList route" do
-      shouldEqual "/users?page=1" (print routeCodec $ UserList { page : 1 })
+      shouldEqual "/users?page=1" (print routeCodec $ UserList { page: 1 })
 

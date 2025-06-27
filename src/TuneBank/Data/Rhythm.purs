@@ -26,7 +26,6 @@ rhythms genre =
     Klezmer ->
       klezmerRhythms
 
-
 scandiRhythms :: Array String
 scandiRhythms =
   [ "any"
@@ -82,17 +81,17 @@ celticRhythms =
 irishRhythms :: Array String
 irishRhythms =
   celticRhythms <>
-  [ "highland"
-  , "mazurka"
-  , "slide"
-  ]
+    [ "highland"
+    , "mazurka"
+    , "slide"
+    ]
 
 scottishRhythms :: Array String
 scottishRhythms =
   celticRhythms <>
-  [ "schottische"
-  , "strathspey"
-  ]
+    [ "schottische"
+    , "strathspey"
+    ]
 
 englishRhythms :: Array String
 englishRhythms =

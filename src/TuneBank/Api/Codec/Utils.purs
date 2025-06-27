@@ -3,13 +3,13 @@ module TuneBank.Api.Codec.Utils
   , showJsonErrorResponse
   , unsafeEncodeURIComponent
   , unsafeDecodeURIComponent
-  , safeSlice) where
-
+  , safeSlice
+  ) where
 
 import Data.Argonaut (Json, decodeJson, (.:))
 import Data.Argonaut.Decode.Error (JsonDecodeError, printJsonDecodeError)
 import Data.Argonaut.Decode.Parser (parseJson)
-import Prelude (($), (>=), (<=), (<>), (&&), bind, identity, pure, show)
+import Prelude (($), (>=), (<=), (&&), bind, identity, pure, show)
 import Data.Either (Either(..), either)
 import Data.Maybe (fromJust)
 import Data.Foldable (any)
@@ -20,11 +20,11 @@ import Partial.Unsafe (unsafePartial)
 import JSURI (decodeURIComponent, encodeURIComponent)
 
 unsafeEncodeURIComponent :: String -> String
-unsafeEncodeURIComponent s = 
+unsafeEncodeURIComponent s =
   unsafePartial $ fromJust $ encodeURIComponent s
 
 unsafeDecodeURIComponent :: String -> String
-unsafeDecodeURIComponent s = 
+unsafeDecodeURIComponent s =
   unsafePartial $ fromJust $ decodeURIComponent s
 
 safeSlice :: Int -> Int -> String -> String
@@ -40,14 +40,13 @@ containsDigit :: String -> Boolean
 containsDigit s =
   any isDigit $ toCodePointArray s
 
-showJsonErrorResponse :: String -> String 
-showJsonErrorResponse jsonString = 
-  if (null jsonString)
-    then ""
+showJsonErrorResponse :: String -> String
+showJsonErrorResponse jsonString =
+  if (null jsonString) then ""
   else
-    case (parseJson jsonString) of 
-      Left _err -> 
-        show jsonString 
+    case (parseJson jsonString) of
+      Left _err ->
+        show jsonString
       Right json ->
         either printJsonDecodeError identity $ decodeErrorResponse json
 
@@ -55,7 +54,7 @@ showJsonErrorResponse jsonString =
   -- | decode a JSON error response from the tunebank server
   decodeErrorResponse :: Json -> Either JsonDecodeError String
   decodeErrorResponse json = do
-    obj <-  decodeJson json
+    obj <- decodeJson json
     message <- obj .: "message"
     pure message
 

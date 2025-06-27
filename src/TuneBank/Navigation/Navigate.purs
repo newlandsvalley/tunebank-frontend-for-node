@@ -1,6 +1,5 @@
 module TuneBank.Navigation.Navigate where
 
-
 import Prelude
 
 import Control.Monad.Trans.Class (lift)

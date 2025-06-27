@@ -2,7 +2,8 @@ module TuneBank.Api.Codec.TunesPage
   ( TunesPage(..)
   , TuneRefArray
   , TuneRef
-  , decodeTunesPage) where
+  , decodeTunesPage
+  ) where
 
 import Prelude
 import Data.Argonaut (Json, decodeJson, (.:))
@@ -20,12 +21,12 @@ type TuneRef =
 
 decodeJsonTuneRef :: Json -> Either JsonDecodeError TuneRef
 decodeJsonTuneRef json = do
-    obj <- decodeJson json
-    title <- obj .: "title"
-    rhythm <- obj .: "rhythm"
-    ts <- obj .: "timestamp"
-    abc <- obj .: "abc"
-    pure $ { title, rhythm, ts, abc }
+  obj <- decodeJson json
+  title <- obj .: "title"
+  rhythm <- obj .: "rhythm"
+  ts <- obj .: "timestamp"
+  abc <- obj .: "abc"
+  pure $ { title, rhythm, ts, abc }
 
 type TunesPage =
   { tunes :: TuneRefArray
@@ -37,7 +38,7 @@ type TuneRefArray = Array TuneRef
 decodeTuneRefArray :: Json -> Either JsonDecodeError TuneRefArray
 decodeTuneRefArray json = decodeJson json >>= traverse decodeJsonTuneRef
 
-decodeTunesPage :: Json -> Either  JsonDecodeError TunesPage
+decodeTunesPage :: Json -> Either JsonDecodeError TunesPage
 decodeTunesPage json = do
   obj <- decodeJson json
   tunes <- obj .: "tunes" >>= decodeTuneRefArray

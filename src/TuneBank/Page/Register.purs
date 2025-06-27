@@ -32,8 +32,8 @@ type Slot = H.Slot (Const Void) Void
 
 type State =
   { submission :: Submission
-  , userRegisterResult :: Either String String  -- result from server
-  , errorText :: String                         -- validation errors
+  , userRegisterResult :: Either String String -- result from server
+  , errorText :: String -- validation errors
   }
 
 type Query :: forall k. k -> Type
@@ -51,11 +51,11 @@ data Action
   | RegisterUser MouseEvent
 
 component
-   :: ∀ i o m r
-    . MonadAff m
-   => MonadAsk { session :: Session, baseURL :: BaseURL  | r } m
-   => Navigate m
-   => H.Component Query i o m
+  :: ∀ i o m r
+   . MonadAff m
+  => MonadAsk { session :: Session, baseURL :: BaseURL | r } m
+  => Navigate m
+  => H.Component Query i o m
 component =
   H.mkComponent
     { initialState
@@ -70,9 +70,9 @@ component =
 
   initialState :: i -> State
   initialState _ =
-    { submission : defaultSubmission
-    , userRegisterResult : Left ""
-    , errorText : ""
+    { submission: defaultSubmission
+    , userRegisterResult: Left ""
+    , errorText: ""
     }
 
   render :: State -> H.ComponentHTML Action ChildSlots m
@@ -80,14 +80,14 @@ component =
     HH.form
       [ HP.id "registrationform" ]
       [ HH.fieldset
-        []
-        [ HH.legend_ [HH.text "Register"]
-        , renderUserName state
-        , renderEmail state
-        , renderPassword false state
-        , renderPassword true state
-        , renderRegisterButton
-        ]
+          []
+          [ HH.legend_ [ HH.text "Register" ]
+          , renderUserName state
+          , renderEmail state
+          , renderPassword false state
+          , renderPassword true state
+          , renderRegisterButton
+          ]
       , renderRegisterError state
       ]
 
@@ -96,27 +96,26 @@ component =
     HH.div
       [ css "textinput-div" ]
       [ HH.label
-        [ css "textinput-label" ]
-        [ HH.text "name:" ]
+          [ css "textinput-label" ]
+          [ HH.text "name:" ]
       , HH.input
           [ css "textinput"
-          , HE.onValueInput  HandleUserName
+          , HE.onValueInput HandleUserName
           , HP.value ""
           , HP.type_ HP.InputText
           ]
       ]
-
 
   renderEmail :: State -> H.ComponentHTML Action ChildSlots m
   renderEmail _state =
     HH.div
       [ css "textinput-div" ]
       [ HH.label
-        [ css "textinput-label" ]
-        [ HH.text "email:" ]
+          [ css "textinput-label" ]
+          [ HH.text "email:" ]
       , HH.input
           [ css "textinput"
-          , HE.onValueInput  HandleEmail
+          , HE.onValueInput HandleEmail
           , HP.value ""
           , HP.type_ HP.InputText
           ]
@@ -139,11 +138,11 @@ component =
       HH.div
         [ css "textinput-div" ]
         [ HH.label
-          [ css "textinput-label" ]
-          [ HH.text label ]
+            [ css "textinput-label" ]
+            [ HH.text label ]
         , HH.input
             [ css "textinput"
-            , HE.onValueInput  action
+            , HE.onValueInput action
             , HP.value ""
             , HP.type_ HP.InputPassword
             ]
@@ -158,19 +157,19 @@ component =
       ]
       [ HH.text "register user" ]
 
-  renderRegisterError ::  State -> H.ComponentHTML Action ChildSlots m
+  renderRegisterError :: State -> H.ComponentHTML Action ChildSlots m
   renderRegisterError state =
     let
       registrationOK :: String -> String
       registrationOK msg =
-          msg <>
-            " The last part of the registration process is to reply to an" <>
+        msg
+          <> " The last part of the registration process is to reply to an"
+          <>
             " email confirmation message that has been sent to you."
       registrationText = either showJsonErrorResponse registrationOK state.userRegisterResult
     in
       HH.div_
-        [
-          HH.text state.errorText
+        [ HH.text state.errorText
         , HH.text registrationText
         ]
 
@@ -182,59 +181,61 @@ component =
       state <- H.get
       let
         newSubmission = state.submission { name = name }
-      H.modify_ (\st -> st { submission = newSubmission } )
+      H.modify_ (\st -> st { submission = newSubmission })
     HandleEmail email -> do
       state <- H.get
       let
         newSubmission = state.submission { email = email }
-      H.modify_ (\st -> st { submission = newSubmission } )
+      H.modify_ (\st -> st { submission = newSubmission })
     HandlePassword password -> do
       state <- H.get
       let
         newSubmission = state.submission { password = password }
-      H.modify_ (\st -> st { submission = newSubmission } )
+      H.modify_ (\st -> st { submission = newSubmission })
     HandlePasswordConfirmation password -> do
       state <- H.get
       let
         newSubmission = state.submission { password2 = password }
-      H.modify_ (\st -> st { submission = newSubmission } )
+      H.modify_ (\st -> st { submission = newSubmission })
     RegisterUser event -> do
       _ <- H.liftEffect $ preventDefault $ toEvent event
       state <- H.get
       baseURL <- getBaseURL
       -- reset any previous error text
-      H.modify_ (\st -> st { userRegisterResult = Left "" } )
+      H.modify_ (\st -> st { userRegisterResult = Left "" })
       let
         validated = validate state.submission
         newState = validation
-                    (\errs -> state { errorText = foldl (<>) "" errs})
-                    (\submission -> state {submission = submission
-                                          , errorText = ""
-                                          , userRegisterResult = Left ""} )
-                    validated
+          (\errs -> state { errorText = foldl (<>) "" errs })
+          ( \submission -> state
+              { submission = submission
+              , errorText = ""
+              , userRegisterResult = Left ""
+              }
+          )
+          validated
 
-      if (null newState.errorText)
-        then do
-          userRegisterResult <- postNewUser newState.submission baseURL
-          _ <- H.put newState { userRegisterResult = userRegisterResult }
-          pure unit
-        else do
-          _ <- H.put newState
-          pure unit
+      if (null newState.errorText) then do
+        userRegisterResult <- postNewUser newState.submission baseURL
+        _ <- H.put newState { userRegisterResult = userRegisterResult }
+        pure unit
+      else do
+        _ <- H.put newState
+        pure unit
       pure unit
-
 
 -- validation
 validate :: Submission -> Validated Submission
-validate submission  =
-  { name : _
-  , email : _
-  , password : _
-  , password2 : submission.password2
-  , refererUrl : submission.refererUrl }
-  <$> validateName submission.name
-  <*> validateEmail submission.email
-  <*> validatePassword submission.password submission.password2
+validate submission =
+  { name: _
+  , email: _
+  , password: _
+  , password2: submission.password2
+  , refererUrl: submission.refererUrl
+  }
+    <$> validateName submission.name
+    <*> validateEmail submission.email
+    <*> validatePassword submission.password submission.password2
 
 validateName :: String -> Validated String
 validateName name =
@@ -245,15 +246,14 @@ validateName name =
 
 validatePassword :: String -> String -> Validated String
 validatePassword password confirmationPassword =
-  if (containsDigit password)  && length password >= 7
-    then
-      comparePasswords password confirmationPassword
-    else
-      invalid $ pure ("Passwords should be at least 7 characters and contain at least one digit. ")
+  if (containsDigit password) && length password >= 7 then
+    comparePasswords password confirmationPassword
+  else
+    invalid $ pure ("Passwords should be at least 7 characters and contain at least one digit. ")
 
 comparePasswords :: String -> String -> Validated String
 comparePasswords password confirmationPassword =
-  if (password /= confirmationPassword ) then
+  if (password /= confirmationPassword) then
     invalid $ pure ("Passwords don't match. ")
   else
     pure password

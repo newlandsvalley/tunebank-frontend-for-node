@@ -49,11 +49,10 @@ type State =
   , instruments :: Array Instrument
   }
 
-data Query a
-  = Navigate Route a
+data Query a = Navigate Route a
 
 type ChildSlots =
-  ( home ::  SearchForm.Slot  Unit
+  ( home :: SearchForm.Slot Unit
   , genre :: GenreMenu.Slot Unit
   , login :: Login.Slot Unit
   , register :: Register.Slot Unit
@@ -68,18 +67,20 @@ type ChildSlots =
   , editor :: Editor.Slot Unit
   )
 
-component ::
-    ∀ m r
-    . MonadAff m
-    => MonadAsk { session :: Session, baseURL :: BaseURL | r } m
-    => Navigate m
-    => H.Component Query Input Void m
+component
+  :: ∀ m r
+   . MonadAff m
+  => MonadAsk { session :: Session, baseURL :: BaseURL | r } m
+  => Navigate m
+  => H.Component Query Input Void m
 component =
   H.mkComponent
-    { initialState: \input -> { route: Nothing
-                              , genre : Scandi
-                              , currentUser : Nothing
-                              , instruments : input.instruments }
+    { initialState: \input ->
+        { route: Nothing
+        , genre: Scandi
+        , currentUser: Nothing
+        , instruments: input.instruments
+        }
     , render
     , eval: H.mkEval $ H.defaultEval
         { handleQuery = handleQuery
@@ -105,7 +106,7 @@ component =
     HandleInput input -> do
       H.modify_ _ { instruments = input.instruments }
       pure unit
-    ToggleHamburgerMenu -> do 
+    ToggleHamburgerMenu -> do
       _ <- H.liftEffect toggleHamburgerMenu
       pure unit
 
@@ -116,12 +117,14 @@ component =
       user <- getUser
       genre <- getCurrentGenre
       -- don't re-render unnecessarily if the state is unchanged.
-      when ( (state.route /= Just dest)
-           || (state.genre /= genre)
-           || (state.currentUser /= user)
-           ) do 
-         _ <- H.liftEffect resetHamburgerMenu
-         H.modify_ _ { route = Just dest, genre = genre, currentUser = user }
+      when
+        ( (state.route /= Just dest)
+            || (state.genre /= genre)
+            || (state.currentUser /= user)
+        )
+        do
+          _ <- H.liftEffect resetHamburgerMenu
+          H.modify_ _ { route = Just dest, genre = genre, currentUser = user }
       pure (Just a)
 
   render :: State -> H.ComponentHTML Action ChildSlots m
@@ -132,10 +135,10 @@ component =
       headerRoute :: Route
       headerRoute = maybe Home identity state.route
     HH.div_
-        [  header state.currentUser state.genre headerRoute
-        ,  renderRoute state
-        ,  footer
-        ]
+      [ header state.currentUser state.genre headerRoute
+      , renderRoute state
+      , footer
+      ]
 
   -- | Note - links are not well-typed.  Proxy names must also match the
   -- | child slot names AND the route codec initial URI name.
@@ -146,45 +149,46 @@ component =
       foo = spy "rendering route: " $ show state.route
     in
     -}
-      case state.route of
-        Just r -> case r of
-          Home ->
-            HH.slot (Proxy :: _ "home") unit SearchForm.component unit absurd
-          Genre ->
-            HH.slot (Proxy :: _ "genre") unit GenreMenu.component unit absurd
-          Login ->
-            HH.slot (Proxy :: _ "login") unit Login.component { currentUser : state.currentUser } absurd
-          Register ->
-            HH.slot (Proxy :: _ "register") unit Register.component unit absurd
-          Upload ->
-            HH.slot (Proxy :: _ "upload") unit Upload.component unit absurd
-          AdvancedSearch ->
-            HH.slot (Proxy :: _ "advancedsearch") unit AdvancedSearchForm.component unit absurd
-          UserList pageParams  ->
-            HH.slot (Proxy :: _ "userlist") unit UserList.component { pageParams } absurd
-          Tune genre tuneId  ->
-            HH.slot (Proxy :: _ "tune") unit Tune.component { genre, tuneId, instruments : state.instruments } absurd
-          TuneList searchParams ->
-            HH.slot (Proxy :: _ "tunelist") unit TuneList.component { searchParams, instruments : state.instruments } absurd
-          Comments genre tuneId  ->
-            HH.slot (Proxy :: _ "comment") unit Comment.component { genre, tuneId, commentId: Nothing } absurd
-          Comment genre tuneId commentId ->
-            HH.slot (Proxy :: _ "comment") unit Comment.component { genre, tuneId, commentId: Just commentId } absurd
-          Metronome ->
-            HH.slot (Proxy :: _ "metronome") unit Metronome.component unit absurd
-          Tutorial ->
-            HH.slot (Proxy :: _ "tutorial") unit Tutorial.component { instruments : state.instruments } absurd
-          Editor { initialAbc } ->
-            HH.slot (Proxy :: _ "editor") unit Editor.component 
-                               { instruments: state.instruments, initialAbc } absurd
-          About ->
-            about
-          Credits ->
-            credits
-          ContactUs ->
-            contactUs
-          Help ->
-            help
+    case state.route of
+      Just r -> case r of
+        Home ->
+          HH.slot (Proxy :: _ "home") unit SearchForm.component unit absurd
+        Genre ->
+          HH.slot (Proxy :: _ "genre") unit GenreMenu.component unit absurd
+        Login ->
+          HH.slot (Proxy :: _ "login") unit Login.component { currentUser: state.currentUser } absurd
+        Register ->
+          HH.slot (Proxy :: _ "register") unit Register.component unit absurd
+        Upload ->
+          HH.slot (Proxy :: _ "upload") unit Upload.component unit absurd
+        AdvancedSearch ->
+          HH.slot (Proxy :: _ "advancedsearch") unit AdvancedSearchForm.component unit absurd
+        UserList pageParams ->
+          HH.slot (Proxy :: _ "userlist") unit UserList.component { pageParams } absurd
+        Tune genre tuneId ->
+          HH.slot (Proxy :: _ "tune") unit Tune.component { genre, tuneId, instruments: state.instruments } absurd
+        TuneList searchParams ->
+          HH.slot (Proxy :: _ "tunelist") unit TuneList.component { searchParams, instruments: state.instruments } absurd
+        Comments genre tuneId ->
+          HH.slot (Proxy :: _ "comment") unit Comment.component { genre, tuneId, commentId: Nothing } absurd
+        Comment genre tuneId commentId ->
+          HH.slot (Proxy :: _ "comment") unit Comment.component { genre, tuneId, commentId: Just commentId } absurd
+        Metronome ->
+          HH.slot (Proxy :: _ "metronome") unit Metronome.component unit absurd
+        Tutorial ->
+          HH.slot (Proxy :: _ "tutorial") unit Tutorial.component { instruments: state.instruments } absurd
+        Editor { initialAbc } ->
+          HH.slot (Proxy :: _ "editor") unit Editor.component
+            { instruments: state.instruments, initialAbc }
+            absurd
+        About ->
+          about
+        Credits ->
+          credits
+        ContactUs ->
+          contactUs
+        Help ->
+          help
 
-        Nothing ->
-          HH.div_ [ HH.text "Oh no! That page wasn't found." ]
+      Nothing ->
+        HH.div_ [ HH.text "Oh no! That page wasn't found." ]

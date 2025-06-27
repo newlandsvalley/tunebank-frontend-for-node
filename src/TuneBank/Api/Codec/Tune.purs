@@ -1,7 +1,8 @@
 module TuneBank.Api.Codec.Tune
   ( TuneMetadata(..)
   , nullTuneMetadata
-  , decodeTune) where
+  , decodeTune
+  ) where
 
 import Prelude
 import Data.Argonaut (Json, decodeJson, (.:), (.:?))
@@ -23,15 +24,15 @@ type TuneMetadata =
 
 nullTuneMetadata :: TuneMetadata
 nullTuneMetadata =
-  { title : ""
-  , source : Nothing
-  , composer : Nothing
-  , origin : Nothing
-  , transcriber : Nothing
-  , submitter : ""
-  , tid : 0
-  , ts : 0
-  , abc : ""
+  { title: ""
+  , source: Nothing
+  , composer: Nothing
+  , origin: Nothing
+  , transcriber: Nothing
+  , submitter: ""
+  , tid: 0
+  , ts: 0
+  , abc: ""
   }
 
 decodeTune :: Json -> Either JsonDecodeError TuneMetadata

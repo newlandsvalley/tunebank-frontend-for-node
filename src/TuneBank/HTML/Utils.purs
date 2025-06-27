@@ -18,16 +18,16 @@ import Routing.Duplex (print)
 
 -- | I get annoyed writing `class_ $ ClassName "..."` over and over again. This small utility saves
 -- | a few characters all over our HTML.
-css :: forall r i. String -> HH.IProp ( class :: String | r ) i
+css :: forall r i. String -> HH.IProp (class :: String | r) i
 css = HP.class_ <<< HH.ClassName
 
 -- ditto for the SVG element
-svgcss :: forall r i. String -> HH.IProp ( class :: String | r ) i
-svgcss = SA.class_ <<< HH.ClassName   
+svgcss :: forall r i. String -> HH.IProp (class :: String | r) i
+svgcss = SA.class_ <<< HH.ClassName
 
 -- | We must provide a `String` to the "href" attribute, but we represent routes with the much
 -- | better `Route` type. This utility is a drop-in replacement for `href` that uses `Route`.
-safeHref :: forall r i. Route -> HH.IProp ( href :: String | r) i
+safeHref :: forall r i. Route -> HH.IProp (href :: String | r) i
 safeHref = HP.href <<< append "#" <<< print routeCodec
 
 -- | We must provide a `String` to the "href" attribute, but we represent routes with the much
@@ -57,9 +57,9 @@ truncateTo maxLen s =
 tsToDateString :: Int -> String
 tsToDateString ts =
   let
-     mInstant = instant $ Milliseconds $ (toNumber ts) * 1000.0
-     -- mInstant = instant $ Milliseconds $ readFloat tsString
-     dateTime = maybe (bottom) (toDateTime) mInstant
+    mInstant = instant $ Milliseconds $ (toNumber ts) * 1000.0
+    -- mInstant = instant $ Milliseconds $ readFloat tsString
+    dateTime = maybe (bottom) (toDateTime) mInstant
   in
     either (const "bad date") identity $ formatDateTime "DD MM YY" dateTime
 
@@ -67,11 +67,10 @@ tsToDateString ts =
 renderKV :: ∀ a s m. String -> String -> H.ComponentHTML a s m
 renderKV k v =
   HH.div_
-    [
-    HH.dt_
-      [ HH.text k ]
+    [ HH.dt_
+        [ HH.text k ]
     , HH.dd_
-      [ HH.text v ]
+        [ HH.text v ]
     ]
 
 showRatio :: Rational -> String

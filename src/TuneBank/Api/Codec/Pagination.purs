@@ -1,6 +1,7 @@
 module TuneBank.Api.Codec.Pagination
   ( Pagination
-  , decodeJsonPagination) where
+  , decodeJsonPagination
+  ) where
 
 -- | Pagination responses are now held solely in the returned JSON for
 -- | Tune and User lists
@@ -20,8 +21,8 @@ type Pagination =
 
 decodeJsonPagination :: Json -> Either JsonDecodeError Pagination
 decodeJsonPagination json = do
-   obj <- decodeJson json
-   page <- obj .: "page"
-   size <- obj .: "size"
-   maxPages <- obj .: "maxPages"
-   pure $ { page, size, maxPages }
+  obj <- decodeJson json
+  page <- obj .: "page"
+  size <- obj .: "size"
+  maxPages <- obj .: "maxPages"
+  pure $ { page, size, maxPages }

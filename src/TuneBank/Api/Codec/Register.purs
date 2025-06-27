@@ -1,16 +1,13 @@
 module TuneBank.Api.Codec.Register
   ( Submission
   , defaultSubmission
-  , encodeSubmission ) where
-
+  , encodeSubmission
+  ) where
 
 import Data.Argonaut (Json)
 import Data.Argonaut.Encode.Class (encodeJson)
-import Data.Tuple (Tuple(..))
-import Data.Maybe (Maybe(..))
 import TuneBank.Navigation.Route (Route(..), routeCodec)
 import Routing.Duplex (print)
-import Data.FormURLEncoded (FormURLEncoded, fromArray)
 
 -- the form data to be posted in a new user registration
 type Submission =
@@ -21,19 +18,18 @@ type Submission =
   , refererUrl :: String
   }
 
-encodeSubmission :: Submission -> Json 
-encodeSubmission = 
+encodeSubmission :: Submission -> Json
+encodeSubmission =
   encodeJson
 
 defaultSubmission :: Submission
 defaultSubmission =
-  { name : ""
-  , email : ""
-  , password : ""
-  , password2 : ""
-  , refererUrl : print routeCodec Register
+  { name: ""
+  , email: ""
+  , password: ""
+  , password2: ""
+  , refererUrl: print routeCodec Register
   }
-
 
 {-}
 encodeFormData :: Submission -> FormURLEncoded

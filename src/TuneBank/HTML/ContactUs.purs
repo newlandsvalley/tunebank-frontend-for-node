@@ -8,13 +8,12 @@ contactUs =
   HH.div
     [ HP.id "contactusdiv" ]
     [ HH.h2_
-       [ HH.text "Please get in touch" ]
+        [ HH.text "Please get in touch" ]
     , HH.p_
-      [
-        HH.text "Perhaps you have questions about the site or suggestions for improvements. If so, "
-      , HH.a
-        [ HP.href "mailto:john.watson@@gmx.co.uk"]
-        [ HH.text "contact us"]
-      , HH.text " and we'd be delighted to hear from you."
-      ]
+        [ HH.text "Perhaps you have questions about the site or suggestions for improvements. If so, "
+        , HH.a
+            [ HP.href "mailto:john.watson@@gmx.co.uk" ]
+            [ HH.text "contact us" ]
+        , HH.text " and we'd be delighted to hear from you."
+        ]
     ]

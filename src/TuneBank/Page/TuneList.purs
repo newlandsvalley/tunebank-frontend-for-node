@@ -61,24 +61,24 @@ type Input =
   }
 
 -- type Query = (Const Void)
-data Query a =
-  FetchResults a        -- Fetch a page of results
-  | InitializeVex a     -- Initialise Vex renderers on first reference
-  | Thumbnail Int a     -- Add thumbnail for row 0 (and chain through the rest)
-  | ClearThumbnails a   -- clear the thumbnails of the current page
+data Query a
+  = FetchResults a -- Fetch a page of results
+  | InitializeVex a -- Initialise Vex renderers on first reference
+  | Thumbnail Int a -- Add thumbnail for row 0 (and chain through the rest)
+  | ClearThumbnails a -- clear the thumbnails of the current page
 
 type ChildSlots =
-  ( thumbnailPlayer :: TNP.Slot Unit )
+  (thumbnailPlayer :: TNP.Slot Unit)
 
 _thumbnailPlayer = Proxy :: Proxy "thumbnailPlayer"
 
 data Action
-  = Initialize               -- initialise the TuneList Page with default values
+  = Initialize -- initialise the TuneList Page with default values
   | HandleInput Input
-  | AddThumbnails            -- add all thumbnails to this page
-  | HighlightThumbnail Int   -- when the thumbnail has mouse enter
-  | PlayThumbnail Int        -- when the thumbnail is cliecked
-  | StopThumbnail            -- when the thumbnail has mouse leave
+  | AddThumbnails -- add all thumbnails to this page
+  | HighlightThumbnail Int -- when the thumbnail has mouse enter
+  | PlayThumbnail Int -- when the thumbnail is cliecked
+  | StopThumbnail -- when the thumbnail has mouse leave
 
 maxPageLinks :: Int
 maxPageLinks = 10
@@ -98,21 +98,21 @@ canvasWidth =
 -- overridden when the image is justified to its actual dimensions
 defaultThumbnailConfig :: Int -> Config
 defaultThumbnailConfig index =
-  defaultConfig 
+  defaultConfig
     { parentElementId = ("canvas" <> show index)
     , width = canvasWidth
     , height = 10
-    , isSVG = true 
+    , isSVG = true
     , scale = scale
     , titling = NoTitle
     }
 
 component
-   :: ∀ o m r
-    . MonadAff m
-   => MonadAsk { session :: Session, baseURL :: BaseURL | r } m
-   => Navigate m
-   => H.Component Query Input o m
+  :: ∀ o m r
+   . MonadAff m
+  => MonadAsk { session :: Session, baseURL :: BaseURL | r } m
+  => Navigate m
+  => H.Component Query Input o m
 component =
   H.mkComponent
     { initialState
@@ -129,20 +129,20 @@ component =
 
   initialState :: Input -> State
   initialState { searchParams, instruments } =
-     { genre : Scandi
-     , searchParams
-     , searchResult : Left ""
-     , instruments
-     , vexRenderers : []
-     , hasThumbnails : false
-     , selectedThumbnail : Nothing
-     , windowWidth : 0
-     }
+    { genre: Scandi
+    , searchParams
+    , searchResult: Left ""
+    , instruments
+    , vexRenderers: []
+    , hasThumbnails: false
+    , selectedThumbnail: Nothing
+    , windowWidth: 0
+    }
 
   render :: State -> H.ComponentHTML Action ChildSlots m
   render state =
     HH.div_
-      [ HH.slot _thumbnailPlayer unit TNP.component { instruments : state.instruments } absurd
+      [ HH.slot _thumbnailPlayer unit TNP.component { instruments: state.instruments } absurd
       , renderSearchResult state
       ]
 
@@ -154,29 +154,30 @@ component =
       Right tunesPage ->
         case (length tunesPage.tunes) of
           0 ->
-             HH.div
-               [ css "center" ]
-               [HH.h4_
-                  [ HH.text ( "search results for: "
-                           <> paramsSummary state.searchParams
-                          )
+            HH.div
+              [ css "center" ]
+              [ HH.h4_
+                  [ HH.text
+                      ( "search results for: "
+                          <> paramsSummary state.searchParams
+                      )
                   ]
-                , HH.p_
-                    [HH.text "no matching tunes found"]
-               ]
+              , HH.p_
+                  [ HH.text "no matching tunes found" ]
+              ]
           _ ->
             HH.div_
-              [
-              HH.h4
-                 [ css "center" ]
-                 [HH.text ( "search results for: "
-                            <> paramsSummary state.searchParams
-                            <> " page "
-                            <> show tunesPage.pagination.page
-                            <> " of "
-                            <> show tunesPage.pagination.maxPages
-                           )
-                 ]
+              [ HH.h4
+                  [ css "center" ]
+                  [ HH.text
+                      ( "search results for: "
+                          <> paramsSummary state.searchParams
+                          <> " page "
+                          <> show tunesPage.pagination.page
+                          <> " of "
+                          <> show tunesPage.pagination.maxPages
+                      )
+                  ]
               , renderTuneList state tunesPage.tunes
               , renderPagination (TuneList state.searchParams) tunesPage.pagination
               , renderAddThumbnailsButton state
@@ -185,145 +186,141 @@ component =
   renderTuneList :: State -> TuneRefArray -> H.ComponentHTML Action ChildSlots m
   renderTuneList state tunes =
     HH.div
-      [css "tunelist"]
+      [ css "tunelist" ]
       [ HH.table_ $
-        (mapWithIndex buildRow tunes) <>
-        (renderPhantomRows $ length tunes)
+          (mapWithIndex buildRow tunes) <>
+            (renderPhantomRows $ length tunes)
       ]
 
     where
 
-      isLargeScreen = state.windowWidth > 600        
-      
-      -- build one row of the tune list table
-      buildRow :: Int -> TuneRef -> H.ComponentHTML Action ChildSlots m
-      buildRow i tuneRef =
-        let
-          tuneId = decodeTuneIdURIComponent tuneRef.title
-          dateString = tsToDateString tuneRef.ts
-        in
-          tableRow tuneId tuneRef.rhythm dateString i
+    isLargeScreen = state.windowWidth > 600
 
-      -- render a row where we have results from the search
-      -- on large screens we display the tune type and date columns, on mobiles, we don't
-      tableRow :: TuneId -> String -> String -> Int -> H.ComponentHTML Action ChildSlots m
-      tableRow tuneId rhythm dateString index =
-        HH.tr
-          [  ]
-          ( [ HH.td
+    -- build one row of the tune list table
+    buildRow :: Int -> TuneRef -> H.ComponentHTML Action ChildSlots m
+    buildRow i tuneRef =
+      let
+        tuneId = decodeTuneIdURIComponent tuneRef.title
+        dateString = tsToDateString tuneRef.ts
+      in
+        tableRow tuneId tuneRef.rhythm dateString i
+
+    -- render a row where we have results from the search
+    -- on large screens we display the tune type and date columns, on mobiles, we don't
+    tableRow :: TuneId -> String -> String -> Int -> H.ComponentHTML Action ChildSlots m
+    tableRow tuneId rhythm dateString index =
+      HH.tr
+        []
+        ( [ HH.td
               []
               [ HH.a
-                [ safeHref route ]
-                [ HH.text $ truncateTo 36 title]
+                  [ safeHref route ]
+                  [ HH.text $ truncateTo 36 title ]
               ]
-            ]
+          ]
+            <>
+              -- maybe include tune type and date
+              tuneTypeAndDateCells isLargeScreen rhythm dateString
 
             <>
-            -- maybe include tune type and date
-            tuneTypeAndDateCells isLargeScreen rhythm dateString
 
-            <>
+              [ HH.td
+                  []
+                  [ renderThumbnailCanvas index ]
+              ]
+        )
+      where
+      (TuneId title) = tuneId
 
-            [ HH.td
+      -- route = Tune state.genre tuneId
+      route :: Route
+      route = Tune state.genre tuneId
+
+    -- render further 'phantom' rows up to the max rows per page
+    -- in order to give a regular number of rows for each page and thus
+    -- preserve canvas slots for the thumbnails
+    renderPhantomRows :: Int -> Array (H.ComponentHTML Action ChildSlots m)
+    renderPhantomRows start =
+      if
+        start >= (maxRowsPerPage - 1) then
+        []
+      else
+        let
+          rows = range start (maxRowsPerPage - 1)
+        in
+          map renderPhantomRow rows
+
+    -- | if we have less than a full page of 15 rows, generate phantoms
+    -- | for the rest with workable but empty canvas references
+    renderPhantomRow :: ∀ i p. Int -> HH.HTML i p
+    renderPhantomRow index =
+      HH.tr
+        []
+        ( [ HH.td
               []
-              [ renderThumbnailCanvas index ]
-            ]
-          )
-        where
-          (TuneId title) = tuneId
-          -- route = Tune state.genre tuneId
-          route :: Route
-          route = Tune state.genre tuneId
+              [ HH.text "" ]
+          ]
+            <>
+              tuneTypeAndDateCells isLargeScreen "" ""
 
-      -- render further 'phantom' rows up to the max rows per page
-      -- in order to give a regular number of rows for each page and thus
-      -- preserve canvas slots for the thumbnails
-      renderPhantomRows :: Int -> Array (H.ComponentHTML Action ChildSlots m)
-      renderPhantomRows start  =
-        if
-          start >= (maxRowsPerPage -1 ) then
+            <>
+
+              [ HH.td
+                  []
+                  [ HH.div
+                      [ HP.id ("canvas" <> show index)
+                      , css "thumbnail"
+                      ]
+                      []
+                  ]
+              ]
+        )
+
+    -- render the thumbnail canvas.  This canvas is empty, but populated by
+    -- side-effect if AddThumbnails is pressed.  We don't want to have
+    -- active onMouse functions if the thumbnail is inactive and we highlight
+    -- the thumbnail if the mpuse passes over it
+    renderThumbnailCanvas :: Int -> H.ComponentHTML Action ChildSlots m
+    renderThumbnailCanvas index =
+      let
+        -- highlight the currently hovered over thumbnail image
+        f target =
+          if (index == target) then
+            "thumbnail-highlighted"
+          else
+            "thumbnail"
+        cssSelector = maybe "thumbnail" f state.selectedThumbnail
+      in
+        if (state.hasThumbnails) then
+          HH.div
+            [ HP.id ("canvas" <> show index)
+            , css cssSelector
+            , HE.onMouseOver \_ -> HighlightThumbnail index
+            , HE.onMouseLeave \_ -> StopThumbnail
+            , HE.onMouseDown \_ -> PlayThumbnail index
+            ]
             []
         else
-          let
-            rows = range start (maxRowsPerPage -1)
-          in
-            map renderPhantomRow rows
-
-      -- | if we have less than a full page of 15 rows, generate phantoms
-      -- | for the rest with workable but empty canvas references
-      renderPhantomRow :: ∀ i p. Int -> HH.HTML i p
-      renderPhantomRow index =
-        HH.tr
-          [ ]
-          ( [ HH.td
-              []
-              [ HH.text ""]
+          HH.div
+            [ HP.id ("canvas" <> show index)
+            , css "thumbnail"
             ]
-
-            <> 
-
-            tuneTypeAndDateCells isLargeScreen "" ""
-
-            <>
-
-            [ HH.td
-              []
-              [ HH.div
-                [ HP.id ("canvas" <> show index)
-                , css "thumbnail"
-                ]
-                []
-              ]
-            ] 
-          )
-
-
-      -- render the thumbnail canvas.  This canvas is empty, but populated by
-      -- side-effect if AddThumbnails is pressed.  We don't want to have
-      -- active onMouse functions if the thumbnail is inactive and we highlight
-      -- the thumbnail if the mpuse passes over it
-      renderThumbnailCanvas :: Int -> H.ComponentHTML Action ChildSlots m
-      renderThumbnailCanvas index =
-        let
-          -- highlight the currently hovered over thumbnail image
-          f target =
-            if (index == target) then
-              "thumbnail-highlighted"
-            else
-              "thumbnail"
-          cssSelector = maybe "thumbnail" f state.selectedThumbnail
-        in
-          if (state.hasThumbnails) then
-            HH.div
-              [ HP.id ("canvas" <> show index)
-              , css cssSelector
-              , HE.onMouseOver \_ -> HighlightThumbnail index
-              , HE.onMouseLeave \_ -> StopThumbnail
-              , HE.onMouseDown \_ -> PlayThumbnail index
-              ]
-              []
-          else
-            HH.div
-              [ HP.id ("canvas" <> show index)
-              , css "thumbnail"
-              ]
-              []
+            []
 
   renderAddThumbnailsButton :: State -> H.ComponentHTML Action ChildSlots m
   renderAddThumbnailsButton state =
     if (state.hasThumbnails) then
       HH.text ""
     else
-      HH.div 
+      HH.div
         [ HP.id "add-thumbnails" ]
         [ HH.button
-          [ HE.onClick \_ -> AddThumbnails
-          , css "hoverable"
-          , HP.enabled true
-          ]
-          [ HH.text "add thumbnails" ]
+            [ HE.onClick \_ -> AddThumbnails
+            , css "hoverable"
+            , HP.enabled true
+            ]
+            [ HH.text "add thumbnails" ]
         ]
-
 
   handleAction ∷ Action -> H.HalogenM State Action ChildSlots o m Unit
   handleAction = case _ of
@@ -331,15 +328,17 @@ component =
       genre <- getCurrentGenre
       window <- H.liftEffect HTML.window
       windowWidth <- H.liftEffect $ Window.innerWidth window
-      H.modify_ (\state -> state 
-        { genre = genre
-        , windowWidth = windowWidth 
-        } )
+      H.modify_
+        ( \state -> state
+            { genre = genre
+            , windowWidth = windowWidth
+            }
+        )
       _ <- handleQuery (FetchResults unit)
       pure unit
 
     HandleInput input -> do
-      H.modify_ (\st -> st { searchParams = input.searchParams } )
+      H.modify_ (\st -> st { searchParams = input.searchParams })
       _ <- handleQuery (ClearThumbnails unit)
       _ <- handleQuery (FetchResults unit)
       pure unit
@@ -347,11 +346,11 @@ component =
     AddThumbnails -> do
       _ <- handleQuery (InitializeVex unit)
       _ <- handleQuery (Thumbnail 0 unit)
-      _ <- H.modify_ (\state -> state { hasThumbnails = true } )
+      _ <- H.modify_ (\state -> state { hasThumbnails = true })
       pure unit
 
     HighlightThumbnail idx -> do
-      _ <- H.modify_ (\state -> state { selectedThumbnail = Just idx } )
+      _ <- H.modify_ (\state -> state { selectedThumbnail = Just idx })
       pure unit
 
     PlayThumbnail idx -> do
@@ -362,24 +361,22 @@ component =
       case state.searchResult of
         Left _err ->
           pure unit
-        Right tunesPage  ->
-          if ((idx >= (length $ tunesPage.tunes) ) || ( isPlaying == Just true))
-            then do
-              pure unit
-            else do
-              let
-                tuneRef = unsafePartial $ unsafeIndex tunesPage.tunes idx
-                melody = getThumbnailMelody tuneRef.abc
-              _ <- H.tell _thumbnailPlayer unit (TNP.PlayMelody melody)
-              -- _ <- H.query _thumbnailPlayer unit $ H.tell (TNP.PlayMelody melody)
-              pure unit
+        Right tunesPage ->
+          if ((idx >= (length $ tunesPage.tunes)) || (isPlaying == Just true)) then do
+            pure unit
+          else do
+            let
+              tuneRef = unsafePartial $ unsafeIndex tunesPage.tunes idx
+              melody = getThumbnailMelody tuneRef.abc
+            _ <- H.tell _thumbnailPlayer unit (TNP.PlayMelody melody)
+            -- _ <- H.query _thumbnailPlayer unit $ H.tell (TNP.PlayMelody melody)
+            pure unit
 
     StopThumbnail -> do
-      _ <- H.modify_ (\state -> state { selectedThumbnail = Nothing } )
+      _ <- H.modify_ (\state -> state { selectedThumbnail = Nothing })
       _ <- H.tell _thumbnailPlayer unit TNP.StopMelody
       -- _ <- H.query _thumbnailPlayer unit $ H.tell TNP.StopMelody
       pure unit
-
 
   handleQuery :: ∀ a. Query a -> H.HalogenM State Action ChildSlots o m (Maybe a)
   handleQuery = case _ of
@@ -389,7 +386,7 @@ component =
       -- live server testing only baseURL <- getCorsBaseURL
       baseURL <- getBaseURL
       searchResult <- requestTuneSearch baseURL state.genre state.searchParams
-      H.modify_ (\st -> st { searchResult = searchResult } )
+      H.modify_ (\st -> st { searchResult = searchResult })
       -- handleQuery (InitializeVex next)
       pure (Just next)
 
@@ -398,50 +395,48 @@ component =
     -- because only then are the canvas Div elements established
     InitializeVex next -> do
       state <- H.get
-      if (length state.vexRenderers > 0)
-        then do
-          -- already initialized
-          pure (Just next)
-        else do
-          let
-            rows :: Array Int
-            rows = range 0 (maxRowsPerPage - 1)
-          renderers <- H.liftEffect $ traverse (\r -> initialiseCanvas $ defaultThumbnailConfig r) rows
-          H.modify_ (\st -> st { vexRenderers = renderers } )
-          -- _ <- handleQuery (Thumbnail 0 unit)
-          pure (Just next)
+      if (length state.vexRenderers > 0) then do
+        -- already initialized
+        pure (Just next)
+      else do
+        let
+          rows :: Array Int
+          rows = range 0 (maxRowsPerPage - 1)
+        renderers <- H.liftEffect $ traverse (\r -> initialiseCanvas $ defaultThumbnailConfig r) rows
+        H.modify_ (\st -> st { vexRenderers = renderers })
+        -- _ <- handleQuery (Thumbnail 0 unit)
+        pure (Just next)
 
     -- render the thumbnail at index idx
     Thumbnail idx next -> do
       -- we delay here to give the UI chance to re-render between each thumbnail
-      _ <- H.liftAff $ delay (Milliseconds 25.0 )
+      _ <- H.liftAff $ delay (Milliseconds 25.0)
       state <- H.get
       case state.searchResult of
         Left _err ->
           pure (Just next)
         Right tunesPage ->
-          if (idx >= (length $ tunesPage.tunes) )
-            then do
-              pure (Just next)
-            else do
-              let
-                tuneRef = unsafePartial $ unsafeIndex tunesPage.tunes idx
-              case (Tuple (parse tuneRef.abc) (index state.vexRenderers idx)) of
-                (Tuple (Right abcTune) (Just renderer)) -> do
-                  let 
-                    config = defaultThumbnailConfig idx
-                  _ <- H.liftEffect $ renderThumbnail config renderer abcTune 
-                  -- try to force a re-render after each row
-                  H.modify_ (\st -> st { genre = state.genre } )
-                  handleQuery (Thumbnail (idx + 1) next)
-                (Tuple (Right _) Nothing)  -> do
-                  handleQuery (Thumbnail (idx + 1) next)
-                (Tuple (Left _) _)  -> do
-                  handleQuery (Thumbnail (idx + 1) next)
+          if (idx >= (length $ tunesPage.tunes)) then do
+            pure (Just next)
+          else do
+            let
+              tuneRef = unsafePartial $ unsafeIndex tunesPage.tunes idx
+            case (Tuple (parse tuneRef.abc) (index state.vexRenderers idx)) of
+              (Tuple (Right abcTune) (Just renderer)) -> do
+                let
+                  config = defaultThumbnailConfig idx
+                _ <- H.liftEffect $ renderThumbnail config renderer abcTune
+                -- try to force a re-render after each row
+                H.modify_ (\st -> st { genre = state.genre })
+                handleQuery (Thumbnail (idx + 1) next)
+              (Tuple (Right _) Nothing) -> do
+                handleQuery (Thumbnail (idx + 1) next)
+              (Tuple (Left _) _) -> do
+                handleQuery (Thumbnail (idx + 1) next)
 
     ClearThumbnails next -> do
       state <- H.get
-      _ <- H.modify_ (\st -> st { hasThumbnails = false } )
+      _ <- H.modify_ (\st -> st { hasThumbnails = false })
       let
         f :: Int -> Renderer -> Effect Renderer
         f i renderer = resizeCanvas renderer (defaultThumbnailConfig i)
@@ -451,12 +446,10 @@ component =
 
 resultRows :: Either String TunesPage -> Int
 resultRows = case _ of
-  Right tunePage  ->
+  Right tunePage ->
     length tunePage.tunes
   _ ->
     0
-
-
 
 getThumbnailMelody :: String -> Melody
 getThumbnailMelody abc =
@@ -472,15 +465,15 @@ getThumbnailMelody abc =
       []
 
 -- include the tune type and date cells dependent on whether or not it's a large screen
-tuneTypeAndDateCells :: forall i p. Boolean -> String -> String-> Array (HH.HTML i p)
+tuneTypeAndDateCells :: forall i p. Boolean -> String -> String -> Array (HH.HTML i p)
 tuneTypeAndDateCells isLargeScreen tuneTypeString tuneDateString =
   if isLargeScreen then
     [ HH.td
         []
-        [ HH.text tuneTypeString]
+        [ HH.text tuneTypeString ]
     , HH.td
         []
-        [ HH.text tuneDateString]
+        [ HH.text tuneDateString ]
     ]
   else
     []

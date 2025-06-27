@@ -63,11 +63,11 @@ defaultOtherMenu =
   "any"
 
 component
-   :: ∀ i o m r
-    . MonadAff m
-   => MonadAsk { session :: Session, baseURL :: BaseURL | r } m
-   => Navigate m
-   => H.Component Query i o m
+  :: ∀ i o m r
+   . MonadAff m
+  => MonadAsk { session :: Session, baseURL :: BaseURL | r } m
+  => Navigate m
+  => H.Component Query i o m
 component =
   H.mkComponent
     { initialState
@@ -82,74 +82,70 @@ component =
 
   initialState :: i -> State
   initialState _ =
-   { genre : Scandi
-   , searchParams : defaultSearchParams
-   , title : Nothing
-   , key : Nothing
-   , rhythm : Nothing
-   , ordering : defaultOrdering
-   }
+    { genre: Scandi
+    , searchParams: defaultSearchParams
+    , title: Nothing
+    , key: Nothing
+    , rhythm: Nothing
+    , ordering: defaultOrdering
+    }
 
   render :: State -> H.ComponentHTML Action ChildSlots m
   render state =
     HH.div_
       [ HH.form
-        [ HP.id "searchform" ]
-        [ HH.fieldset
-            []
-            [ HH.legend_ [HH.text "Tune Search"]
-            , renderTuneName state
-            , renderKeyMenu state
-            , renderRhythmMenu state
-            , renderOrderingMenu state
-            , renderSearchButton
-            ]
-        , renderLink
-        , HH.p_
-          [ HH.text ("") ]  -- place for a news message
-        ]
+          [ HP.id "searchform" ]
+          [ HH.fieldset
+              []
+              [ HH.legend_ [ HH.text "Tune Search" ]
+              , renderTuneName state
+              , renderKeyMenu state
+              , renderRhythmMenu state
+              , renderOrderingMenu state
+              , renderSearchButton
+              ]
+          , renderLink
+          , HH.p_
+              [ HH.text ("") ] -- place for a news message
+          ]
       ]
 
   handleAction ∷ Action -> H.HalogenM State Action ChildSlots o m Unit
   handleAction = case _ of
     Initialize -> do
       genre <- getCurrentGenre
-      H.modify_ (\state -> state { genre = genre } )
+      H.modify_ (\state -> state { genre = genre })
     HandleTitle title -> do
-      if (length title > 0)
-        then do
-          state <- H.get
-          let
-            searchParams = state.searchParams { title = Just title }
-          H.modify_ (\st -> st { searchParams = searchParams } )
-        else pure unit
+      if (length title > 0) then do
+        state <- H.get
+        let
+          searchParams = state.searchParams { title = Just title }
+        H.modify_ (\st -> st { searchParams = searchParams })
+      else pure unit
     HandleKey keyName ->
-      if (keyName /= defaultOtherMenu)
-        then do
-          state <- H.get
-          let
-            searchParams = state.searchParams { key = keySearchTerm keyName }
-          H.modify_ (\st -> st { searchParams = searchParams } )
-        else pure unit
+      if (keyName /= defaultOtherMenu) then do
+        state <- H.get
+        let
+          searchParams = state.searchParams { key = keySearchTerm keyName }
+        H.modify_ (\st -> st { searchParams = searchParams })
+      else pure unit
     HandleRhythm rhythm ->
-      if (rhythm /= defaultOtherMenu)
-        then do
-          state <- H.get
-          let
-            searchParams = state.searchParams { rhythm = Just rhythm }
-          H.modify_ (\st -> st { searchParams = searchParams } )
-        else pure unit
+      if (rhythm /= defaultOtherMenu) then do
+        state <- H.get
+        let
+          searchParams = state.searchParams { rhythm = Just rhythm }
+        H.modify_ (\st -> st { searchParams = searchParams })
+      else pure unit
     HandleOrdering ordering -> do
       state <- H.get
       let
         sortKey =
-          if (ordering == mostRecentOrdering)
-            then
-              "date"
-            else
-              defaultOrdering
+          if (ordering == mostRecentOrdering) then
+            "date"
+          else
+            defaultOrdering
         searchParams = state.searchParams { sort = sortKey }
-      H.modify_ (\st -> st { searchParams = searchParams } )
+      H.modify_ (\st -> st { searchParams = searchParams })
     Search event -> do
       _ <- H.liftEffect $ preventDefault $ toEvent event
       state <- H.get
@@ -160,11 +156,11 @@ renderTuneName state =
   HH.div
     [ css "textinput-div" ]
     [ HH.label
-      [ css "textinput-label" ]
-      [ HH.text "name:" ]
+        [ css "textinput-label" ]
+        [ HH.text "name:" ]
     , HH.input
         [ css "textinput"
-        , HE.onValueInput  HandleTitle
+        , HE.onValueInput HandleTitle
         , HP.value (fromMaybe "" state.title)
         , HP.type_ HP.InputText
         ]
@@ -175,26 +171,26 @@ renderKeyMenu state =
   let
     defaultKey = maybe "any" identity state.key
   in
-     HH.div
-       [ css "dropdown-div" ]
-       [ HH.label
-         [ css "dropdown-label" ]
-         [ HH.text "key:" ]
-         , HH.select
-            [ css "dropdown-selection"
-            , HP.id  "key-menu"
-            , HP.value (fromMaybe defaultOtherMenu state.key)
-            , HE.onValueChange  HandleKey
-            ]
-            (keyOptions defaultKey)
-        ]
+    HH.div
+      [ css "dropdown-div" ]
+      [ HH.label
+          [ css "dropdown-label" ]
+          [ HH.text "key:" ]
+      , HH.select
+          [ css "dropdown-selection"
+          , HP.id "key-menu"
+          , HP.value (fromMaybe defaultOtherMenu state.key)
+          , HE.onValueChange HandleKey
+          ]
+          (keyOptions defaultKey)
+      ]
 
 renderLink :: forall m. H.ComponentHTML Action ChildSlots m
 renderLink =
   HH.div_
     [ HH.a
         [ safeHref AdvancedSearch ]
-        [ HH.text "advanced search"]
+        [ HH.text "advanced search" ]
     ]
 
 keyOptions :: forall i p. String -> Array (HH.HTML i p)
@@ -206,27 +202,26 @@ renderRhythmMenu state =
   let
     default = maybe "any" identity state.rhythm
   in
-     HH.div
-       [ css "dropdown-div" ]
-       [ HH.label
-         [ css "dropdown-label" ]
-         [ HH.text "rhythm:" ]
-         , HH.select
-            [ css "dropdown-selection"
-            , HP.id  "rhythm-menu"
-            , HP.value (fromMaybe defaultOtherMenu state.rhythm)
-            , HE.onValueChange  HandleRhythm
-            ]
-            (rhythmOptions state.genre default)
-        ]
+    HH.div
+      [ css "dropdown-div" ]
+      [ HH.label
+          [ css "dropdown-label" ]
+          [ HH.text "rhythm:" ]
+      , HH.select
+          [ css "dropdown-selection"
+          , HP.id "rhythm-menu"
+          , HP.value (fromMaybe defaultOtherMenu state.rhythm)
+          , HE.onValueChange HandleRhythm
+          ]
+          (rhythmOptions state.genre default)
+      ]
 
 rhythmOptions :: forall i p. Genre -> String -> Array (HH.HTML i p)
 rhythmOptions genre default =
   map (menuOption default) (R.rhythms genre)
 
-
 menuOption :: forall i p. String -> String -> HH.HTML i p
-menuOption default next  =
+menuOption default next =
   let
     selected = (next == default)
   in
@@ -241,31 +236,31 @@ renderOrderingMenu state =
     default =
       state.ordering
   in
-     HH.div
-       [ css "dropdown-div" ]
-       [ HH.label
-         [ css "dropdown-label" ]
-         [ HH.text "ordering:" ]
-         , HH.select
-            [ css "dropdown-selection"
-            , HP.id  "ordering-menu"
-            , HP.value default
-            , HE.onValueChange  HandleOrdering
-            ]
-            (orderingOptions default)
-        ]
+    HH.div
+      [ css "dropdown-div" ]
+      [ HH.label
+          [ css "dropdown-label" ]
+          [ HH.text "ordering:" ]
+      , HH.select
+          [ css "dropdown-selection"
+          , HP.id "ordering-menu"
+          , HP.value default
+          , HE.onValueChange HandleOrdering
+          ]
+          (orderingOptions default)
+      ]
 
 orderingOptions :: forall i p. String -> Array (HH.HTML i p)
 orderingOptions default =
-  [ menuOption default defaultOrdering      -- alpha
-  , menuOption default mostRecentOrdering   -- date
+  [ menuOption default defaultOrdering -- alpha
+  , menuOption default mostRecentOrdering -- date
   ]
 
 renderSearchButton :: forall m. H.ComponentHTML Action ChildSlots m
 renderSearchButton =
-    HH.button
-      [ HE.onClick Search
-      , css "hoverable"
-      , HP.enabled true
-      ]
-      [ HH.text "search" ]
+  HH.button
+    [ HE.onClick Search
+    , css "hoverable"
+    , HP.enabled true
+    ]
+    [ HH.text "search" ]

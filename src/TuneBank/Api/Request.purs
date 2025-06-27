@@ -1,11 +1,11 @@
-module TuneBank.Api.Request 
+module TuneBank.Api.Request
   ( checkUser
   , checkService
   , deleteComment
   , deleteTune
   , deleteUser
   , postNewComment
-  , postNewUser  
+  , postNewUser
   , postTune
   , postUpdatedComment
   , requestComment
@@ -56,69 +56,74 @@ defaultJsonGetRequest :: BaseURL -> Maybe Credentials -> Endpoint -> Request Jso
 defaultJsonGetRequest (BaseURL baseUrl) mCredentials endpoint =
   let
     url = baseUrl <> print endpointCodec endpoint
-    headers = [  Accept (MediaType "application/json; charset=UTF-8")
-              ] <> (fromFoldable $ authorizationHeader mCredentials)
-    responseFormat = RF.json 
+    headers =
+      [ Accept (MediaType "application/json; charset=UTF-8")
+      ] <> (fromFoldable $ authorizationHeader mCredentials)
+    responseFormat = RF.json
   in
     defaultRequest { url = url, headers = headers, responseFormat = responseFormat }
 
-
 defaultStringGetRequest :: BaseURL -> Maybe Credentials -> Endpoint -> MediaType -> Request String
 defaultStringGetRequest (BaseURL baseUrl) mCredentials endpoint mediaType =
-  let 
+  let
     url = baseUrl <> print endpointCodec endpoint
-    headers = [ Accept mediaType] <>
-               (fromFoldable $ authorizationHeader mCredentials)
+    headers = [ Accept mediaType ] <>
+      (fromFoldable $ authorizationHeader mCredentials)
     responseFormat = RF.string
-  in 
+  in
     defaultRequest { url = url, headers = headers, responseFormat = responseFormat }
 
 -- A default POST request for JSON bodies
 defaultPostJsonRequest :: BaseURL -> Maybe Credentials -> Json -> Endpoint -> Request String
-defaultPostJsonRequest (BaseURL baseUrl) mCredentials body endpoint  =
-  let 
+defaultPostJsonRequest (BaseURL baseUrl) mCredentials body endpoint =
+  let
     method = Left POST
     url = baseUrl <> print endpointCodec endpoint
     headers = fromFoldable $ authorizationHeader mCredentials
     content = Just $ json body
     responseFormat = RF.string
-  in  
-    defaultRequest { method = method
-                   , url = url
-                   , headers = headers
-                   , content = content
-                   , responseFormat = responseFormat }
-
+  in
+    defaultRequest
+      { method = method
+      , url = url
+      , headers = headers
+      , content = content
+      , responseFormat = responseFormat
+      }
 
 -- a default POST request for simple string bodies
 defaultPostStringRequest :: BaseURL -> Maybe Credentials -> String -> Endpoint -> Request String
-defaultPostStringRequest (BaseURL baseUrl) mCredentials s endpoint  =
-  let 
+defaultPostStringRequest (BaseURL baseUrl) mCredentials s endpoint =
+  let
     method = Left POST
     url = baseUrl <> print endpointCodec endpoint
     headers = fromFoldable $ authorizationHeader mCredentials
     content = Just $ string s
     responseFormat = RF.string
-  in  
-    defaultRequest { method = method
-                   , url = url
-                   , headers = headers
-                   , content = content
-                   , responseFormat = responseFormat }
+  in
+    defaultRequest
+      { method = method
+      , url = url
+      , headers = headers
+      , content = content
+      , responseFormat = responseFormat
+      }
 
 defaultDeleteRequest :: BaseURL -> Maybe Credentials -> Endpoint -> Request String
-defaultDeleteRequest (BaseURL baseUrl) mCredentials endpoint  =
-  let 
+defaultDeleteRequest (BaseURL baseUrl) mCredentials endpoint =
+  let
     method = Left DELETE
     url = baseUrl <> print endpointCodec endpoint
     -- _foo = spy "delete URL" url
     headers = fromFoldable $ authorizationHeader mCredentials
     responseFormat = RF.string
-  in  
-    defaultRequest { method = method
-                   , url = url
-                   , headers = headers
-                   , responseFormat = responseFormat }
+  in
+    defaultRequest
+      { method = method
+      , url = url
+      , headers = headers
+      , responseFormat = responseFormat
+      }
 
 requestTune :: forall m. MonadAff m => BaseURL -> Genre -> TuneId -> m (Either String TuneMetadata)
 requestTune baseUrl genre tuneId = do
@@ -134,7 +139,7 @@ requestTune baseUrl genre tuneId = do
 
 requestTuneAbc :: forall m. MonadAff m => BaseURL -> Genre -> TuneId -> m (Either String String)
 requestTuneAbc baseUrl genre tuneId = do
-  res <- H.liftAff $ request $ defaultStringGetRequest baseUrl Nothing (Tune genre tuneId)  (MediaType "text/vnd.abc")
+  res <- H.liftAff $ request $ defaultStringGetRequest baseUrl Nothing (Tune genre tuneId) (MediaType "text/vnd.abc")
   pure $ bimap printError _.body res
 
 requestTuneSearch :: forall m. MonadAff m => BaseURL -> Genre -> SearchParams -> m (Either String TunesPage)
@@ -149,8 +154,7 @@ requestTuneSearch baseUrl genre searchParams = do
         tunesPage = lmap printJsonDecodeError $ decodeTunesPage json
       pure $ tunesPage
 
-
-requestUsers :: forall m. MonadAff m => BaseURL -> Maybe Credentials-> PageParams -> m (Either String UsersPage)
+requestUsers :: forall m. MonadAff m => BaseURL -> Maybe Credentials -> PageParams -> m (Either String UsersPage)
 requestUsers baseUrl mCredentials pageParams = do
   res <- H.liftAff $ requestTheBody $ defaultJsonGetRequest baseUrl mCredentials (Users pageParams)
   case res of
@@ -162,16 +166,16 @@ requestUsers baseUrl mCredentials pageParams = do
         usersPage = lmap printJsonDecodeError $ decodeUsersPage json
       pure $ usersPage
 
-checkUser :: forall m. MonadAff m => BaseURL -> Credentials-> m (Either String String)
+checkUser :: forall m. MonadAff m => BaseURL -> Credentials -> m (Either String String)
 checkUser baseUrl credentials = do
   H.liftAff $ requestTheBody $ defaultStringGetRequest baseUrl (Just credentials) UserCheck (MediaType "text/plain; charset=UTF-8")
 
 -- | check the MusicRest service is up by attempting to get a welcome message
 -- | we never need to bother to decode the JSON
 checkService :: forall m. MonadAff m => BaseURL -> m (Either String Json)
-checkService baseUrl =  H.liftAff do
+checkService baseUrl = H.liftAff do
   requestTheBody $ defaultJsonGetRequest baseUrl Nothing Root
- 
+
 requestComments :: forall m. MonadAff m => BaseURL -> Genre -> TuneId -> m (Either String Comments)
 requestComments baseUrl genre tuneId = do
   res <- H.liftAff $ requestTheBody $ defaultJsonGetRequest baseUrl Nothing (Comments genre tuneId)
@@ -213,14 +217,12 @@ postNewUser submission baseUrl =
     res <- requestTheBody $ defaultPostJsonRequest baseUrl Nothing json Register
     pure res
 
-
 postNewComment :: forall m. MonadAff m => BaseURL -> Genre -> TuneId -> Comments.NewComment -> Credentials -> m (Either String String)
 postNewComment baseUrl genre tuneId comment credentials =
   H.liftAff do
     let
       json = Comments.encodeNewComment comment
     requestTheBody $ defaultPostJsonRequest baseUrl (Just credentials) json (Comments genre tuneId)
-   
 
 postUpdatedComment :: forall m. MonadAff m => BaseURL -> CommentId -> Comments.NewComment -> Credentials -> m (Either String String)
 postUpdatedComment baseUrl commentId comment credentials =
@@ -228,47 +230,47 @@ postUpdatedComment baseUrl commentId comment credentials =
     let
       json = Comments.encodeNewComment comment
     requestTheBody $ defaultPostJsonRequest baseUrl (Just credentials) json (Comment commentId)
- 
+
 -- | DELETE
 deleteTune :: forall m. MonadAff m => BaseURL -> Genre -> TuneId -> Credentials -> m (Either String String)
 deleteTune baseUrl genre tuneId credentials =
   H.liftAff do
     requestTheBody $ defaultDeleteRequest baseUrl (Just credentials) (Tune genre tuneId)
- 
+
 deleteComment :: forall m. MonadAff m => BaseURL -> CommentId -> Credentials -> m (Either String String)
 deleteComment baseUrl commentId credentials =
   H.liftAff do
     requestTheBody $ defaultDeleteRequest baseUrl (Just credentials) (Comment commentId)
-    
+
 deleteUser :: forall m. MonadAff m => BaseURL -> UserId -> Credentials -> m (Either String String)
 deleteUser baseUrl userId credentials =
   H.liftAff do
     requestTheBody $ defaultDeleteRequest baseUrl (Just credentials) (User userId)
-   
+
 -- | The default manner of attempting a request. We're only interested in the
 -- | response body and all errors will be converted to strings
 requestTheBody :: ∀ a m. MonadAff m => Request a -> m (Either String a)
 requestTheBody r = H.liftAff do
-  response <- request r 
-  case response of 
+  response <- request r
+  case response of
     -- Aff error (unlikely)
     Left err ->
-      pure $ Left $ printError err 
+      pure $ Left $ printError err
     Right result ->
-      let 
+      let
         -- get the HTTP status range - e.g. 2xx is represented as 2
         statusRange :: Int
         statusRange = (unwrap result.status) / 100
       in
-      -- HTTP error ranges
-      case statusRange of 
-        -- bad request 4xx.  likely in uploading ABC tunes which induce validation on the server
-        4 ->
-          pure $ Left $ unsafeCoerce result.body
-        -- success 2xx.
-        2 ->
-          pure $ Right result.body
-        -- other stuff - chaos or less likely
-        _ ->
-          pure $ Left $ result.statusText
+        -- HTTP error ranges
+        case statusRange of
+          -- bad request 4xx.  likely in uploading ABC tunes which induce validation on the server
+          4 ->
+            pure $ Left $ unsafeCoerce result.body
+          -- success 2xx.
+          2 ->
+            pure $ Right result.body
+          -- other stuff - chaos or less likely
+          _ ->
+            pure $ Left $ result.statusText
 

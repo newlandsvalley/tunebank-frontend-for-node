@@ -46,7 +46,6 @@ import Type.Proxy (Proxy(..))
 import Web.HTML (window) as HTML
 import Web.HTML.Window (innerWidth) as Window
 
-
 nullParsedTune :: Either String AbcTune
 nullParsedTune =
   Left "no tune yet"
@@ -61,8 +60,8 @@ type State =
   , baseURL :: BaseURL
   , tuneMetadata :: TuneMetadata
   , tuneResult :: Either String AbcTune
-  , currentBpm :: Int           -- BPM from the tempo slider
-  , originalBpm :: Int          -- BPM from the Abc
+  , currentBpm :: Int -- BPM from the tempo slider
+  , originalBpm :: Int -- BPM from the Abc
   , tempoNoteLength :: String
   , isPlaying :: Boolean
   , comments :: Comments
@@ -85,7 +84,7 @@ type Query = (Const Void)
 
 -- type ChildSlots :: ( Player :: Slot PlayableAbc Unit)
 type ChildSlots =
-   (player :: (PC.Slot PlayableAbc) Unit)
+  (player :: (PC.Slot PlayableAbc) Unit)
 
 _player = Proxy :: Proxy "player"
 
@@ -101,11 +100,11 @@ data Action
   | PrintScore
 
 component
-   :: ∀ o m r
-    . MonadAff m
-   => MonadAsk { session :: Session, baseURL :: BaseURL | r } m
-   => Navigate m
-   => H.Component Query Input o m
+  :: ∀ o m r
+   . MonadAff m
+  => MonadAsk { session :: Session, baseURL :: BaseURL | r } m
+  => Navigate m
+  => H.Component Query Input o m
 component =
   H.mkComponent
     { initialState
@@ -120,40 +119,40 @@ component =
 
   initialState :: Input -> State
   initialState input =
-    { genre : input.genre
-    , currentUser : Nothing
-    , tuneId : input.tuneId
-    , baseURL : BaseURL ""
-    , tuneMetadata : nullTuneMetadata
+    { genre: input.genre
+    , currentUser: Nothing
+    , tuneId: input.tuneId
+    , baseURL: BaseURL ""
+    , tuneMetadata: nullTuneMetadata
     , tuneResult: nullParsedTune
-    , currentBpm : defaultTempo.bpm      -- 120
-    , originalBpm : defaultTempo.bpm     -- 120
-    , tempoNoteLength : "1/4"
-    , isPlaying : false
-    , comments : []
-    , commentsLoadError : ""
-    , debugCommentsJSON : ""
-    , instruments : input.instruments
-    , generateIntro : false
-    , deviceViewportWidth : 0
-    , vexConfig : vexConfig
+    , currentBpm: defaultTempo.bpm -- 120
+    , originalBpm: defaultTempo.bpm -- 120
+    , tempoNoteLength: "1/4"
+    , isPlaying: false
+    , comments: []
+    , commentsLoadError: ""
+    , debugCommentsJSON: ""
+    , instruments: input.instruments
+    , generateIntro: false
+    , deviceViewportWidth: 0
+    , vexConfig: vexConfig
     }
 
-    where 
+    where
     vexConfig :: Config
     vexConfig =
-      defaultConfig 
+      defaultConfig
         { parentElementId = "vexflow"
         , width = 1400
         , height = 200
         , scale = 0.8
         , isSVG = true
-      }  
+        }
 
   render :: State -> H.ComponentHTML Action ChildSlots m
   render state =
     HH.div_
-      [ renderScore 
+      [ renderScore
       , HH.div
           [ HP.id "tune-metadata" ]
           [ renderTuneMetadata state
@@ -165,20 +164,19 @@ component =
           -- , renderDebugViewportWidth state
           ]
       ]
-  
+
   renderScore :: H.ComponentHTML Action ChildSlots m
   renderScore =
     HH.div
       [ HP.id "score"
-      , HP.class_ (H.ClassName "center")  
+      , HP.class_ (H.ClassName "center")
       ]
       [ HH.div
-        [ HP.class_ (H.ClassName "canvasDiv")
-        , HP.id "vexflow"
-        ] []
-      ]   
-
-  
+          [ HP.class_ (H.ClassName "canvasDiv")
+          , HP.id "vexflow"
+          ]
+          []
+      ]
 
   {- get the tune image from the server instead
   renderTuneScore :: State -> String -> H.ComponentHTML Action ChildSlots m
@@ -198,32 +196,32 @@ component =
   -}
 
   renderTuneMetadata :: State -> H.ComponentHTML Action ChildSlots m
-  renderTuneMetadata state  =
+  renderTuneMetadata state =
     HH.dl
-      [ ]
+      []
       [ renderKV "submitter" state.tuneMetadata.submitter
       , renderOptionalKV "composer" state.tuneMetadata.composer
       , renderOptionalKV "source" state.tuneMetadata.source
       , renderOptionalKV "origin" state.tuneMetadata.origin
       , renderOptionalKV "transcriber" state.tuneMetadata.transcriber
       , HH.dt
-         []
-         [ HH.text "download"]
+          []
+          [ HH.text "download" ]
       , HH.dd
-         []
-         [ HH.a
-            [ HP.href (urlPreface state <> "/abc")
-            , HP.type_ (MediaType "text/vnd.abc")
-            ]
-            [ HH.text "abc"]
+          []
+          [ HH.a
+              [ HP.href (urlPreface state <> "/abc")
+              , HP.type_ (MediaType "text/vnd.abc")
+              ]
+              [ HH.text "abc" ]
 
           , HH.a
-            [ HP.href (urlPreface state <> "/midi")
-            , HP.type_ (MediaType "audio/midi")
-            ]
-            [ HH.text "midi"]
-         ]
-         , renderTuneControls state
+              [ HP.href (urlPreface state <> "/midi")
+              , HP.type_ (MediaType "audio/midi")
+              ]
+              [ HH.text "midi" ]
+          ]
+      , renderTuneControls state
       ]
 
   renderOptionalKV :: String -> Maybe String -> H.ComponentHTML Action ChildSlots m
@@ -240,25 +238,23 @@ component =
       Nothing ->
         HH.div_
           [ HH.dt_
-             [ HH.text "tune" ]
+              [ HH.text "tune" ]
           , HH.dd_
-             [ renderPrintScore state ]
+              [ renderPrintScore state ]
           ]
       Just credentials ->
         HH.div_
-          [
-            HH.dt_
-             [ HH.text "tune" ]
+          [ HH.dt_
+              [ HH.text "tune" ]
           , HH.dd_
-             [ HH.a
-               [ safeHref $ Comments state.genre state.tuneId ]
-               [ HH.text "add comment"]
-             , renderEditAbc state credentials
-             , renderDeleteAbc state credentials
-             , renderPrintScore state
-            ]
+              [ HH.a
+                  [ safeHref $ Comments state.genre state.tuneId ]
+                  [ HH.text "add comment" ]
+              , renderEditAbc state credentials
+              , renderDeleteAbc state credentials
+              , renderPrintScore state
+              ]
           ]
-
 
   -- | a user can edit the ABC if he submitted the tune or is the administrator
   -- | but this option is only available on larger screen devices (not mobiles)
@@ -266,8 +262,8 @@ component =
   renderEditAbc state credentials =
     if (canEdit state.tuneMetadata credentials) && (state.deviceViewportWidth > 400) then
       HH.a
-        [ safeHref $ Editor { initialAbc : Just state.tuneMetadata.abc }  ]
-        [ HH.text "edit tune"]
+        [ safeHref $ Editor { initialAbc: Just state.tuneMetadata.abc } ]
+        [ HH.text "edit tune" ]
     else
       HH.text ""
 
@@ -279,7 +275,7 @@ component =
         [ css "a-internal-link"
         , HE.onClick \_ -> DeleteTune state.tuneId
         ]
-        [ HH.text "delete tune"]
+        [ HH.text "delete tune" ]
     else
       HH.text ""
 
@@ -289,25 +285,26 @@ component =
       [ css "a-internal-link"
       , HE.onClick \_ -> PrintScore
       ]
-      [ HH.text "print score"]
+      [ HH.text "print score" ]
 
-  renderPlayer ::  State -> H.ComponentHTML Action ChildSlots m
+  renderPlayer :: State -> H.ComponentHTML Action ChildSlots m
   renderPlayer state =
     case state.tuneResult of
       Right abcTune ->
         HH.div
           [ HP.class_ (H.ClassName "leftPanelComponent")
-          , HP.id  "player-div"
+          , HP.id "player-div"
           ]
           [ HH.slot _player unit (PC.component (toPlayable abcTune state.generateIntro state.currentBpm) state.instruments) unit HandleTuneIsPlaying ]
       Left _err ->
         HH.div_
-          [  ]
+          []
 
   renderTempoSlider :: State -> H.ComponentHTML Action ChildSlots m
   renderTempoSlider state =
     let
       isVisible = isRight state.tuneResult
+
       -- get the value from the slider result
       toTempo :: String -> Int
       toTempo s =
@@ -320,18 +317,18 @@ component =
           ]
           [ HH.text "set tempo: "
           , HH.input
-            [ css "slider"
-            , HE.onValueInput  (HandleTempoInput <<< toTempo)
-            , HP.type_ HP.InputRange
-            , HP.id "tempo-slider"
-            , HP.min (toNumber $ div state.originalBpm 2)
-            , HP.max (toNumber $ state.originalBpm * 2)
-            , HP.value (show state.currentBpm)
-            , HP.disabled state.isPlaying
-            ]
+              [ css "slider"
+              , HE.onValueInput (HandleTempoInput <<< toTempo)
+              , HP.type_ HP.InputRange
+              , HP.id "tempo-slider"
+              , HP.min (toNumber $ div state.originalBpm 2)
+              , HP.max (toNumber $ state.originalBpm * 2)
+              , HP.value (show state.currentBpm)
+              , HP.disabled state.isPlaying
+              ]
           , HH.div
-             [ HP.class_ (H.ClassName "slider-state")]
-             [ HH.text ("  " <> state.tempoNoteLength <> "=" <> (show state.currentBpm)) ]
+              [ HP.class_ (H.ClassName "slider-state") ]
+              [ HH.text ("  " <> state.tempoNoteLength <> "=" <> (show state.currentBpm)) ]
           ]
       else
         HH.text ""
@@ -340,14 +337,12 @@ component =
   renderIntroButton state =
     let
       label =
-        if state.generateIntro
-          then "On"
-          else "Off"
+        if state.generateIntro then "On"
+        else "Off"
     in
       HH.div
         [ HP.id "include-intro-div" ]
-        [
-          HH.text "Include intro when tune plays"
+        [ HH.text "Include intro when tune plays"
         , HH.button
             [ css "hoverable"
             , HP.id "include-intro-button"
@@ -357,7 +352,7 @@ component =
             [ HH.text label ]
         ]
 
-  renderComments ::  State -> H.ComponentHTML Action ChildSlots m
+  renderComments :: State -> H.ComponentHTML Action ChildSlots m
   renderComments state =
     let
       commentCount = length state.comments
@@ -370,16 +365,15 @@ component =
           _ ->
             show commentCount <> " comments"
     in
-    HH.div_
-      [
-        HH.text header
+      HH.div_
+        [ HH.text header
         -- render the comments
-      , HH.div_ $ map (renderComment state) state.comments
+        , HH.div_ $ map (renderComment state) state.comments
         -- but if the load has failed, render the comments load error
-      , HH.text state.commentsLoadError
+        , HH.text state.commentsLoadError
         -- and render the JSON as a String (if we ever need to debug)
-      , HH.text state.debugCommentsJSON
-      ]
+        , HH.text state.debugCommentsJSON
+        ]
 
   renderComment :: State -> Comment -> H.ComponentHTML Action ChildSlots m
   renderComment state comment =
@@ -394,8 +388,8 @@ component =
       HH.div
         []
         [ HH.h2
-          []
-          [ HH.text comment.subject]
+            []
+            [ HH.text comment.subject ]
         , RH.render_ $ expandAllLinks comment.text
         , renderCommentMetadata comment
         --, HH.text comment.text
@@ -406,12 +400,12 @@ component =
   renderCommentMetadata comment =
     HH.div_
       [ HH.dt_
-         [ HH.text "posted by" ]
+          [ HH.text "posted by" ]
       , HH.dd_
-         [ HH.text comment.submitter
-         , HH.text " on "
-         , HH.text $ tsToDateString $ comment.timestamp
-         ]
+          [ HH.text comment.submitter
+          , HH.text " on "
+          , HH.text $ tsToDateString $ comment.timestamp
+          ]
       ]
 
   renderCommentControls :: State -> Boolean -> Comment -> H.ComponentHTML Action ChildSlots m
@@ -420,18 +414,18 @@ component =
       true ->
         HH.div_
           [ HH.a
-            [ css "a-internal-link"
-            , HE.onClick \_ -> DeleteComment comment.commentId
-            ]
-            [ HH.text "delete comment" ]
+              [ css "a-internal-link"
+              , HE.onClick \_ -> DeleteComment comment.commentId
+              ]
+              [ HH.text "delete comment" ]
           , HH.a
-            [ safeHref $ Comment state.genre state.tuneId comment.commentId ]
-            [ HH.text "edit comment" ]
+              [ safeHref $ Comment state.genre state.tuneId comment.commentId ]
+              [ HH.text "edit comment" ]
           ]
       false ->
         HH.text ""
 
-  renderParseError ::  State -> H.ComponentHTML Action ChildSlots m
+  renderParseError :: State -> H.ComponentHTML Action ChildSlots m
   renderParseError state =
     let
       -- instrumentCount = length state.instruments
@@ -439,7 +433,7 @@ component =
     in
       HH.div_
         [ HH.text tuneResult ]
-  
+
   {- in case we need to track the viewport width 
   renderDebugViewportWidth ::  State -> H.ComponentHTML Action ChildSlots m
   renderDebugViewportWidth state =
@@ -476,31 +470,33 @@ component =
       comments <- requestComments baseURL state.genre state.tuneId
       -- in case we want to trace any bad JSON returned from the server, restore this line
       -- eCommentsError <- requestCommentsStr baseURL state.genre state.tuneId
-      
+
       -- set the scale of the score display according to the viewport width      
       window <- H.liftEffect HTML.window
       deviceViewportWidth <- H.liftEffect $ Window.innerWidth window
 
       let
-        vexScale = 
-          if (deviceViewportWidth <= smallDeviceViewportWidthCutoff) then 0.5 else 0.8 
+        vexScale =
+          if (deviceViewportWidth <= smallDeviceViewportWidthCutoff) then 0.5 else 0.8
         vexConfig = state.vexConfig { scale = vexScale }
-      
+
       _ <- either (\i -> H.liftEffect $ log $ "load error: " <> i) (\_ -> pure unit) comments
-      H.modify_ (\st -> st
-        { currentUser = currentUser
-        , baseURL = baseURL
-        , tuneMetadata = tuneMetadata
-        , tuneResult = tuneResult
-        , currentBpm = bpm
-        , originalBpm = bpm
-        , tempoNoteLength = tempoNoteLength
-        , comments = either (const []) identity comments
-        , commentsLoadError = either identity (const "") comments
-        --, debugCommentsJSON = either (const "") identity eCommentsError
-        , deviceViewportWidth = deviceViewportWidth
-        , vexConfig = vexConfig
-        } )
+      H.modify_
+        ( \st -> st
+            { currentUser = currentUser
+            , baseURL = baseURL
+            , tuneMetadata = tuneMetadata
+            , tuneResult = tuneResult
+            , currentBpm = bpm
+            , originalBpm = bpm
+            , tempoNoteLength = tempoNoteLength
+            , comments = either (const []) identity comments
+            , commentsLoadError = either identity (const "") comments
+            --, debugCommentsJSON = either (const "") identity eCommentsError
+            , deviceViewportWidth = deviceViewportWidth
+            , vexConfig = vexConfig
+            }
+        )
 
       handleAction RenderScore
 
@@ -508,7 +504,7 @@ component =
       _ <- H.tell _player unit PC.StopMelody
       pure unit
 
-    RenderScore -> do 
+    RenderScore -> do
       state <- H.get
       -- initialise the VexFlow score renderer 
       renderer <- H.liftEffect $ Score.initialiseCanvas state.vexConfig
@@ -516,19 +512,19 @@ component =
         Right tune -> do
           _ <- displayScore state renderer tune
           pure unit
-        _ -> 
+        _ ->
           pure unit
       pure unit
 
     HandleTuneIsPlaying (PC.IsPlaying isPlaying) -> do
-      _ <- H.modify_ (\st -> st { isPlaying = isPlaying } )
+      _ <- H.modify_ (\st -> st { isPlaying = isPlaying })
       pure unit
 
     ToggleGenerateIntro -> do
       state <- H.get
       let
         generateIntro = not state.generateIntro
-        newState =  state { generateIntro = generateIntro }
+        newState = state { generateIntro = generateIntro }
       _ <- H.put newState
       _ <- refreshPlayerState newState
       pure unit
@@ -536,7 +532,7 @@ component =
     HandleTempoInput bpm -> do
       state <- H.get
       _ <- H.tell _player unit PC.StopMelody
-      _ <- H.modify_ (\st -> st { currentBpm = bpm } )
+      _ <- H.modify_ (\st -> st { currentBpm = bpm })
       _ <- refreshPlayerState state
       pure unit
 
@@ -573,19 +569,20 @@ component =
           pure unit
     PrintScore -> do
       state <- H.get
-      _ <-  H.liftEffect $ print $ getDocumentNameForPrinting state
+      _ <- H.liftEffect $ print $ getDocumentNameForPrinting state
       pure unit
 
 -- refresh the state of the player by passing it the tune result and the tempo
-refreshPlayerState :: ∀ o m
-  . MonadAff m
+refreshPlayerState
+  :: ∀ o m
+   . MonadAff m
   => State
   -> H.HalogenM State Action ChildSlots o m Unit
-refreshPlayerState state  = do
+refreshPlayerState state = do
   _ <- either
-     (\_ -> H.tell _player unit PC.StopMelody)
-     (\abcTune -> H.tell _player unit (PC.HandleNewPlayable (toPlayable abcTune state.generateIntro state.currentBpm)))
-     state.tuneResult
+    (\_ -> H.tell _player unit PC.StopMelody)
+    (\abcTune -> H.tell _player unit (PC.HandleNewPlayable (toPlayable abcTune state.generateIntro state.currentBpm)))
+    state.tuneResult
   pure unit
 
 -- | convert a tune to a format recognized by the player
@@ -593,7 +590,7 @@ toPlayable :: AbcTune -> Boolean -> Int -> PlayableAbc
 toPlayable abcTune generateIntro bpm =
   let
     props = defaultPlayableAbcProperties
-      { tune = abcTune 
+      { tune = abcTune
       , phraseSize = 0.7
       , bpmOverride = Just bpm
       , generateIntro = generateIntro
@@ -601,23 +598,24 @@ toPlayable abcTune generateIntro bpm =
   in
     PlayableAbc props
 
-displayScore :: ∀ o m.
-       MonadAff m
-    => State 
-    -> Score.Renderer    
-    -> AbcTune
-    -> H.HalogenM State Action ChildSlots o m Unit
+displayScore
+  :: ∀ o m
+   . MonadAff m
+  => State
+  -> Score.Renderer
+  -> AbcTune
+  -> H.HalogenM State Action ChildSlots o m Unit
 displayScore state renderer tune = do
   _ <- H.liftEffect $ Score.clearCanvas $ renderer
   mRendered <- H.liftEffect $ Score.renderFinalTune state.vexConfig renderer tune
 
   -- log any errors in attempting to produce a score  
   case mRendered of
-    Just error -> 
+    Just error ->
       H.liftEffect $ log (" score error: " <> error)
     _ ->
-      pure unit  
-  pure unit  
+      pure unit
+  pure unit
 
 -- expand YouTube watch links to embedded iframes and geberal links to anchor tags
 expandAllLinks :: String -> String
@@ -627,10 +625,10 @@ expandAllLinks =
 urlPreface :: State -> String
 urlPreface state =
   (show state.baseURL)
-  <> "/genre/"
-  <> (show state.genre) -- (asUriComponent state.genre)
-  <> "/tune/"
-  <> tuneIdToString state.tuneId
+    <> "/genre/"
+    <> (show state.genre) -- (asUriComponent state.genre)
+    <> "/tune/"
+    <> tuneIdToString state.tuneId
 
 -- | remove the comment from state
 removeComment :: CommentId -> State -> State
@@ -644,8 +642,7 @@ removeComment cId state =
 canEdit :: TuneMetadata -> Credentials -> Boolean
 canEdit tuneMetadata credentials =
   credentials.role == Administrator
-  || credentials.user == tuneMetadata.submitter
-
+    || credentials.user == tuneMetadata.submitter
 
 -- get the document name for printing - this is the tune title if it exists
 -- but if not, the app name
@@ -653,7 +650,7 @@ getDocumentNameForPrinting :: State -> String
 getDocumentNameForPrinting state =
   case state.tuneResult of
     Right abcTune ->
-      fromMaybe "tradtunedb tune bank" $ getTitle abcTune 
+      fromMaybe "tradtunedb tune bank" $ getTitle abcTune
     _ ->
       -- shouldn't happen
       "tradtunedb tune bank"

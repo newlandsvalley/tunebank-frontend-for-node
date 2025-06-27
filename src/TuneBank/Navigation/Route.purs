@@ -3,7 +3,6 @@ module TuneBank.Navigation.Route where
 -- | Routes - TuneBank URLs which are allowable and provide a round trip between
 -- | each Route and a stringified version suitable for a URL
 
-
 import Prelude hiding ((/))
 
 import Data.Generic.Rep (class Generic)
@@ -38,15 +37,14 @@ data Route
   | Tune Genre TuneId
   | TuneList SearchParams
   | Comments Genre TuneId
-  | Comment Genre TuneId CommentId 
+  | Comment Genre TuneId CommentId
   | Metronome
   | Tutorial
-  | Editor  { initialAbc :: Maybe String }
+  | Editor { initialAbc :: Maybe String }
   | About
   | Credits
   | ContactUs
   | Help
-
 
 derive instance genericRoute :: Generic Route _
 derive instance eqRoute :: Eq Route
@@ -64,27 +62,28 @@ routeCodec = root $ sum
   , "Register": "register" / noArgs
   , "Upload": "upload" / noArgs
   , "AdvancedSearch": "advancedsearch" / noArgs
-  , "Tune": "genre" / (genre segment)  / "tune" / (tuneId segment)
+  , "Tune": "genre" / (genre segment) / "tune" / (tuneId segment)
   , "UserList": "users" ?
-       { page: int }
-  , "TuneList":  "tunelist" ?
-       { key : optional <<< string
-       , rhythm : optional <<< string
-       , title : optional <<< string
-       , source : optional <<< string
-       , origin : optional <<< string
-       , composer : optional <<< string
-       , transcriber : optional <<< string
-       , submitter : optional <<< string
-       , page: int
-       , sort : string }
-  , "Comments": "genre" / (genre segment)  / "tune" / (tuneId segment) / "comments"
-  , "Comment": "genre" / (genre segment)  / "tune" / (tuneId segment) / "comment" / (commentId segment) 
-  , "Metronome" : "metronome" / noArgs
-  , "Tutorial" : "tutorial" / noArgs
-  , "Editor" : "editor" ? { initialAbc: (optional <<< string) }
-  , "About" : "about" / noArgs
-  , "Credits" : "credits" / noArgs
-  , "ContactUs" : "contact" / noArgs
-  , "Help" : "help" / noArgs
+      { page: int }
+  , "TuneList": "tunelist" ?
+      { key: optional <<< string
+      , rhythm: optional <<< string
+      , title: optional <<< string
+      , source: optional <<< string
+      , origin: optional <<< string
+      , composer: optional <<< string
+      , transcriber: optional <<< string
+      , submitter: optional <<< string
+      , page: int
+      , sort: string
+      }
+  , "Comments": "genre" / (genre segment) / "tune" / (tuneId segment) / "comments"
+  , "Comment": "genre" / (genre segment) / "tune" / (tuneId segment) / "comment" / (commentId segment)
+  , "Metronome": "metronome" / noArgs
+  , "Tutorial": "tutorial" / noArgs
+  , "Editor": "editor" ? { initialAbc: (optional <<< string) }
+  , "About": "about" / noArgs
+  , "Credits": "credits" / noArgs
+  , "ContactUs": "contact" / noArgs
+  , "Help": "help" / noArgs
   }

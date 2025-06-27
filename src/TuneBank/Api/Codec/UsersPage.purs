@@ -2,7 +2,8 @@ module TuneBank.Api.Codec.UsersPage
   ( UsersPage
   , UserRefArray
   , UserRef
-  , decodeUsersPage) where
+  , decodeUsersPage
+  ) where
 
 import Prelude
 import Data.Argonaut (Json, decodeJson, (.:))
@@ -21,13 +22,13 @@ type UserRef =
 
 decodeJsonUserRef :: Json -> Either JsonDecodeError UserRef
 decodeJsonUserRef json = do
-    obj <- decodeJson json
-    name <- obj .: "username"
-    email <- obj .: "email"
-    role <- obj .: "role"
-    valid <- obj .: "valid"
-    timestamp <- obj .: "timestamp"
-    pure $ { name, email, role, valid, timestamp }
+  obj <- decodeJson json
+  name <- obj .: "username"
+  email <- obj .: "email"
+  role <- obj .: "role"
+  valid <- obj .: "valid"
+  timestamp <- obj .: "timestamp"
+  pure $ { name, email, role, valid, timestamp }
 
 type UserRefArray = Array UserRef
 

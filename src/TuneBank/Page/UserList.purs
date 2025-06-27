@@ -20,7 +20,7 @@ import TuneBank.Navigation.Endpoint (PageParams)
 import TuneBank.Navigation.Navigate (class Navigate)
 import TuneBank.Navigation.Route (Route(..))
 import TuneBank.Page.Utils.Environment (getBaseURL, getUser)
-import TuneBank.HTML.PaginationRendering  (renderPagination)
+import TuneBank.HTML.PaginationRendering (renderPagination)
 
 type Slot = H.Slot Query Void
 
@@ -31,7 +31,7 @@ type State =
   }
 
 data Query a =
-    FetchResults a
+  FetchResults a
 
 type Input =
   { pageParams :: PageParams }
@@ -45,11 +45,11 @@ data Action
   | DeleteUser UserId
 
 component
-   :: ∀ o m r
-    . MonadAff m
-   => MonadAsk { session :: Session, baseURL :: BaseURL | r } m
-   => Navigate m
-   => H.Component Query Input o m
+  :: ∀ o m r
+   . MonadAff m
+  => MonadAsk { session :: Session, baseURL :: BaseURL | r } m
+  => Navigate m
+  => H.Component Query Input o m
 component =
   H.mkComponent
     { initialState
@@ -66,9 +66,10 @@ component =
 
   initialState :: Input -> State
   initialState input =
-    { currentUser : Nothing
-    , pageParams : input.pageParams
-    , usersResult : Left "Not started" }
+    { currentUser: Nothing
+    , pageParams: input.pageParams
+    , usersResult: Left "Not started"
+    }
 
   render :: State -> H.ComponentHTML Action ChildSlots m
   render state =
@@ -78,18 +79,18 @@ component =
       Right usersPage ->
         case (length usersPage.users) of
           0 ->
-             HH.text "no users found"
+            HH.text "no users found"
           _ ->
             HH.div_
-              [
-              HH.h4
-                 [ css "center" ]
-                 [HH.text ("user list page "
-                           <> show usersPage.pagination.page
-                           <> " of "
-                           <> show usersPage.pagination.maxPages
-                           )
-                 ]
+              [ HH.h4
+                  [ css "center" ]
+                  [ HH.text
+                      ( "user list page "
+                          <> show usersPage.pagination.page
+                          <> " of "
+                          <> show usersPage.pagination.maxPages
+                      )
+                  ]
               , renderUserList state usersPage.users
               , renderPagination (UserList state.pageParams) usersPage.pagination
               ]
@@ -98,51 +99,49 @@ component =
   renderUserList _state users =
     let
       f userRef =
-          tableRow userRef
+        tableRow userRef
     in
       HH.table_ $
         map f users
     where
-      tableRow userRef =
-        HH.tr_
-          [ HH.td_
-            [ HH.text userRef.name]
-          , HH.td_
-            [ HH.text userRef.email]
-          , HH.td_
-            [ HH.text userRef.role]
-          , HH.td_
-            [ HH.text userRef.valid]
-          , HH.td_
-            [ HH.text $ tsToDateString userRef.timestamp]
-          , HH.td_ 
+    tableRow userRef =
+      HH.tr_
+        [ HH.td_
+            [ HH.text userRef.name ]
+        , HH.td_
+            [ HH.text userRef.email ]
+        , HH.td_
+            [ HH.text userRef.role ]
+        , HH.td_
+            [ HH.text userRef.valid ]
+        , HH.td_
+            [ HH.text $ tsToDateString userRef.timestamp ]
+        , HH.td_
             [ renderDeleteUser userRef ]
-          ]
+        ]
 
   -- | only the administrator can see this page, and we'll give him the option 
   -- | of deleting a user if it's not been validated 
   renderDeleteUser :: UserRef -> H.ComponentHTML Action ChildSlots m
   renderDeleteUser userRef =
-    if (userRef.valid  == "N") then
+    if (userRef.valid == "N") then
       HH.a
         [ css "a-internal-link"
         , HE.onClick \_ -> DeleteUser (UserId userRef.name)
         ]
-        [ HH.text "delete user"]
+        [ HH.text "delete user" ]
     else
       HH.text ""
-  
-
 
   handleAction ∷ Action -> H.HalogenM State Action ChildSlots o m Unit
   handleAction = case _ of
     Initialize -> do
       mUser <- getUser
-      _ <- H.modify (\st -> st { currentUser = mUser } )
+      _ <- H.modify (\st -> st { currentUser = mUser })
       _ <- handleQuery (FetchResults unit)
       pure unit
     HandleInput input -> do
-      H.modify_ (\st -> st { pageParams = input.pageParams } )
+      H.modify_ (\st -> st { pageParams = input.pageParams })
       _ <- handleQuery (FetchResults unit)
       pure unit
     DeleteUser userId -> do
@@ -170,5 +169,5 @@ component =
       -- live server testing only baseURL <- getCorsBaseURL
       baseURL <- getBaseURL
       usersResult <- requestUsers baseURL state.currentUser state.pageParams
-      H.modify_ (\st -> st { usersResult = usersResult } )
+      H.modify_ (\st -> st { usersResult = usersResult })
       pure (Just next)

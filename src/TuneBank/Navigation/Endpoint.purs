@@ -1,8 +1,10 @@
 module TuneBank.Navigation.Endpoint
-  (PageParams, Endpoint(..), endpointCodec)  where
+  ( PageParams
+  , Endpoint(..)
+  , endpointCodec
+  ) where
 
 -- | Endpoints - legitimate URLs at the musicrest backend
-
 
 import Prelude hiding ((/))
 
@@ -44,7 +46,6 @@ data Endpoint
   | Comments Genre TuneId
   | Comment CommentId
 
-
 derive instance genericEndpoint :: Generic Endpoint _
 derive instance eqEndpoint :: Eq Endpoint
 derive instance ordEndpoint :: Ord Endpoint
@@ -52,28 +53,28 @@ derive instance ordEndpoint :: Ord Endpoint
 instance showEndpoint :: Show Endpoint where
   show = genericShow
 
-
 -- | Our codec will cause a compile-time error if we fail to handle any of our endpoint cases.
 endpointCodec :: RouteDuplex' Endpoint
 endpointCodec = root $ sum
   { "Search": "genre" / (genre segment) / "search" ?
-       { key : optional <<< string
-       , rhythm : optional <<< string
-       , title : optional <<< string
-       , source : optional <<< string
-       , origin : optional <<< string
-       , composer : optional <<< string
-       , transcriber : optional <<< string
-       , submitter : optional <<< string
-       , page: int
-       , sort : string }
+      { key: optional <<< string
+      , rhythm: optional <<< string
+      , title: optional <<< string
+      , source: optional <<< string
+      , origin: optional <<< string
+      , composer: optional <<< string
+      , transcriber: optional <<< string
+      , submitter: optional <<< string
+      , page: int
+      , sort: string
+      }
   , "Users": "user" ? { page: int }
   , "UserCheck": "user" / "check" / noArgs
   , "User": "user" / (userId segment)
   , "Register": "user" / noArgs
-  , "Tune": "genre" /  (genre segment) / "tune" / (tuneId segment)
+  , "Tune": "genre" / (genre segment) / "tune" / (tuneId segment)
   , "NewTune": "genre" / (genre segment) / "tune"
   , "Comments": "genre" / (genre segment) / "tune" / (tuneId segment) / "comments"
-  , "Comment":  "comment" / (commentId segment)
-  , "Root" : noArgs
+  , "Comment": "comment" / (commentId segment)
+  , "Root": noArgs
   }

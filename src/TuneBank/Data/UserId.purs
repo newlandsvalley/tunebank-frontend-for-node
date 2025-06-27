@@ -1,4 +1,4 @@
-module TuneBank.Data.UserId 
+module TuneBank.Data.UserId
   ( UserId(..)
   , userIdFromString
   , userIdToString
@@ -14,11 +14,11 @@ derive newtype instance Ord UserId
 
 instance showUserid :: Show UserId where
   show = userIdToString
-  
+
 userIdToString :: UserId -> String
 userIdToString (UserId name) =
   name
-  
+
 userIdFromString :: String -> Either String UserId
 userIdFromString s =
   Right (UserId s)
