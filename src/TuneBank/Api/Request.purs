@@ -7,6 +7,7 @@ module TuneBank.Api.Request
   , postNewComment
   , postNewUser
   , postTune
+  , postEmail
   , postUpdatedComment
   , requestComment
   , requestComments
@@ -230,6 +231,13 @@ postUpdatedComment baseUrl commentId comment credentials =
     let
       json = Comments.encodeNewComment comment
     requestTheBody $ defaultPostJsonRequest baseUrl (Just credentials) json (Comment commentId)
+
+postEmail :: forall m. MonadAff m => String -> BaseURL -> m (Either String String)
+postEmail email baseUrl =
+  H.liftAff do
+    res <- requestTheBody $ defaultPostStringRequest baseUrl Nothing email UserName
+    pure res
+
 
 -- | DELETE
 deleteTune :: forall m. MonadAff m => BaseURL -> Genre -> TuneId -> Credentials -> m (Either String String)

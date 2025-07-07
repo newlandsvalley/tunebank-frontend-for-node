@@ -31,6 +31,7 @@ data Route
   | Genre
   | Login
   | Register
+  | ForgotUserName
   | Upload
   | AdvancedSearch
   | UserList PageParams
@@ -60,6 +61,7 @@ routeCodec = root $ sum
   , "Login": "login" / noArgs
   , "Genre": "genre" / noArgs
   , "Register": "register" / noArgs
+  , "ForgotUserName": "forgotuser" / noArgs
   , "Upload": "upload" / noArgs
   , "AdvancedSearch": "advancedsearch" / noArgs
   , "Tune": "genre" / (genre segment) / "tune" / (tuneId segment)

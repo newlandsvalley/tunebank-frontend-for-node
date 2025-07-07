@@ -12,8 +12,6 @@ import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
-import Web.Event.Event (preventDefault)
-import Web.UIEvent.MouseEvent (MouseEvent, toEvent)
 import Prelude (Unit, Void, ($), (<<<), (>), (<>), bind, const, pure, unit)
 import TuneBank.Api.Request (checkUser)
 import TuneBank.Data.Credentials (Credentials, blankCredentials, roleFromString)
@@ -23,6 +21,8 @@ import TuneBank.HTML.Utils (css, safeHref)
 import TuneBank.Navigation.Navigate (class Navigate, navigate)
 import TuneBank.Navigation.Route (Route(..))
 import TuneBank.Page.Utils.Environment (getBaseURL)
+import Web.Event.Event (preventDefault)
+import Web.UIEvent.MouseEvent (MouseEvent, toEvent)
 
 type Slot = H.Slot Query Void
 
@@ -162,9 +162,20 @@ component =
 
   renderLinks :: H.ComponentHTML Action ChildSlots m
   renderLinks =
-    HH.a
-      [ safeHref Register ]
-      [ HH.text "register" ]
+    HH.table_
+      [ HH.tr_
+        [ HH.td_
+          [ HH.a
+            [ safeHref Register ]
+            [ HH.text "register"]
+          ]
+        , HH.td_
+          [ HH.a
+            [ safeHref ForgotUserName ]
+            [ HH.text "forgot name"]
+          ]
+        ]
+      ]
 
   handleAction ∷ Action -> H.HalogenM State Action ChildSlots o m Unit
   handleAction = case _ of

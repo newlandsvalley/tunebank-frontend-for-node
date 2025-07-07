@@ -40,6 +40,7 @@ data Endpoint
   | Users PageParams
   | User UserId
   | UserCheck
+  | UserName
   | Register
   | Tune Genre TuneId
   | NewTune Genre
@@ -71,6 +72,7 @@ endpointCodec = root $ sum
   , "Users": "user" ? { page: int }
   , "UserCheck": "user" / "check" / noArgs
   , "User": "user" / (userId segment)
+  , "UserName" : "user" / "getName" / noArgs
   , "Register": "user" / noArgs
   , "Tune": "genre" / (genre segment) / "tune" / (tuneId segment)
   , "NewTune": "genre" / (genre segment) / "tune"
