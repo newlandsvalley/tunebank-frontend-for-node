@@ -19,13 +19,14 @@ import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
 import TuneBank.Api.Codec.Register (Submission, defaultSubmission)
-import TuneBank.Api.Codec.Utils (containsDigit, showJsonErrorResponse)
+import TuneBank.Api.Codec.Utils (showJsonErrorResponse)
 import TuneBank.Api.Request (postNewUser)
 import TuneBank.Data.Session (Session)
 import TuneBank.Data.Types (Validated, BaseURL)
 import TuneBank.HTML.Utils (css)
 import TuneBank.Navigation.Navigate (class Navigate)
 import TuneBank.Page.Utils.Environment (getBaseURL)
+import TuneBank.Page.Utils.UserValidation (validatePassword)
 
 -- type Slot = H.Slot Query Void
 type Slot = H.Slot (Const Void) Void
@@ -243,20 +244,6 @@ validateName name =
     pure name
   else
     invalid $ pure ("Invalid name. ")
-
-validatePassword :: String -> String -> Validated String
-validatePassword password confirmationPassword =
-  if (containsDigit password) && length password >= 7 then
-    comparePasswords password confirmationPassword
-  else
-    invalid $ pure ("Passwords should be at least 7 characters and contain at least one digit. ")
-
-comparePasswords :: String -> String -> Validated String
-comparePasswords password confirmationPassword =
-  if (password /= confirmationPassword) then
-    invalid $ pure ("Passwords don't match. ")
-  else
-    pure password
 
 validateEmail :: String -> Validated String
 validateEmail email =

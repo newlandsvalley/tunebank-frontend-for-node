@@ -8,6 +8,8 @@ module TuneBank.Api.Request
   , postNewUser
   , postTune
   , postEmail
+  , postNewPasswordOTP
+  , postChangePassword
   , postUpdatedComment
   , requestComment
   , requestComments
@@ -38,6 +40,7 @@ import Halogen as H
 import Routing.Duplex (print)
 import TuneBank.Api.Codec.Comments (Comment, Comments, decodeComment, decodeComments)
 import TuneBank.Api.Codec.Comments (NewComment, encodeNewComment) as Comments
+import TuneBank.Api.Codec.Password (ChangePassword, OTPSubmission, encodeChangePassword, encodeOTPSubmission) as Password
 import TuneBank.Api.Codec.Register (Submission, encodeSubmission) as Register
 import TuneBank.Api.Codec.Tune (TuneMetadata, decodeTune)
 import TuneBank.Api.Codec.TunesPage (TunesPage, decodeTunesPage)
@@ -232,12 +235,28 @@ postUpdatedComment baseUrl commentId comment credentials =
       json = Comments.encodeNewComment comment
     requestTheBody $ defaultPostJsonRequest baseUrl (Just credentials) json (Comment commentId)
 
-postEmail :: forall m. MonadAff m => String -> BaseURL -> m (Either String String)
-postEmail email baseUrl =
+-- | post an email address so as to get the corresponding user name
+postEmail :: forall m. MonadAff m => BaseURL -> String -> m (Either String String)
+postEmail baseUrl email =
   H.liftAff do
     res <- requestTheBody $ defaultPostStringRequest baseUrl Nothing email UserName
     pure res
 
+-- | send a one-time-password so as to authorise a later password change
+postNewPasswordOTP :: forall m. MonadAff m => BaseURL -> Password.OTPSubmission -> m (Either String String)
+postNewPasswordOTP baseUrl otpSubmission =
+  H.liftAff do
+    let
+      json = Password.encodeOTPSubmission otpSubmission
+    requestTheBody $ defaultPostJsonRequest baseUrl Nothing json UserPasswordOTP
+
+-- | post a request to change a user's password
+postChangePassword :: forall m. MonadAff m => BaseURL -> Password.ChangePassword -> m (Either String String)
+postChangePassword baseUrl changePassword =
+  H.liftAff do
+    let
+      json = Password.encodeChangePassword changePassword
+    requestTheBody $ defaultPostJsonRequest baseUrl Nothing json UserPassword
 
 -- | DELETE
 deleteTune :: forall m. MonadAff m => BaseURL -> Genre -> TuneId -> Credentials -> m (Either String String)

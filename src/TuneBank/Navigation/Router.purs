@@ -19,6 +19,7 @@ import TuneBank.Page.AdvancedSearchForm as AdvancedSearchForm
 import TuneBank.Page.GenreMenu as GenreMenu
 import TuneBank.Page.Register as Register
 import TuneBank.Page.ForgotUser as ForgotUser
+import TuneBank.Page.ChangePassword as ChangePassword
 import TuneBank.Page.Upload as Upload
 import TuneBank.Page.UserList as UserList
 import TuneBank.Page.Tune as Tune
@@ -58,6 +59,7 @@ type ChildSlots =
   , login :: Login.Slot Unit
   , register :: Register.Slot Unit
   , forgotuser :: ForgotUser.Slot Unit
+  , changepassword :: ChangePassword.Slot Unit
   , upload :: Upload.Slot Unit
   , advancedsearch :: AdvancedSearchForm.Slot Unit
   , userlist :: UserList.Slot Unit
@@ -163,6 +165,8 @@ component =
           HH.slot (Proxy :: _ "register") unit Register.component unit absurd
         ForgotUserName ->
           HH.slot (Proxy :: _ "forgotuser") unit ForgotUser.component unit absurd
+        ChangePassword ->
+          HH.slot (Proxy :: _ "changepassword") unit ChangePassword.component unit absurd
         Upload ->
           HH.slot (Proxy :: _ "upload") unit Upload.component unit absurd
         AdvancedSearch ->

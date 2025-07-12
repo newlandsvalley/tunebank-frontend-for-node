@@ -164,17 +164,22 @@ component =
   renderLinks =
     HH.table_
       [ HH.tr_
-        [ HH.td_
-          [ HH.a
-            [ safeHref Register ]
-            [ HH.text "register"]
+          [ HH.td_
+              [ HH.a
+                  [ safeHref Register ]
+                  [ HH.text "register" ]
+              ]
+          , HH.td_
+              [ HH.a
+                  [ safeHref ForgotUserName ]
+                  [ HH.text "forgot name" ]
+              ]
+          , HH.td_
+              [ HH.a
+                  [ safeHref ChangePassword ]
+                  [ HH.text "forgot password" ]
+              ]
           ]
-        , HH.td_
-          [ HH.a
-            [ safeHref ForgotUserName ]
-            [ HH.text "forgot name"]
-          ]
-        ]
       ]
 
   handleAction ∷ Action -> H.HalogenM State Action ChildSlots o m Unit

@@ -127,6 +127,6 @@ component =
       baseURL <- getBaseURL
       -- reset any previous error text
       _ <- H.modify_ (\st -> st { forgotUserResult = Left "" })
-      forgotUserResult <- postEmail state.email baseURL
+      forgotUserResult <- postEmail baseURL state.email
       _ <- H.put state { forgotUserResult = forgotUserResult }
       pure unit

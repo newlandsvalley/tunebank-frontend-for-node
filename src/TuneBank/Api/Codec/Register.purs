@@ -31,14 +31,3 @@ defaultSubmission =
   , refererUrl: print routeCodec Register
   }
 
-{-}
-encodeFormData :: Submission -> FormURLEncoded
-encodeFormData submission =
-  fromArray
-     [ Tuple "name"  (Just submission.name)
-     , Tuple "email"  (Just submission.email)
-     , Tuple "password"  (Just submission.password)
-     , Tuple "password2"  (Just submission.password2)
-     , Tuple "refererUrl"  (Just submission.refererUrl)
-     ]
--}
