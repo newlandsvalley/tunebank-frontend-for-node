@@ -46,6 +46,7 @@ All we then need to do is to change the baseURL reference in index.html to point
   * Search URLs are no longer required to supply search terms in lower-case.  For example, search terms of `title`, `rhythm`, `origin`, `source` etc. can all be supplied using any combination of case.  This means that tune titles in tune lists are correctly capitalised.
   * It is no longer possible to search by the tune notes in the ABC itself.  This facility rarely worked.
   * Any user may be made into an administrator (at the discretion of the owner of tunebank-node).  This is invisible to most users but can allow some users to see extra options previously available only to the user named `Administrator`.
+  * User passwords are unique. The original tunebank-frontend allows different users to share the same passsword.  This is problematic in that it makes a _change password_ feature problematic to implement. Now, we do have _change/forgot password_ and _forgot user_.
 
 
 
