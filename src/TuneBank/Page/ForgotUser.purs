@@ -17,8 +17,7 @@ import TuneBank.Api.Request (postEmail)
 import TuneBank.Data.Session (Session)
 import TuneBank.Data.Types (BaseURL)
 import TuneBank.HTML.Utils (css)
-import TuneBank.Navigation.Navigate (class Navigate, navigate)
-import TuneBank.Navigation.Route (Route(..))
+import TuneBank.Navigation.Navigate (class Navigate)
 import TuneBank.Page.Utils.Environment (getBaseURL)
 
 type Slot = H.Slot Query Void

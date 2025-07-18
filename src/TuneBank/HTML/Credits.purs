@@ -20,7 +20,7 @@ credits =
         ]
     , HH.p_
         [ HH.text "Code is written in PureScript and PureScript-Halogen. "
-        , HH.text "The idea for the polska metronome was borrowed from Ben Potton of the band"
+        , HH.text "The idea for the polska metronome was borrowed from Ben Potton of the band "
         , HH.a
             [ HP.href "http://www.jigfoot.com/" ]
             [ HH.text "JigFoot." ]
