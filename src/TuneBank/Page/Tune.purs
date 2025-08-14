@@ -650,8 +650,8 @@ getDocumentNameForPrinting :: State -> String
 getDocumentNameForPrinting state =
   case state.tuneResult of
     Right abcTune ->
-      fromMaybe "tradtunedb tune bank" $ getTitle abcTune
+      fromMaybe "tunebank" $ getTitle abcTune
     _ ->
       -- shouldn't happen
-      "tradtunedb tune bank"
+      "tunebank"
 

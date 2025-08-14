@@ -53,7 +53,7 @@ header mCredentials genre route =
             -- hamburger app name
             [ HH.li
                 [ css "hamburger-appname" ]
-                [ HH.text "tradtunedb" ]
+                [ HH.text "tunebank" ]
             , HH.li
                 [ css "hamburger-genre" ]
                 [ HH.text (show genre) ]

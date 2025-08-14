@@ -9,10 +9,10 @@ about =
   HH.div
     [ HP.id "aboutdiv" ]
     [ HH.h2_
-        [ HH.text "TradTuneDb version 3.0.0" ]
+        [ HH.text "Tunebank version 4.0.0" ]
     , HH.p_
         [ HH.text $
-            ( "TradTuneDb is a database of English, Irish, Scottish, Scandinavian and klezmer tunes. You can search for tunes and then view the scores "
+            ( "The Tunebank is a database of English, Irish, Scottish, Scandinavian and klezmer tunes. You can search for tunes and then view the scores "
                 <> "or hear them played.  Of course, having them played on a rather tinny midi piano is no substitute for hearing the real thing, "
                 <> "but it may help you to learn the basics of a tune because you can vary the tempo. Currently, the player works with the latest "
                 <>
@@ -26,4 +26,6 @@ about =
             [ HH.text "London Scandi Session" ]
         , HH.text ". It represents a fair cross-section of tunes that are regularly played at the session."
         ]
+    , HH.p_ 
+       [ HH.text "This site is a development of TradTuneDb version 3.0.0." ]
     ]

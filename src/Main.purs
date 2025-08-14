@@ -26,13 +26,12 @@ import Routing.Hash (matchesWith)
 import Audio.SoundFont (loadPianoSoundFont)
 import AppM (runAppM)
 
--- | production Musicrest server
--- |  baseURL = BaseURL "http://www.tradtunedb.org.uk:8080/musicrest"
--- | dev server
--- |  baseURL = BaseURL "http://192.168.0.113:8080/musicrest"
+-- | production tunebank server
+-- | This requires that we use a reverse proxy (NGINX) to define the URL below and proxy requests to it
+-- | to the real backend (which is actually via http)
 productionServer :: String
 productionServer =
-  "http://www.tradtunedb.org.uk:8080/musicrest"
+  "https://localhost/tunebank"
 
 -- | we pass parameters to the application by means of local storage.
 -- | if there is no baseURL item, then we automatically fall back

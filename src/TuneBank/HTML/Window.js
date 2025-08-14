@@ -9,7 +9,7 @@ var wrapper = function() {
       window.document.title = title;
       window.print();
       // and put it back
-      window.document.title = "tradtunedb tune bank"
+      window.document.title = "tunebank"
    }
 
   }

@@ -8,7 +8,7 @@ credits =
   HH.div
     [ HP.id "creditsdiv" ]
     [ HH.p_
-        [ HH.text "TradTuneDb uses "
+        [ HH.text "The Tunebank uses "
         , HH.a
             [ HP.href "http://abcnotation.com/" ]
             [ HH.text "ABC notation" ]

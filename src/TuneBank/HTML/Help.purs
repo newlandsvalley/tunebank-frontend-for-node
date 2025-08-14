@@ -21,7 +21,7 @@ help =
     , HH.h2_
         [ HH.text "Which genres are supported?" ]
     , HH.text $
-        ( "At the moment, TradTuneDb recognises English, Irish, Klezmer, Scottish and (especially) Scandinavian tunes. "
+        ( "At the moment, the Tunebank recognises English, Irish, Klezmer, Scottish and (especially) Scandinavian tunes. "
             <> " These are kept in separate collections and you must select your chosen genre before searching for tunes."
             <> " Each tune has a distinct name (consisting of the tune title) which is used in its URL. "
             <> " Also, each tune must have a key signature and a rhythm "
@@ -66,14 +66,14 @@ help =
             <> "you to hear what you've written and see the score ; if incorrect, you  will see an error message.  "
             <> "You can also use it to change octave or transpose to a different key.  Once you are happy, you can save "
             <>
-              "the ABC to file and load it to tradtunedb. This option is not available on mobile phones."
+              "the ABC to file and load it to the tunebank. This option is not available on mobile phones."
         )
     , HH.h2_
         [ HH.text "What restrictions are there in acceptable ABC?" ]
     , HH.ul_
         [ HH.li_
             [ HH.text
-                ( "Names in TradTuneDB are in unicode - you should use a unicode-aware editor. " <>
+                ( "Names in the Tunebank are in unicode - you should use a unicode-aware editor. " <>
                     "Particularly important for Scandi tunes where a good many names are non-ASCII."
                 )
             ]

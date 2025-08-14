@@ -13,7 +13,7 @@ footer =
             [ css "mainlogo" ]
             [ HH.span
                 [ css "mainlogo-prefix" ]
-                [ HH.text "tradtunedb" ]
+                [ HH.text "tunebank" ]
             , HH.span
                 [ css "mainlogo-suffix" ]
                 [ HH.text ".org.uk" ]
