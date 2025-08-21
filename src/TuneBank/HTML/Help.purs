@@ -1,8 +1,8 @@
 module TuneBank.HTML.Help (help) where
 
-import Prelude ((<>), ($))
 import Halogen.HTML as HH
 import Halogen.HTML.Properties as HP
+import Prelude ((<>), ($))
 
 help :: forall i p. HH.HTML i p
 help =
@@ -13,7 +13,7 @@ help =
     , HH.text $
         ( "You don't have to register to search for tunes, to see their scores and comments or to play them.  "
             <> "But you do need to register if you wish to submit a new tune or add a comment.  When you register, "
-            <> "you will need to supply a user name and an email address.  We will keep your email address secret and will"
+            <> "you will need to supply a user name and an email address.  We will keep your email address secret and will "
             <> "not spam you.  Once you send your details, you will be sent an email with a link which you must click on to finish the registration"
             <>
               "process.  Then you will be able to log in. You register via a link from the login page."
@@ -65,9 +65,10 @@ help =
         ( "This allows you to build up your ABC text gradually.  If it is correct, a player will appear allowing "
             <> "you to hear what you've written and see the score ; if incorrect, you  will see an error message.  "
             <> "You can also use it to change octave or transpose to a different key.  Once you are happy, you can save "
-            <>
-              "the ABC to file and load it to the tunebank. This option is not available on mobile phones."
+            <> "the ABC to file and load it to the tunebank. This option is not available on mobile phones."
         )
+    , HH.p_
+       [ HH.text  "It is usually a good idea to add a Z: header so that when the tune plays, it is at a natural tempo." ]
     , HH.h2_
         [ HH.text "What restrictions are there in acceptable ABC?" ]
     , HH.ul_
@@ -101,9 +102,8 @@ help =
     , HH.text $
         ( "Once you have logged in, the Upload menu item becomes available from where you can upload an ABC file. "
             <> "Whereas the ABC Editor is very liberal, upload conditions are a good deal stricter (see the restrictions above). "
-            <> "These are in place in order to ensure that tune searches are more accurate. "
-            <>
-              "and that the MIDI-player sounds reasonable."
+            <> "These are in place in order to ensure that tune searches are more accurate "
+            <> "and that the MIDI-player sounds reasonable."
         )
     , HH.h2_
         [ HH.text "How do I correct a tune I have submitted?" ]
@@ -115,5 +115,13 @@ help =
             <>
               "used as a key. You should then delete the older version of the tune."
         )
+    , HH.h2_
+        [ HH.text "How do I collaborate with others when attempting to transcribe a tune to ABC?" ]
+    , HH.text "You can use "
+    , HH.a
+        [ HP.href "https://tunebank.org.uk:8605/" ]
+        [ HH.text "share-a-tune" ]
+    , HH.text (". This lets you to send a link to your friends which allows them to see the score and hear "
+              <> "the tune as you do.  They can then work on the ABC themselves and send it back to you.")
 
     ]

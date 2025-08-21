@@ -1,6 +1,7 @@
 module TuneBank.HTML.Footer (footer) where
 
 import Halogen.HTML as HH
+import Halogen.HTML.Properties as HP
 import TuneBank.HTML.Utils (css, safeHref)
 import TuneBank.Navigation.Route (Route(..))
 
@@ -46,12 +47,17 @@ footer =
             [ navItem ContactUs
                 [ HH.text "contact us" ]
             ]
+        , HH.nav
+            [ css "footer-nav" ]
+            [ externalLink "https://tunebank.org.uk:8605/"
+                [ HH.text "share-a-tune" ]
+            ]
         ]
     ]
 
   where
 
-  -- | a navigation item available at any time
+  -- | a navigation item on this site available at any time
   navItem :: Route -> Array (HH.HTML i p) -> HH.HTML i p
   navItem r html =
     HH.div
@@ -61,3 +67,15 @@ footer =
           ]
           html
       ]
+
+  -- | a link to an external site
+  externalLink :: String -> Array (HH.HTML i p) -> HH.HTML i p
+  externalLink link html =
+    HH.div
+      [ css "nav-item" ]
+      [ HH.a
+          [ HP.href link
+          ]
+          html
+      ]
+
