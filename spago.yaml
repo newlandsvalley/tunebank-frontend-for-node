@@ -166,15 +166,6 @@ workspace:
         - strings
       git: https://github.com/newlandsvalley/purescript-abc-tutorial.git
       ref: d25b966c2dd53bb3a0d7a24762be65cca0fb7bb8
-    drawing:
-      dependencies:
-        - canvas
-        - colors
-        - integers
-        - lists
-        - numbers
-      git: https://github.com/newlandsvalley/purescript-drawing
-      ref: v6.0.0
     expand-links:
       dependencies:
         - console
@@ -229,7 +220,6 @@ workspace:
         - canvas
         - colors
         - datetime
-        - drawing
         - effect
         - either
         - foldable-traversable
@@ -241,6 +231,7 @@ workspace:
         - maybe
         - newtype
         - numbers
+        - open-drawing
         - ordered-collections
         - parallel
         - partial
@@ -249,7 +240,7 @@ workspace:
         - tuples
         - webaudio
       git: https://github.com/newlandsvalley/purescript-polska-metronome.git
-      ref: v0.3.4
+      ref: v0.3.5
     webaudio:
       dependencies:
         - aff
@@ -263,4 +254,4 @@ workspace:
       git: https://github.com/newlandsvalley/purescript-webaudio.git
       ref: b2cf7c19314613834762680acadf397173978efd
   packageSet:
-    registry: 63.0.0
+    registry: 66.3.0
