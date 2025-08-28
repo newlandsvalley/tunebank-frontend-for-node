@@ -68,7 +68,7 @@ type State =
   , commentsLoadError :: String
   , debugCommentsJSON :: String
   , instruments :: Array Instrument
-  , generateIntro :: Boolean
+  , playback :: Playback
   , deviceViewportWidth :: Int
   , vexConfig :: Config
   }
@@ -93,11 +93,17 @@ data Action
   | Finalize
   | RenderScore
   | HandleTuneIsPlaying PC.Message
-  | ToggleGenerateIntro
+  | ChangePlayback String
   | HandleTempoInput Int
   | DeleteTune TuneId
   | DeleteComment CommentId
   | PrintScore
+
+
+-- | a menu option is a string representing the option and a boolean indicating
+-- | whether it is selected
+data MenuOption =
+  MenuOption String Boolean
 
 component
   :: ∀ o m r
@@ -133,7 +139,7 @@ component =
     , commentsLoadError: ""
     , debugCommentsJSON: ""
     , instruments: input.instruments
-    , generateIntro: false
+    , playback: Normal
     , deviceViewportWidth: 0
     , vexConfig: vexConfig
     }
@@ -158,7 +164,7 @@ component =
           [ renderTuneMetadata state
           , renderTempoSlider state
           , renderPlayer state
-          , renderIntroButton state
+          , renderPlaybackMenu state
           , renderComments state
           , renderParseError state
           -- , renderDebugViewportWidth state
@@ -295,7 +301,7 @@ component =
           [ HP.class_ (H.ClassName "leftPanelComponent")
           , HP.id "player-div"
           ]
-          [ HH.slot _player unit (PC.component (toPlayable abcTune state.generateIntro state.currentBpm) state.instruments) unit HandleTuneIsPlaying ]
+          [ HH.slot _player unit (PC.component (toPlayable abcTune state.playback state.currentBpm) state.instruments) unit HandleTuneIsPlaying ]
       Left _err ->
         HH.div_
           []
@@ -333,25 +339,6 @@ component =
       else
         HH.text ""
 
-  renderIntroButton :: State -> H.ComponentHTML Action ChildSlots m
-  renderIntroButton state =
-    let
-      label =
-        if state.generateIntro then "On"
-        else "Off"
-    in
-      HH.div
-        [ HP.id "include-intro-div" ]
-        [ HH.text "Include intro when tune plays"
-        , HH.button
-            [ css "hoverable"
-            , HP.id "include-intro-button"
-            , HE.onClick \_ -> ToggleGenerateIntro
-            , HP.enabled true
-            ]
-            [ HH.text label ]
-        ]
-
   renderComments :: State -> H.ComponentHTML Action ChildSlots m
   renderComments state =
     let
@@ -366,7 +353,8 @@ component =
             show commentCount <> " comments"
     in
       HH.div_
-        [ HH.text header
+        [ HH.h2_ 
+          [ HH.text header ]
         -- render the comments
         , HH.div_ $ map (renderComment state) state.comments
         -- but if the load has failed, render the comments load error
@@ -387,7 +375,7 @@ component =
     in
       HH.div
         []
-        [ HH.h2
+        [ HH.h3
             []
             [ HH.text comment.subject ]
         , RH.render_ $ expandAllLinks comment.text
@@ -433,6 +421,42 @@ component =
     in
       HH.div_
         [ HH.text tuneResult ]
+
+
+  renderPlaybackMenu :: State -> H.ComponentHTML Action ChildSlots m
+  renderPlaybackMenu state =
+    let
+      f :: ∀ p i. MenuOption -> HH.HTML p i
+      f mo =
+        case mo of
+          MenuOption text selected ->
+            HH.option
+              [ HP.selected selected
+              , HP.value text ]
+              [ HH.text text]
+    in
+      HH.div
+        [ HP.class_ (H.ClassName "leftPanelComponent")]
+        [ HH.label
+           [ HP.class_ (H.ClassName "labelAlignment") ]
+           [ HH.text "playback:" ]
+        , HH.select
+            [ HP.class_ $ H.ClassName "selection"
+            , HE.onValueChange ChangePlayback
+            , HP.id  "playback-menu"
+            , HP.value (show state.playback)
+            ]
+            (map f $ playbackOptions state.playback)
+        ]
+
+  playbackOptions :: Playback -> Array MenuOption
+  playbackOptions playback =    
+    [ MenuOption (show Normal) (playback == Normal)
+    , MenuOption (show WithIntro) (playback == WithIntro)
+    , MenuOption (show $ Loop 2) (playback == Loop 2)
+    , MenuOption (show $ Loop 4) (playback == Loop 4)
+    ]
+  
 
   {- in case we need to track the viewport width 
   renderDebugViewportWidth ::  State -> H.ComponentHTML Action ChildSlots m
@@ -520,11 +544,11 @@ component =
       _ <- H.modify_ (\st -> st { isPlaying = isPlaying })
       pure unit
 
-    ToggleGenerateIntro -> do
+    ChangePlayback s -> do 
       state <- H.get
       let
-        generateIntro = not state.generateIntro
-        newState = state { generateIntro = generateIntro }
+        playback = readPlayback s 
+        newState = state { playback = playback }
       _ <- H.put newState
       _ <- refreshPlayerState newState
       pure unit
@@ -581,15 +605,14 @@ refreshPlayerState
 refreshPlayerState state = do
   _ <- either
     (\_ -> H.tell _player unit PC.StopMelody)
-    (\abcTune -> H.tell _player unit (PC.HandleNewPlayable (toPlayable abcTune state.generateIntro state.currentBpm)))
+    (\abcTune -> H.tell _player unit (PC.HandleNewPlayable (toPlayable abcTune state.playback state.currentBpm)))
     state.tuneResult
   pure unit
 
 -- | convert a tune to a format recognized by the player
-toPlayable :: AbcTune -> Boolean -> Int -> PlayableAbc
-toPlayable abcTune generateIntro bpm =
+toPlayable :: AbcTune -> Playback -> Int -> PlayableAbc
+toPlayable abcTune playback bpm =
   let
-    playback = (if generateIntro then WithIntro else Normal)
     props = defaultPlayableAbcProperties
       { tune = abcTune
       , phraseSize = 0.7
@@ -655,4 +678,15 @@ getDocumentNameForPrinting state =
     _ ->
       -- shouldn't happen
       "tunebank"
+
+-- decode the playback string
+readPlayback :: String -> Playback
+readPlayback s =
+  case s of
+    "Normal" -> Normal
+    "With intro" -> WithIntro
+    "Repeat loop 2" -> Loop 2
+    "Repeat loop 4" -> Loop 4
+    _ -> Normal
+
 
