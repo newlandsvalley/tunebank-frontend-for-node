@@ -851,7 +851,7 @@
     "extra_packages": {
       "abc-editor": {
         "git": "https://github.com/newlandsvalley/purescript-abc-editor.git",
-        "ref": "b141ea944da2c5c83f33f5692446161bde752798",
+        "ref": "v1.1.3",
         "dependencies": [
           "abc-melody",
           "abc-parser",
@@ -881,7 +881,7 @@
       },
       "abc-melody": {
         "git": "https://github.com/newlandsvalley/purescript-abc-melody.git",
-        "ref": "843e59f1e7cdc0020bf3ffe184ab41e0ed0452ac",
+        "ref": "v0.4.0",
         "dependencies": [
           "abc-parser",
           "arrays",
@@ -900,13 +900,9 @@
           "tuples"
         ]
       },
-      "abc-parser": {
-        "git": "https://github.com/newlandsvalley/purescript-abc-parser.git",
-        "ref": "824451a8eaea2aaadb7deaec9efafd2e49484f5e"
-      },
       "abc-scores": {
         "git": "https://github.com/newlandsvalley/purescript-abc-scores.git",
-        "ref": "10118be4551f899ce343fa05f0273b191dc10429",
+        "ref": "v0.6.7",
         "dependencies": [
           "abc-parser",
           "arrays",
@@ -931,7 +927,7 @@
       },
       "abc-tutorial": {
         "git": "https://github.com/newlandsvalley/purescript-abc-tutorial.git",
-        "ref": "d25b966c2dd53bb3a0d7a24762be65cca0fb7bb8",
+        "ref": "v1.2.0",
         "dependencies": [
           "abc-melody",
           "abc-parser",
@@ -965,7 +961,7 @@
       },
       "halogen-components": {
         "git": "https://github.com/newlandsvalley/purescript-halogen-components.git",
-        "ref": "v0.6.0",
+        "ref": "v0.6.1",
         "dependencies": [
           "aff",
           "arrays",
@@ -1056,7 +1052,7 @@
     "abc-editor": {
       "type": "git",
       "url": "https://github.com/newlandsvalley/purescript-abc-editor.git",
-      "rev": "b141ea944da2c5c83f33f5692446161bde752798",
+      "rev": "b141bda9d43b776e6b6bf2a942e37eae56b370e5",
       "dependencies": [
         "abc-melody",
         "abc-parser",
@@ -1087,7 +1083,7 @@
     "abc-melody": {
       "type": "git",
       "url": "https://github.com/newlandsvalley/purescript-abc-melody.git",
-      "rev": "843e59f1e7cdc0020bf3ffe184ab41e0ed0452ac",
+      "rev": "ccae3011216a31570c44504475c5b14d03c882e4",
       "dependencies": [
         "abc-parser",
         "arrays",
@@ -1107,9 +1103,9 @@
       ]
     },
     "abc-parser": {
-      "type": "git",
-      "url": "https://github.com/newlandsvalley/purescript-abc-parser.git",
-      "rev": "824451a8eaea2aaadb7deaec9efafd2e49484f5e",
+      "type": "registry",
+      "version": "2.1.0",
+      "integrity": "sha256-qCd59jV0KTRX9vNPydeEUxUakV/qqn+qf8eV8vMOMP0=",
       "dependencies": [
         "arrays",
         "bifunctors",
@@ -1140,7 +1136,7 @@
     "abc-scores": {
       "type": "git",
       "url": "https://github.com/newlandsvalley/purescript-abc-scores.git",
-      "rev": "10118be4551f899ce343fa05f0273b191dc10429",
+      "rev": "49fa1fffbf512fa5f177e2032f9f02c165bc418c",
       "dependencies": [
         "abc-parser",
         "arrays",
@@ -1166,7 +1162,7 @@
     "abc-tutorial": {
       "type": "git",
       "url": "https://github.com/newlandsvalley/purescript-abc-tutorial.git",
-      "rev": "d25b966c2dd53bb3a0d7a24762be65cca0fb7bb8",
+      "rev": "d8754f8963cb84deb14101c157abb81e2d2b2833",
       "dependencies": [
         "abc-melody",
         "abc-parser",
@@ -1895,7 +1891,7 @@
     "halogen-components": {
       "type": "git",
       "url": "https://github.com/newlandsvalley/purescript-halogen-components.git",
-      "rev": "30080f7b1219b5370172d937ca971d89816ac5a9",
+      "rev": "6a7bfaebda2a30c6be3665c8c9fc21e7ba903d71",
       "dependencies": [
         "aff",
         "arrays",

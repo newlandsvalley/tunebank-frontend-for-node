@@ -71,9 +71,6 @@ package:
       - spec-node
 workspace:
   extraPackages:
-    abc-parser:
-      git: https://github.com/newlandsvalley/purescript-abc-parser.git
-      ref: 824451a8eaea2aaadb7deaec9efafd2e49484f5e
     abc-editor:
       dependencies:
         - abc-melody
@@ -101,7 +98,7 @@ workspace:
         - string-parsers
         - strings
       git: https://github.com/newlandsvalley/purescript-abc-editor.git
-      ref: b141ea944da2c5c83f33f5692446161bde752798
+      ref: v1.1.3
     abc-melody:
       dependencies:
         - abc-parser
@@ -120,7 +117,7 @@ workspace:
         - transformers
         - tuples
       git: https://github.com/newlandsvalley/purescript-abc-melody.git
-      ref: 843e59f1e7cdc0020bf3ffe184ab41e0ed0452ac
+      ref: v0.4.0
     abc-scores:
       dependencies:
         - abc-parser
@@ -143,7 +140,7 @@ workspace:
         - tuples
         - unfoldable
       git: https://github.com/newlandsvalley/purescript-abc-scores.git
-      ref: 10118be4551f899ce343fa05f0273b191dc10429
+      ref: v0.6.7
     abc-tutorial:
       dependencies:
         - abc-melody
@@ -165,7 +162,7 @@ workspace:
         - string-parsers
         - strings
       git: https://github.com/newlandsvalley/purescript-abc-tutorial.git
-      ref: d25b966c2dd53bb3a0d7a24762be65cca0fb7bb8
+      ref: v1.2.0
     expand-links:
       dependencies:
         - console
@@ -196,7 +193,7 @@ workspace:
         - web-html
         - web-uievents
       git: https://github.com/newlandsvalley/purescript-halogen-components.git
-      ref: v0.6.0
+      ref: v0.6.1
     html-parser-halogen:
       dependencies:
         - arrays

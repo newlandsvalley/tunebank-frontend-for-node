@@ -5,7 +5,7 @@ import Prelude
 import Audio.SoundFont (Instrument)
 import Control.Monad.Reader (class MonadAsk, asks)
 import Data.Abc (AbcTune)
-import Data.Abc.Melody (PlayableAbc(..), defaultPlayableAbcProperties)
+import Data.Abc.Melody (PlayableAbc(..), Playback(..), defaultPlayableAbcProperties)
 import Data.Abc.Parser (parse)
 import Data.Abc.Tempo (defaultTempo, getAbcTempo, getBpm)
 import Data.Abc.Utils (getTitle)
@@ -589,11 +589,12 @@ refreshPlayerState state = do
 toPlayable :: AbcTune -> Boolean -> Int -> PlayableAbc
 toPlayable abcTune generateIntro bpm =
   let
+    playback = (if generateIntro then WithIntro else Normal)
     props = defaultPlayableAbcProperties
       { tune = abcTune
       , phraseSize = 0.7
       , bpmOverride = Just bpm
-      , generateIntro = generateIntro
+      , playback = playback
       }
   in
     PlayableAbc props
@@ -607,11 +608,11 @@ displayScore
   -> H.HalogenM State Action ChildSlots o m Unit
 displayScore state renderer tune = do
   _ <- H.liftEffect $ Score.clearCanvas $ renderer
-  mRendered <- H.liftEffect $ Score.renderFinalTune state.vexConfig renderer tune
+  eRendered <- H.liftEffect $ Score.renderFinalTune state.vexConfig renderer tune
 
   -- log any errors in attempting to produce a score  
-  case mRendered of
-    Just error ->
+  case eRendered of
+    Left error ->
       H.liftEffect $ log (" score error: " <> error)
     _ ->
       pure unit
