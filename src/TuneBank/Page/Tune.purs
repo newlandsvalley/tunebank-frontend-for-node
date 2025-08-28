@@ -425,15 +425,8 @@ component =
 
   renderPlaybackMenu :: State -> H.ComponentHTML Action ChildSlots m
   renderPlaybackMenu state =
-    let
-      f :: ∀ p i. MenuOption -> HH.HTML p i
-      f mo =
-        case mo of
-          MenuOption text selected ->
-            HH.option
-              [ HP.selected selected
-              , HP.value text ]
-              [ HH.text text]
+    let 
+      default = playbackToString state.playback
     in
       HH.div
         [ HP.class_ (H.ClassName "leftPanelComponent")]
@@ -444,18 +437,28 @@ component =
             [ HP.class_ $ H.ClassName "selection"
             , HE.onValueChange ChangePlayback
             , HP.id  "playback-menu"
-            , HP.value (show state.playback)
+            , HP.value default
             ]
-            (map f $ playbackOptions state.playback)
+            (playbackOptions default)
         ]
 
-  playbackOptions :: Playback -> Array MenuOption
-  playbackOptions playback =    
-    [ MenuOption (show Normal) (playback == Normal)
-    , MenuOption (show WithIntro) (playback == WithIntro)
-    , MenuOption (show $ Loop 2) (playback == Loop 2)
-    , MenuOption (show $ Loop 4) (playback == Loop 4)
+  
+  playbackOptions :: forall i p. String -> Array (HH.HTML i p)
+  playbackOptions default =    
+    [ menuOption "Normal"
+    , menuOption "With intro"
+    , menuOption "Play twice"
+    , menuOption "Play 4 times"
     ]
+
+    where
+
+    menuOption :: String -> HH.HTML i p
+    menuOption next =
+      HH.option
+        [ HP.disabled (next == default) ]
+        [ HH.text next ]
+
   
 
   {- in case we need to track the viewport width 
@@ -547,7 +550,7 @@ component =
     ChangePlayback s -> do 
       state <- H.get
       let
-        playback = readPlayback s 
+        playback = playbackFromString s 
         newState = state { playback = playback }
       _ <- H.put newState
       _ <- refreshPlayerState newState
@@ -679,14 +682,25 @@ getDocumentNameForPrinting state =
       -- shouldn't happen
       "tunebank"
 
+-- Warning - playback read/write not type-safe - make sure the strings match
+-- possibly move this into abc-melody later on
+
 -- decode the playback string
-readPlayback :: String -> Playback
-readPlayback s =
+playbackFromString :: String -> Playback
+playbackFromString s =
   case s of
     "Normal" -> Normal
     "With intro" -> WithIntro
-    "Repeat loop 2" -> Loop 2
-    "Repeat loop 4" -> Loop 4
+    "Play twice" -> Loop 2
+    "Play 4 times" -> Loop 4
     _ -> Normal
+
+-- display the Playback
+playbackToString :: Playback -> String
+playbackToString playback =
+  case playback of
+    Loop 2 -> "Play twice"
+    Loop 4 -> "Play 4 times"
+    _ -> show playback
 
 

@@ -232,7 +232,6 @@ menuOption default next =
 renderOrderingMenu :: forall m. State -> H.ComponentHTML Action ChildSlots m
 renderOrderingMenu state =
   let
-    -- default = "alpha"
     default =
       state.ordering
   in
