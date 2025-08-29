@@ -1002,7 +1002,7 @@
       },
       "polska-metronome": {
         "git": "https://github.com/newlandsvalley/purescript-polska-metronome.git",
-        "ref": "v0.3.5",
+        "ref": "v0.3.6",
         "dependencies": [
           "aff",
           "affjax",
@@ -2535,7 +2535,7 @@
     "polska-metronome": {
       "type": "git",
       "url": "https://github.com/newlandsvalley/purescript-polska-metronome.git",
-      "rev": "ededaad37a7a2fc5d0d2f2c16e351d6f4310bdae",
+      "rev": "bff96e580b341951e81498ddfda392f44f42abe4",
       "dependencies": [
         "aff",
         "affjax",

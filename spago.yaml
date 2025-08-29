@@ -237,7 +237,7 @@ workspace:
         - tuples
         - webaudio
       git: https://github.com/newlandsvalley/purescript-polska-metronome.git
-      ref: v0.3.5
+      ref: v0.3.6
     webaudio:
       dependencies:
         - aff
