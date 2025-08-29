@@ -426,7 +426,7 @@ component =
   renderPlaybackMenu :: State -> H.ComponentHTML Action ChildSlots m
   renderPlaybackMenu state =
     let 
-      default = playbackToString state.playback
+      default = show state.playback
     in
       HH.div
         [ HP.class_ (H.ClassName "leftPanelComponent")]
@@ -444,11 +444,11 @@ component =
 
   
   playbackOptions :: forall i p. String -> Array (HH.HTML i p)
-  playbackOptions default =    
-    [ menuOption "Normal"
-    , menuOption "With intro"
-    , menuOption "Play twice"
-    , menuOption "Play 4 times"
+  playbackOptions default =     
+    [ menuOption $ show Normal       -- "Normal"
+    , menuOption $ show WithIntro    -- "With intro"
+    , menuOption $ show $ Loop 2     -- "Play twice"
+    , menuOption $ show $ Loop 4     -- "Play 4 times"
     ]
 
     where
@@ -682,10 +682,9 @@ getDocumentNameForPrinting state =
       -- shouldn't happen
       "tunebank"
 
--- Warning - playback read/write not type-safe - make sure the strings match
--- possibly move this into abc-melody later on
-
 -- decode the playback string
+-- Warning - playback read/write not type-safe - make sure the strings match
+-- the show instance of Playback.  We only use two looping constructs at the moment.
 playbackFromString :: String -> Playback
 playbackFromString s =
   case s of
@@ -694,13 +693,5 @@ playbackFromString s =
     "Play twice" -> Loop 2
     "Play 4 times" -> Loop 4
     _ -> Normal
-
--- display the Playback
-playbackToString :: Playback -> String
-playbackToString playback =
-  case playback of
-    Loop 2 -> "Play twice"
-    Loop 4 -> "Play 4 times"
-    _ -> show playback
 
 

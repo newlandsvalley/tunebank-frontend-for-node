@@ -881,7 +881,7 @@
       },
       "abc-melody": {
         "git": "https://github.com/newlandsvalley/purescript-abc-melody.git",
-        "ref": "v0.4.0",
+        "ref": "v0.4.1",
         "dependencies": [
           "abc-parser",
           "arrays",
@@ -1083,7 +1083,7 @@
     "abc-melody": {
       "type": "git",
       "url": "https://github.com/newlandsvalley/purescript-abc-melody.git",
-      "rev": "ccae3011216a31570c44504475c5b14d03c882e4",
+      "rev": "d52445dbe26f0e0816819598ff1cb08da3db4912",
       "dependencies": [
         "abc-parser",
         "arrays",
