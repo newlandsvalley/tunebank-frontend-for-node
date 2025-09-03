@@ -19,7 +19,7 @@ This is the browser frontend code for the new domain. It operates against a back
 
 We want communication between `tunebank-frontend-for-node` and `tunebank-node` (the backend) to be as simple and seemless as possible.  In particular, we want the frontend to use SSL and to be configured to use HTTPS and still use HTTP to communicate to the backend. If we do this, we don't then need the CORS response headers from the backend at all.
 
-By far the most straightforward way to achieve this is to use a reverse-proxy.  This can be used to make browsers think that the backend is co-hosted alongside the frontend, and so that both also appear to use HTTPS.  In our case, we use `nginx` as a reverse proxy and configure our service to have an extra location route describing the backend which we'll call `tunebank` and which passes on traffic to the actual backend server on port 8080. Here's the addition we need to nginx configuration:
+By far the most straightforward way to achieve this is to use a reverse-proxy.  This can be used to make browsers think that the backend is co-hosted alongside the frontend, and so that both also appear to use HTTPS.  In our case, we use `nginx` as a reverse proxy and configure our service to have an extra location route describing the backend which we'll call `tunebank` and which passes on traffic to the actual backend server on port 8080. Here's the addition we need to nginx configuration in a development environment:
 
 ```
 location /tunebank/ {
@@ -32,12 +32,27 @@ location /tunebank/ {
      }
 ```
 
-All we then need to do is to change the baseURL reference in index.html to point to this location instead of the actual backend:
-
+All we then need to do is to change the baseURL reference in `index.html` to point to this location instead of the actual backend.  So for the development environment this is:
 
 ```
 <script>
    localStorage.setItem('baseURL', 'https://localhost/tunebank')
+</script>
+```
+
+and for a production service at `mydomain.com` we would have:
+
+```
+location /tunebank/ {
+     proxy_pass http://mydomain.com:myport/tunebank;
+     ...
+     }
+```
+and:
+
+```
+<script>
+   localStorage.setItem('baseURL', 'https://mydomain.com/tunebank')
 </script>
 ```
 
