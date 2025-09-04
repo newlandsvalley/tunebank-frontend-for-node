@@ -35,6 +35,7 @@ type State =
   { submission :: Submission
   , userRegisterResult :: Either String String -- result from server
   , errorText :: String -- validation errors
+  , showPasswords :: Boolean  -- do we show the user input for her passwords?
   }
 
 type Query :: forall k. k -> Type
@@ -48,6 +49,7 @@ data Action
   | HandleUserName String
   | HandleEmail String
   | HandlePassword String
+  | HandleShowPasswords Boolean
   | HandlePasswordConfirmation String
   | RegisterUser MouseEvent
 
@@ -74,6 +76,7 @@ component =
     { submission: defaultSubmission
     , userRegisterResult: Left ""
     , errorText: ""
+    , showPasswords : false
     }
 
   render :: State -> H.ComponentHTML Action ChildSlots m
@@ -87,6 +90,7 @@ component =
           , renderEmail state
           , renderPassword false state
           , renderPassword true state
+          , renderShowPasswordsOption
           , renderRegisterButton
           ]
       , renderRegisterError state
@@ -123,8 +127,10 @@ component =
       ]
 
   renderPassword :: Boolean -> State -> H.ComponentHTML Action ChildSlots m
-  renderPassword isConfirmation _state =
+  renderPassword isConfirmation state =
     let
+      inputType = 
+        if (state.showPasswords) then HP.InputText else HP.InputPassword
       action =
         if isConfirmation then
           HandlePasswordConfirmation
@@ -145,9 +151,23 @@ component =
             [ css "textinput"
             , HE.onValueInput action
             , HP.value ""
-            , HP.type_ HP.InputPassword
+            , HP.type_ inputType
             ]
         ]
+
+
+  renderShowPasswordsOption :: H.ComponentHTML Action ChildSlots m
+  renderShowPasswordsOption =
+    HH.div
+      [ css "register-checkbox-div" ]
+      [ HH.input
+          [ css "checkbox"
+          , HE.onChecked HandleShowPasswords
+          , HP.checked false
+          , HP.type_ HP.InputCheckbox
+          ]
+      , HH.text "show passwords"
+      ]
 
   renderRegisterButton :: H.ComponentHTML Action ChildSlots m
   renderRegisterButton =
@@ -193,6 +213,9 @@ component =
       let
         newSubmission = state.submission { password = password }
       H.modify_ (\st -> st { submission = newSubmission })
+    HandleShowPasswords showPasswords -> do 
+      _ <- H.modify_ (\st -> st { showPasswords = showPasswords })
+      pure unit
     HandlePasswordConfirmation password -> do
       state <- H.get
       let

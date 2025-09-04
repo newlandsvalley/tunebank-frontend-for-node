@@ -312,9 +312,14 @@ label {
 
 
 /* the checkbox on the login form */
-div.checkbox-div {
+div.login-checkbox-div {
   margin-left: 112px;  /* align with label in forms - we have a blank label - take account of margins and width */
 	margin-top: 5px;
+}
+
+/* the checkbox on the register form */
+div.register-checkbox-div {
+  margin-left: 112px;  /* align with label in forms - we have a blank label - take account of margins and width */
 }
 
 /* reduce the width for advanced search and comment form labels
