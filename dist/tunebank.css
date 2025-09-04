@@ -310,6 +310,13 @@ label {
 	margin-top: 8px; /* match with select (dropdown) */
 }
 
+
+/* the checkbox on the login form */
+div.checkbox-div {
+  margin-left: 112px;  /* align with label in forms - we have a blank label - take account of margins and width */
+	margin-top: 5px;
+}
+
 /* reduce the width for advanced search and comment form labels
    we need to preserve space for mobiles 
 */
@@ -341,6 +348,13 @@ input[type="text"] {
 	width: 200px;
 	margin-top: 8px;   /* match with label */
   font-size: 1.25em;
+}
+
+
+input[type="checkbox"] {
+	margin-left: 0px;
+	margin-right: 8px;
+  accent-color: #67d665; /* light green */
 }
 
 /* override default text input width for advanced search criteria */
@@ -440,6 +454,7 @@ input[type='submit'] {
   margin-left: auto;
   margin-right: auto;
 }
+
 
 
 /* link states */

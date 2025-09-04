@@ -30,6 +30,7 @@ type State =
   { credentials :: Credentials
   , currentUser :: Maybe Credentials
   , userCheckResult :: Either String String
+  , showPassword :: Boolean
   }
 
 type Query :: forall k. k -> Type
@@ -45,6 +46,7 @@ data Action
   = HandleInput Input
   | HandleUserName String
   | HandlePassword String
+  | HandleShowPassword Boolean
   | LoginUser MouseEvent
   | LogoutUser MouseEvent
 
@@ -72,6 +74,7 @@ component =
     { credentials: blankCredentials
     , currentUser: input.currentUser
     , userCheckResult: Left ""
+    , showPassword : false
     }
 
   render :: State -> H.ComponentHTML Action ChildSlots m
@@ -91,6 +94,7 @@ component =
               [ HH.legend_ [ HH.text "Login" ]
               , renderUserName state
               , renderPassword state
+              , renderShowPasswordOption
               , renderLoginOutButton state.currentUser
               ]
           , renderLoginError state
@@ -119,19 +123,37 @@ component =
       ]
 
   renderPassword :: State -> H.ComponentHTML Action ChildSlots m
-  renderPassword _state =
+  renderPassword state =
+    let 
+      inputType = 
+        if (state.showPassword) then HP.InputText else HP.InputPassword
+    in
+      HH.div
+        [ css "textinput-div" ]
+        [ HH.label
+            [ css "textinput-label" ]
+            [ HH.text "password:" ]
+        , HH.input
+            [ css "textinput"
+            , HE.onValueInput HandlePassword
+            , HP.value ""
+            , HP.type_ inputType
+            ]
+        ]
+
+  renderShowPasswordOption :: H.ComponentHTML Action ChildSlots m
+  renderShowPasswordOption =
     HH.div
-      [ css "textinput-div" ]
-      [ HH.label
-          [ css "textinput-label" ]
-          [ HH.text "password:" ]
-      , HH.input
-          [ css "textinput"
-          , HE.onValueInput HandlePassword
-          , HP.value ""
-          , HP.type_ HP.InputPassword
+      [ css "checkbox-div" ]
+      [ HH.input
+          [ css "checkbox"
+          , HE.onChecked HandleShowPassword
+          , HP.checked false
+          , HP.type_ HP.InputCheckbox
           ]
+      , HH.text "show password"
       ]
+  
 
   renderLoginOutButton :: Maybe Credentials -> H.ComponentHTML Action ChildSlots m
   renderLoginOutButton mCred =
@@ -203,6 +225,9 @@ component =
           credentials = state.credentials { pass = pass }
         H.modify_ (\st -> st { credentials = credentials })
       else pure unit
+    HandleShowPassword showPassword -> do
+      _ <- H.modify_ (\st -> st { showPassword = showPassword })
+      pure unit
     LoginUser event -> do
       _ <- H.liftEffect $ preventDefault $ toEvent event
       state <- H.get
