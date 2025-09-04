@@ -144,7 +144,9 @@ component =
   renderShowPasswordOption :: H.ComponentHTML Action ChildSlots m
   renderShowPasswordOption =
     HH.div
-      [ css "login-checkbox-div" ]
+      [ css "checkbox-div"
+      , HP.id "login-password-div"
+      ]
       [ HH.input
           [ css "checkbox"
           , HE.onChecked HandleShowPassword
