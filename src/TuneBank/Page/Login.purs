@@ -151,9 +151,11 @@ component =
     let
       f :: String -> String
       f errorMsg =
+        -- the case for no user check yet is Left ""
         if (null errorMsg) then ""
+        -- but if there us some text, it's a real login error
         else
-          "login failed"
+          errorMsg
       errorText = either f (const "login OK") state.userCheckResult
     in
       HH.div_
@@ -206,7 +208,6 @@ component =
       state <- H.get
       baseURL <- getBaseURL
       userCheckResult <- checkUser baseURL state.credentials
-      _ <- H.modify_ (\st -> st { userCheckResult = userCheckResult })
       case (userCheckResult) of
         Right roleString -> do
           let
@@ -214,9 +215,11 @@ component =
             credentials = state.credentials { role = role }
           session <- asks _.session
           _ <- H.liftEffect $ Ref.write (Just credentials) session.user
+          _ <- H.modify_ (\st -> st { userCheckResult = userCheckResult })
           -- if the user logs in, we MUST navigate in order to update the headers
           navigate Home
-        Left _ ->
+        Left _ -> do
+          _ <- H.modify_ (\st -> st { userCheckResult = Left "login failed" })
           pure unit
     LogoutUser event -> do
       _ <- H.liftEffect $ preventDefault $ toEvent event
