@@ -34,6 +34,7 @@ type State =
   , name :: String
   , password :: String
   , password2 :: String
+  , showPasswords :: Boolean
   , getOTPResult :: Either String String
   , changePasswordResult :: Either String String
   }
@@ -50,6 +51,7 @@ data Action
   | HandleUserOTP String
   | HandlePassword String
   | HandlePasswordConfirmation String
+  | HandleShowPasswords Boolean
   | GetOTP MouseEvent
   | ChangeUserPassword MouseEvent
 
@@ -78,6 +80,7 @@ component =
     , name: ""
     , password: ""
     , password2: ""
+    , showPasswords: false
     , getOTPResult: Left ""
     , changePasswordResult: Left ""
     }
@@ -113,6 +116,7 @@ component =
             , renderUserOTP state
             , renderPassword false state
             , renderPassword true state
+            , renderShowPasswordsOption
             , renderChangePasswordButton
             ]
         , renderChangePasswordError state
@@ -151,8 +155,10 @@ component =
       ]
 
   renderPassword :: Boolean -> State -> H.ComponentHTML Action ChildSlots m
-  renderPassword isConfirmation _state =
+  renderPassword isConfirmation state =
     let
+      inputType = 
+        if (state.showPasswords) then HP.InputText else HP.InputPassword
       action =
         if isConfirmation then
           HandlePasswordConfirmation
@@ -173,9 +179,22 @@ component =
             [ css "textinput"
             , HE.onValueInput action
             , HP.value ""
-            , HP.type_ HP.InputPassword
+            , HP.type_ inputType
             ]
         ]
+
+  renderShowPasswordsOption :: H.ComponentHTML Action ChildSlots m
+  renderShowPasswordsOption =
+    HH.div
+      [ css "register-checkbox-div" ]
+      [ HH.input
+          [ css "checkbox"
+          , HE.onChecked HandleShowPasswords
+          , HP.checked false
+          , HP.type_ HP.InputCheckbox
+          ]
+      , HH.text "show passwords"
+      ]
 
   renderOTPSubmitButton :: State -> H.ComponentHTML Action ChildSlots m
   renderOTPSubmitButton state =
@@ -253,6 +272,9 @@ component =
       H.modify_ (\st -> st { password = password })
     HandlePasswordConfirmation password -> do
       H.modify_ (\st -> st { password2 = password })
+    HandleShowPasswords showPasswords -> do 
+      _ <- H.modify_ (\st -> st { showPasswords = showPasswords })
+      pure unit
     ChangeUserPassword event -> do
       _ <- H.liftEffect $ preventDefault $ toEvent event
       state <- H.get

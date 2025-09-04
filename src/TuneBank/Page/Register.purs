@@ -155,7 +155,6 @@ component =
             ]
         ]
 
-
   renderShowPasswordsOption :: H.ComponentHTML Action ChildSlots m
   renderShowPasswordsOption =
     HH.div
