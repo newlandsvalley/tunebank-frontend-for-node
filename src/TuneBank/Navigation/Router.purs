@@ -13,6 +13,7 @@ import TuneBank.Navigation.Route (Route(..), routeCodec)
 import TuneBank.Navigation.RouterTypes (Action(..), Input)
 import TuneBank.Navigation.Navigate (class Navigate, navigate)
 import TuneBank.Navigation.Toggle (resetHamburgerMenu, toggleHamburgerMenu)
+import TuneBank.Navigation.SearchParams (defaultSearchParams)
 import TuneBank.Page.Login as Login
 import TuneBank.Page.SearchForm as SearchForm
 import TuneBank.Page.AdvancedSearchForm as AdvancedSearchForm
@@ -177,6 +178,9 @@ component =
           HH.slot (Proxy :: _ "tune") unit Tune.component { genre, tuneId, instruments: state.instruments } absurd
         TuneList searchParams ->
           HH.slot (Proxy :: _ "tunelist") unit TuneList.component { searchParams, instruments: state.instruments } absurd
+        TuneListDefault ->
+          HH.slot (Proxy :: _ "tunelist") unit TuneList.component 
+            { searchParams: defaultSearchParams, instruments: state.instruments } absurd
         Comments genre tuneId ->
           HH.slot (Proxy :: _ "comment") unit Comment.component { genre, tuneId, commentId: Nothing } absurd
         Comment genre tuneId commentId ->

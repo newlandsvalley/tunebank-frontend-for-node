@@ -38,6 +38,7 @@ data Route
   | UserList PageParams
   | Tune Genre TuneId
   | TuneList SearchParams
+  | TuneListDefault
   | Comments Genre TuneId
   | Comment Genre TuneId CommentId
   | Metronome
@@ -81,6 +82,7 @@ routeCodec = root $ sum
       , page: int
       , sort: string
       }
+  , "TuneListDefault": "tunelist" / noArgs
   , "Comments": "genre" / (genre segment) / "tune" / (tuneId segment) / "comments"
   , "Comment": "genre" / (genre segment) / "tune" / (tuneId segment) / "comment" / (commentId segment)
   , "Metronome": "metronome" / noArgs

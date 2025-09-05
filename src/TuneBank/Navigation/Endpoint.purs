@@ -4,7 +4,7 @@ module TuneBank.Navigation.Endpoint
   , endpointCodec
   ) where
 
--- | Endpoints - legitimate URLs at the musicrest backend
+-- | Endpoints - legitimate URLs at the tunebank-node backend
 
 import Prelude hiding ((/))
 
