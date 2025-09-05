@@ -7,14 +7,15 @@ This is the browser frontend code for the new domain. It operates against a back
 
 ## To Build
 
+```
     npm run build
-
+```
 ## To Test
 
     fire up a tunebank-node development server make sure its test suite has been run and then:
-
+```
     npm run test
-
+```
 ## SSL, CORS and a Reverse-Proxy
 
 We want communication between `tunebank-frontend-for-node` and `tunebank-node` (the backend) to be as simple and seemless as possible.  In particular, we want the frontend to use SSL and to be configured to use HTTPS and still use HTTP to communicate to the backend. If we do this, we don't then need the CORS response headers from the backend at all.
