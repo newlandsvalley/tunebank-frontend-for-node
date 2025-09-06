@@ -57,6 +57,14 @@ and:
 </script>
 ```
 
+## Sitemap Generation
+
+Because of the dynamic nature of the site, there is no permanent sitemap - it will grow organically as more tunes are added.  However, it is possible to generate sitemaps for your production server that represent a single point in time by querying the backend database used by `tunebank-node`. The sitemap folder holds a bash script that can be run against the underlying PSQL database to generate a set of tune sitemaps - one for each of the five genres.
+
+You should first edit the script and replace the postgres user name and database name with your own names. You should also edit the output file path to suit your own environment. Then run the script - it requires two parameters - firstly the domain name of your server and finally the genre of music for the tunes for which you wish to generate a map.
+
+Finally you can copy these sitemap files to your production server and will then be able to submit them to `Google Search Console`.
+
 ## Key Differences from the original tunebank-frontend
 
   * Tunes in search URLs are identified uniquely by the tune title rather than the combination of title and rhythm.
