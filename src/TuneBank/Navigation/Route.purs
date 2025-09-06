@@ -48,6 +48,7 @@ data Route
   | Credits
   | ContactUs
   | Help
+  | Error String
 
 derive instance genericRoute :: Generic Route _
 derive instance eqRoute :: Eq Route
@@ -92,4 +93,5 @@ routeCodec = root $ sum
   , "Credits": "credits" / noArgs
   , "ContactUs": "contact" / noArgs
   , "Help": "help" / noArgs
+  , "Error": (string segment)
   }

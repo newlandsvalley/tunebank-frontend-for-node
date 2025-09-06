@@ -614,6 +614,13 @@ table.textalign tr td  {
   margin-right: auto;
 }
 
+/* static error page */
+#errordiv {
+  width: 20%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 #tune-metadata {
 	margin-left: auto;
 	margin-right: auto;

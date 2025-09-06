@@ -30,13 +30,14 @@ import TuneBank.Data.Session (Session)
 import TuneBank.Data.Types (BaseURL)
 import TuneBank.Data.Genre (Genre(..))
 import TuneBank.Data.Credentials (Credentials)
+import TuneBank.HTML.Error (notFoundPage)
+import TuneBank.HTML.Help (help)
 import TuneBank.HTML.Footer (footer)
 import TuneBank.HTML.Header (header)
 import TuneBank.Page.Utils.Environment (getUser, getCurrentGenre)
 import TuneBank.HTML.About (about)
 import TuneBank.HTML.Credits (credits)
 import TuneBank.HTML.ContactUs (contactUs)
-import TuneBank.HTML.Help (help)
 import Metronome.Container as Metronome
 import Tutorial.Container as Tutorial
 import Editor.Container as Editor
@@ -201,6 +202,9 @@ component =
           contactUs
         Help ->
           help
+        Error _fragment ->
+          notFoundPage
 
       Nothing ->
-        HH.div_ [ HH.text "Oh no! That page wasn't found." ]
+        -- for some reason that I can't yet fathom, this never gets called even though you manually enter a bad URL
+        notFoundPage
