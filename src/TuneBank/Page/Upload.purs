@@ -8,7 +8,7 @@ import Data.Either (Either(..), either)
 import Data.Maybe (Maybe(..), maybe)
 import Data.MediaType (MediaType(..))
 import Data.Tuple (Tuple(..))
-import Data.String.CodeUnits (contains)
+import Data.String.CodeUnits (contains, takeRight)
 import Data.String.Pattern (Pattern(..))
 import Effect.Aff.Class (class MonadAff)
 import Web.Event.Event (preventDefault)
@@ -18,7 +18,7 @@ import Halogen.FileInputComponent as FIC
 import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
-import Prelude (Unit, Void, ($), (<>), bind, const, discard, identity, pure, show, unit)
+import Prelude (Unit, Void, ($), (<>), (==), bind, const, discard, identity, pure, show, unit)
 import TuneBank.Api.Codec.Utils (showJsonErrorResponse)
 import TuneBank.Api.Request (postTune)
 import TuneBank.Data.Credentials (Credentials)
@@ -124,10 +124,12 @@ component =
         )
       pure unit
     HandleABCFile (FIC.FileLoaded filespec) -> do
+      let 
+        abc = ensureTermination filespec.contents
       _ <- H.modify
         ( \st -> st
             { fileName = Just filespec.name
-            , abc = filespec.contents
+            , abc = abc
             , errorText = ""
             }
         )
@@ -224,14 +226,23 @@ validateTune abc =
 
 validTuneTitle :: String -> Either String String
 validTuneTitle abc =
-  case parse (abc <> "\r\n") of
+  case parse abc of
     Left err -> Left ("invalid ABC: " <> show err)
     Right tune ->
       maybe (Left "No tune title present") (\t -> Right t) $ getTitle tune
 
 -- | check whether the parsed ABC text is invalid for submission to the server
 -- | at the moment, just one check is performed - the server doesn't accept
--- | embedded double quotes - i.e. it rejects chotds
+-- | embedded double quotes - i.e. it rejects chords
 textContainsQuotes :: String -> Boolean
 textContainsQuotes text =
   contains (Pattern "\"") text
+
+
+-- | check that the last character is a carriage return and add it if it's not present
+ensureTermination :: String -> String 
+ensureTermination abc = 
+  if ((takeRight 1 abc) == "\n")
+    then abc 
+    else (abc <> "\n")
+
