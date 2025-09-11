@@ -1,0 +1,21 @@
+{
+    "name": "The Tunebank",
+    "short_name": "Tunebank",
+    "theme_color": "#224422",
+    "background_color": "#224422",
+    "start_url": ".",
+    "display": "standalone",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "assets/images/icons/treble-clef-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "assets/images/icons/treble-clef-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
