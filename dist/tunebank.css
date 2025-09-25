@@ -47,23 +47,16 @@ h2 {
 }
 
 
-/* navigation */
-
+/* navigation - the bar across the top - all screens */
 .nav {
   color: #cccc99; /* light greenish grey */
   display: block;
-  width: 100%;
+  width: auto;
 }
 
-/* give a bit of clearance to menu letters in big screen nav bars*/
-.nav > .main-menu {
-  padding-top: 2px;
-  padding-bottom: 5px;
-}
-
-/* the children of this div separate the LHS and RHS elements.  Separate them with flex. */
-.navdiv {
-  display: flex;
+/* don't display the main menu inside the bar on small screens */
+.main-menu {
+  display: none;
 }
 
 /* the navigation default (small screens) is just the app name and the hamburger icon */
@@ -109,15 +102,6 @@ h2 {
   background-color: #224422; /* hard dark green */
 }
 
-/* don't display the main navigation bar on default small screens */
-.main-menu {
-  background-color: #224422; /* hard dark green */
-  overflow: hidden;
-  display: none;
-  list-style-type: none;  /* don't display the bullets in the nav bar */
-  height: 40px;
-}
-
 /* don't display the hamburger menu by default - it needs to be switched on by the icon*/
 .hamburger-menu {
   display: none;
@@ -130,37 +114,8 @@ h2 {
 }
 
 .mobnavitem>a:hover {
-  color: #cccc99; /* light greenish grey */
-}
+  color: #cccc99; /* light greenish grey */}
 
-/* set the text and background colour for main menu items when selected */
-.navdiv > li > a.current,
-.navdiv > li > a:hover {
-  color: white;
-  background-color: #224422; /* hard dark green */
-}
-
-/* Additional information (such as current genre) in the nav bar to the links themselves */
-.navdiv > li {
-	color: #e69900;
-  font-size: 1.3em;
-}
-
-.navdiv li:last-child {
-	padding-right: 30px;
-}
-
-/* links in the navigation - big screens */
-.navdiv > li > a { 
-  color: #cccc99; /* light greenish grey */
-  display: inline;
-  margin: 0 8px 0 8px;
-  font-size: 1.5em;
-  text-decoration: none;    
-  white-space: nowrap;
-  transition-delay: 250ms;
-  transition-timing-function: ease-in-out;
-} 
 
 /* links in the navigation - small (mobile) screens */
 .mobile-navdiv > li > a {
@@ -355,7 +310,6 @@ input[type="text"] {
   font-size: 1.25em;
 }
 
-
 input[type="checkbox"] {
 	margin-left: 0px;
 	margin-right: 8px;
@@ -364,7 +318,7 @@ input[type="checkbox"] {
 
 /* override default text input width for advanced search criteria */
 #search-criteria {
-	width: 200px;
+	max-width: 200px;
 }
 
 /* select dropdown on forms */
@@ -382,7 +336,7 @@ select {
 
 /* the upload file label */
 #uploadselectfile label {
-	width: 150px;
+	max-width: 150px;
 }
 
 /* the upload file button */
@@ -413,21 +367,21 @@ input[type='submit'] {
 #registrationform,
 #changepasswordform,
 #searchform {
-  width: 350px;
+  max-width: 350px;
   text-align: middle;
   margin-left: auto;
   margin-right: auto;
 }
 
 #uploadform {
-  width: 400px;
+  max-width: 400px;
   text-align: middle;
   margin-left: auto;
   margin-right: auto;
 }
 
 #genreform {
-  width: 250px;
+  max-width: 250px;
   text-align: middle;
   margin-left: auto;
   margin-right: auto;
@@ -436,7 +390,7 @@ input[type='submit'] {
 /* mobiles - width is overridden for larger screens */
 #commentform,
 #advancedsearchform {
-  width: 335px;
+  max-width: 335px;
   text-align: middle;
   margin-left: auto;
   margin-right: auto;
@@ -454,7 +408,7 @@ input[type='submit'] {
 
 /* center search examples in advanced search page */
 #search-examples-div {
-  width: 500px;
+  max-width: 500px;
 	margin-top: 10px;
   margin-left: auto;
   margin-right: auto;
@@ -865,7 +819,6 @@ div.thumbnail-highlighted > svg {
   }
 }
 
-
 /* laptops. desktops etc */
 @media (min-width: 725px) {
   .hamburger-menu {
@@ -876,10 +829,50 @@ div.thumbnail-highlighted > svg {
     display: none
   }
 
+  /* the children of this div separate the LHS and RHS elements of menu items.  Separate them with flex. */
+  .navdiv {
+    display: flex;
+  }
+
+  /* set the text and background colour for main menu items when selected */
+  .navdiv > li > a.current,
+  .navdiv > li > a:hover {
+    color: white;
+    background-color: #224422; /* hard dark green */
+  }
+
+  /* Additional information (such as current genre) in the nav bar to the links themselves */
+  .navdiv > li {
+	  color: #e69900;
+    font-size: 1.3em; 
+  }
+
+  .navdiv li:last-child {
+	  padding-right: 30px;
+  }
+
+  /* links in the navigation - big screens */
+  .navdiv > li > a { 
+    color: #cccc99; /* light greenish grey */
+    display: inline;
+    margin: 0 8px 0 8px;
+    font-size: 1.5em;
+    text-decoration: none;    
+    white-space: nowrap;
+    transition-delay: 250ms;
+    transition-timing-function: ease-in-out;
+  } 
+
   .main-menu {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding-top: 2px; /* give a bit of clearance to menu letters in big screen nav bars */
+    padding-bottom: 5px;
+    background-color: #224422; /* hard dark green */
+    overflow: hidden;
+    list-style-type: none;  /* don't display the bullets in the nav bar */
+    height: 40px;
   }
 
   #advancedsearchform {
