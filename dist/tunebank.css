@@ -583,10 +583,9 @@ table.textalign tr td  {
 }
 
 /* tune lists with thumbnail images */
-
 .tunelist {
 	margin: 0 auto;
-	width: 95%;
+	width: auto;
 	text-align: left;
 }
 
@@ -784,7 +783,9 @@ div.thumbnail-highlighted > svg {
 */
 
 /* tablets */
-@media (min-width: 520px) {
+@media only screen 
+  and (min-width: 520px)
+  and (max-width: 999px) {
 
   #commentform,
   #advancedsearchform {
@@ -819,8 +820,10 @@ div.thumbnail-highlighted > svg {
   }
 }
 
-/* laptops. desktops etc */
-@media (min-width: 725px) {
+/* larger laptops. desktops etc */
+@media only screen
+  and (min-width: 1000px) {
+
   .hamburger-menu {
     display: none;
   }
