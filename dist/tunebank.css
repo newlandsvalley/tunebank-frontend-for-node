@@ -521,16 +521,16 @@ table.textalign tr td  {
    padding-right: 2em;
 }
 
-/** navigation for pagination */
-
-.pagination ul {
-    padding-left: 15px;
+.pagination {
+  margin: 0; 
+  padding: 0;
 }
+
 
 .pagination li {
    float: left;
-   padding: 3.5px 4px 3.5px 4px;
-   /* font-size: .90em; */
+   /* padding: 3.5px 4px 3.5px 4px; */
+   padding: 3.5px 1px 3.5px 1px;
    font-size: 1.3em;
    list-style-type: none;
    display: inline;
@@ -582,11 +582,27 @@ table.textalign tr td  {
 	display: block;
 }
 
+.tunelist-search-summary {
+  margin-left: 10px;
+}
+
 /* tune lists with thumbnail images */
 .tunelist {
-	margin: 0 auto;
+	/* margin: 0 auto; */
 	width: auto;
 	text-align: left;
+}
+
+/* tune titles in the tune list */
+.tunelist-title {
+  max-width: 125px;
+  overflow: hidden;
+}
+
+/* tune thumbnails in the tune list */
+.tunelist-thumbnail {
+  max-width: 225px;
+  overflow: hidden;
 }
 
 div.thumbnail > svg {
@@ -602,10 +618,12 @@ div.thumbnail-highlighted > svg {
   height: 60px;
 }
 
-/* the add thumbnails button */
-#add-thumbnails {
+/* the thumbnails button */
+#thumbnails-button {
   display: block;
-  margin-left: 50px;
+  width: 160px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* the tune page */
@@ -925,6 +943,37 @@ div.thumbnail-highlighted > svg {
   /* produces wider left-hand margins */
   .tunelist {
     width: 90%;
+  }
+
+  .tunelist-search-summary {
+    text-align: center;
+  }
+
+  .tunelist > table {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /** tunelist pagination */
+  .pagination {
+    display: flex;
+    justify-content: center;
+  }
+
+  /* tune titles in the tune list */
+  .tunelist-title {
+    max-width: 360px;
+    overflow: hidden;
+  }
+
+  /* tune thumbnails in the tune list */
+  .tunelist-thumbnail {
+    max-width: 800px;
+  }
+
+  /* don't display thumbnail slots that are unoccupied */
+  .thumbnail-empty {
+    display: none;
   }
 
   #metronome-display {

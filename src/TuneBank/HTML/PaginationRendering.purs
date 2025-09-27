@@ -25,15 +25,16 @@ renderPagination route pagination =
 
 renderPaginationLinks :: ∀ i p. Route -> Pagination -> HH.HTML i p
 renderPaginationLinks route pagination =
-  HH.ul
+  HH.div 
     [ css "pagination" ]
-    ( [ renderFirstPage ]
-        <> [ renderPrevPage ]
-        <> renderNumberedPageLinks
-        <> [ renderNextPage ]
-        <>
-          [ renderLastPage ]
-    )
+    [ HH.ul_
+      (  [ renderFirstPage ]
+      <> [ renderPrevPage ]
+      <> renderNumberedPageLinks
+      <> [ renderNextPage ]
+      <> [ renderLastPage ]
+      )
+    ]
   where
 
   renderFirstPage =

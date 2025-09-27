@@ -65,7 +65,7 @@ data Query a
   = FetchResults a -- Fetch a page of results
   | InitializeVex a -- Initialise Vex renderers on first reference
   | Thumbnail Int a -- Add thumbnail for row 0 (and chain through the rest)
-  | ClearThumbnails a -- clear the thumbnails of the current page
+  | ClearAllThumbnails a -- clear all the thumbnails of the current page
 
 type ChildSlots =
   (thumbnailPlayer :: TNP.Slot Unit)
@@ -155,31 +155,34 @@ component =
         case (length tunesPage.tunes) of
           0 ->
             HH.div
-              [ css "center" ]
+              [ css "tunelist-search-summary" ]
               [ HH.h4_
-                  [ HH.text
-                      ( "search results for: "
-                          <> paramsSummary state.searchParams
-                      )
-                  ]
+                [ HH.text
+                  ( "search results: "
+                        <> paramsSummary state.searchParams
+                  )
+                ]
               , HH.p_
-                  [ HH.text "no matching tunes found" ]
+                [ HH.text "no matching tunes found" ]
               ]
           _ ->
             HH.div_
               [ HH.h4
-                  [ css "center" ]
-                  [ HH.text
-                      ( "search results for: "
-                          <> paramsSummary state.searchParams
-                          <> " page "
-                          <> show tunesPage.pagination.page
-                          <> " of "
-                          <> show tunesPage.pagination.maxPages
-                      )
-                  ]
+                [ css "tunelist-search-summary" ]
+                [ HH.text
+                    ( "search results: " <> paramsSummary state.searchParams )
+                ]
               , renderTuneList state tunesPage.tunes
               , renderPagination (TuneList state.searchParams) tunesPage.pagination
+              , HH.h4
+                [ css "center"] 
+                [ HH.text
+                    ( " page "
+                      <> show tunesPage.pagination.page
+                      <> " of "
+                      <> show tunesPage.pagination.maxPages
+                    )
+                ]
               , renderAddThumbnailsButton state
               ]
 
@@ -212,7 +215,9 @@ component =
       HH.tr
         []
         ( [ HH.td
-              []
+              [ css "tunelist-title" 
+              , HP.title title  -- this displays the title as a hint
+              ]
               [ HH.a
                   [ safeHref route ]
                   [ HH.text $ truncateTo 36 title ]
@@ -221,13 +226,12 @@ component =
             <>
               -- maybe include tune type and date
               tuneTypeAndDateCells isLargeScreen rhythm dateString
-
             <>
 
-              [ HH.td
-                  []
-                  [ renderThumbnailCanvas index ]
-              ]
+          [ HH.td
+            [ css "tunelist-thumbnail" ]
+            [ renderThumbnailCanvas index ]
+          ]
         )
       where
       (TuneId title) = tuneId
@@ -279,7 +283,7 @@ component =
     -- render the thumbnail canvas.  This canvas is empty, but populated by
     -- side-effect if AddThumbnails is pressed.  We don't want to have
     -- active onMouse functions if the thumbnail is inactive and we highlight
-    -- the thumbnail if the mpuse passes over it
+    -- the thumbnail if the mouse passes over it
     renderThumbnailCanvas :: Int -> H.ComponentHTML Action ChildSlots m
     renderThumbnailCanvas index =
       let
@@ -303,7 +307,7 @@ component =
         else
           HH.div
             [ HP.id ("canvas" <> show index)
-            , css "thumbnail"
+            , css "thumbnail-empty"
             ]
             []
 
@@ -313,7 +317,7 @@ component =
       HH.text ""
     else
       HH.div
-        [ HP.id "add-thumbnails" ]
+        [ HP.id "thumbnails-button" ]
         [ HH.button
             [ HE.onClick \_ -> AddThumbnails
             , css "hoverable"
@@ -321,7 +325,7 @@ component =
             ]
             [ HH.text "add thumbnails" ]
         ]
-
+  
   handleAction ∷ Action -> H.HalogenM State Action ChildSlots o m Unit
   handleAction = case _ of
     Initialize -> do
@@ -339,7 +343,7 @@ component =
 
     HandleInput input -> do
       H.modify_ (\st -> st { searchParams = input.searchParams })
-      _ <- handleQuery (ClearThumbnails unit)
+      _ <- handleQuery (ClearAllThumbnails unit)
       _ <- handleQuery (FetchResults unit)
       pure unit
 
@@ -395,7 +399,8 @@ component =
     -- because only then are the canvas Div elements established
     InitializeVex next -> do
       state <- H.get
-      if (length state.vexRenderers > 0) then do
+
+      if (length state.vexRenderers > 0) then do 
         -- already initialized
         pure (Just next)
       else do
@@ -410,7 +415,7 @@ component =
     -- render the thumbnail at index idx
     Thumbnail idx next -> do
       -- we delay here to give the UI chance to re-render between each thumbnail
-      _ <- H.liftAff $ delay (Milliseconds 25.0)
+      _ <- H.liftAff $ delay (Milliseconds 15.0)
       state <- H.get
       case state.searchResult of
         Left _err ->
@@ -434,14 +439,14 @@ component =
               (Tuple (Left _) _) -> do
                 handleQuery (Thumbnail (idx + 1) next)
 
-    ClearThumbnails next -> do
+    ClearAllThumbnails next -> do
       state <- H.get
       _ <- H.modify_ (\st -> st { hasThumbnails = false })
       let
         f :: Int -> Renderer -> Effect Renderer
         f i renderer = resizeCanvas renderer (defaultThumbnailConfig i)
-      _ <- H.liftEffect $ traverseWithIndex f state.vexRenderers
       _ <- H.liftEffect $ traverse (clearCanvas) state.vexRenderers
+      _ <- H.liftEffect $ traverseWithIndex f state.vexRenderers
       pure (Just next)
 
 resultRows :: Either String TunesPage -> Int
