@@ -585,6 +585,10 @@ table.textalign tr td  {
   margin-left: 10px;
 }
 
+.contactus {
+  display: inline-block;
+}
+
 /* tune lists with thumbnail images and user lists*/
 .userlist,
 .tunelist {
