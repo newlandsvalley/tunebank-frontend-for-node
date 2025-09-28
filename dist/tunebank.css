@@ -506,7 +506,6 @@ table#samplesearch {
 }
 
 table tr td {
-   padding: 0.25em 1em;
 	 white-space: nowrap;
 }
 
@@ -521,24 +520,17 @@ table.textalign tr td  {
    padding-right: 2em;
 }
 
-.pagination {
+/* on mobiles, start pagination immediately at LHS of screen */
+.pagination ul {
   margin: 0; 
   padding: 0;
 }
 
-
 .pagination li {
-   float: left;
-   /* padding: 3.5px 4px 3.5px 4px; */
    padding: 3.5px 1px 3.5px 1px;
    font-size: 1.3em;
    list-style-type: none;
    display: inline;
-}
-
-.pagination li:last-child {
-    float: left;
-    padding-right: 20px;
 }
 
 .pagination li a {
@@ -556,6 +548,13 @@ table.textalign tr td  {
 .pagination li a.current {
    color: black;
    text-decoration: none;
+}
+
+.page-number {
+  text-align: center;
+  margin-top: 3px;
+	color: #b74e07;
+	font-weight: bold;
 }
 
 /* static pages */
@@ -586,16 +585,22 @@ table.textalign tr td  {
   margin-left: 10px;
 }
 
-/* tune lists with thumbnail images */
+/* tune lists with thumbnail images and user lists*/
+.userlist,
 .tunelist {
-	/* margin: 0 auto; */
 	width: auto;
 	text-align: left;
 }
 
-/* tune titles in the tune list */
+/* tune titles in the tune list where we also have a thumbnail alongside */
+.tunelist-title-with-thumbnail {
+  max-width: 100px;
+  overflow: hidden;
+}
+
+/* tune titles in the tune list where there us no thumbnail selected */
 .tunelist-title {
-  max-width: 125px;
+  max-width: 250px;
   overflow: hidden;
 }
 
@@ -940,15 +945,16 @@ div.thumbnail-highlighted > svg {
     width: 23em;
   }
 
-  /* produces wider left-hand margins */
-  .tunelist {
-    width: 90%;
+  /* give a bit more separation for table rows for big screens */
+  table tr td {
+    padding: 0.25em 1em;
   }
 
   .tunelist-search-summary {
     text-align: center;
   }
 
+  .userlist > table,
   .tunelist > table {
     margin-left: auto;
     margin-right: auto;
@@ -961,6 +967,7 @@ div.thumbnail-highlighted > svg {
   }
 
   /* tune titles in the tune list */
+  .tunelist-title-with-thumbnail,
   .tunelist-title {
     max-width: 360px;
     overflow: hidden;

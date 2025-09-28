@@ -85,13 +85,18 @@ component =
               [ HH.h4
                   [ css "center" ]
                   [ HH.text
-                      ( "user list page "
-                          <> show usersPage.pagination.page
-                          <> " of "
-                          <> show usersPage.pagination.maxPages
-                      )
+                      ( "user list page " )
                   ]
               , renderUserList state usersPage.users
+              , HH.div
+                [ css "page-number"] 
+                [ HH.text
+                    ( " page "
+                      <> show usersPage.pagination.page
+                      <> " of "
+                      <> show usersPage.pagination.maxPages
+                    )
+                ]
               , renderPagination (UserList state.pageParams) usersPage.pagination
               ]
 
@@ -100,9 +105,11 @@ component =
     let
       f userRef =
         tableRow userRef
-    in
-      HH.table_ $
-        map f users
+    in HH.div
+      [ css "userlist" ]
+      [ HH.table_ $ 
+          map f users
+      ]
     where
     tableRow userRef =
       HH.tr_

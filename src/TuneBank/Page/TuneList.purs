@@ -173,9 +173,8 @@ component =
                     ( "search results: " <> paramsSummary state.searchParams )
                 ]
               , renderTuneList state tunesPage.tunes
-              , renderPagination (TuneList state.searchParams) tunesPage.pagination
-              , HH.h4
-                [ css "center"] 
+              , HH.div
+                [ css "page-number"] 
                 [ HH.text
                     ( " page "
                       <> show tunesPage.pagination.page
@@ -183,6 +182,7 @@ component =
                       <> show tunesPage.pagination.maxPages
                     )
                 ]
+              , renderPagination (TuneList state.searchParams) tunesPage.pagination
               , renderAddThumbnailsButton state
               ]
 
@@ -215,7 +215,7 @@ component =
       HH.tr
         []
         ( [ HH.td
-              [ css "tunelist-title" 
+              [ css csstag
               , HP.title title  -- this displays the title as a hint
               ]
               [ HH.a
@@ -234,11 +234,16 @@ component =
           ]
         )
       where
+
       (TuneId title) = tuneId
 
       -- route = Tune state.genre tuneId
       route :: Route
       route = Tune state.genre tuneId
+
+      -- on mobiles we want to restrict the space for the tune title when set alongside a thumbnail
+      csstag = 
+        if state.hasThumbnails then "tunelist-title-with-thumbnail" else "tunelist-title"
 
     -- render further 'phantom' rows up to the max rows per page
     -- in order to give a regular number of rows for each page and thus
@@ -273,7 +278,7 @@ component =
                   []
                   [ HH.div
                       [ HP.id ("canvas" <> show index)
-                      , css "thumbnail"
+                      , css "thumbnail-empty"
                       ]
                       []
                   ]
