@@ -4,7 +4,7 @@
     "theme_color": "#224422",
     "background_color": "#224422",
     "start_url": ".",
-    "display": "standalone",
+    "display": "minimal-ui",
     "orientation": "portrait-primary",
     "icons": [
         {
