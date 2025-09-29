@@ -99,6 +99,7 @@ englishRhythms =
   , "jig"
   , "reel"
   , "hornpipe"
+  , "barndance"
   , "march"
   , "minuet"
   , "polka"
