@@ -291,7 +291,7 @@ component =
       [ css "a-internal-link"
       , HE.onClick \_ -> PrintScore
       ]
-      [ HH.text "print score" ]
+      [ HH.text "print/download score" ]
 
   renderPlayer :: State -> H.ComponentHTML Action ChildSlots m
   renderPlayer state =
@@ -595,8 +595,7 @@ component =
         Nothing ->
           pure unit
     PrintScore -> do
-      state <- H.get
-      _ <- H.liftEffect $ print $ getDocumentNameForPrinting state
+      _ <- H.liftEffect $ print
       pure unit
 
 -- refresh the state of the player by passing it the tune result and the tempo

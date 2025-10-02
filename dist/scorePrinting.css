@@ -1,4 +1,15 @@
 @media print {
+
+  @page {
+    margin-bottom: 0;     /* remove the otherwise automatic footer */
+    margin-left: 10px;    /* set the LR page margins to what we want */
+    margin-right: 10px;
+  }
+
+  .header {
+    font-size: 4em;
+  }
+
   body * {
     visibility: hidden;
   }
@@ -9,5 +20,6 @@
     position: absolute;
     left: 0;
     top: 0;
+    margin-top: 10px; /* place here to allow space under the header but still to allow the automatic header */
   }
 }
