@@ -1,7 +1,6 @@
 # tunebank-frontend-for-node
 
-Tradtunedb.org.uk is now moving to a new domain - [tunebank.org.uk](https://tunebank.org.uk).
-
+Tradtunedb.org.uk has now moved to a new domain - try it here - [tunebank.org.uk](https://tunebank.org.uk).
 
 This is the browser frontend code for the new domain. It operates against a backend of [tunebank-node](https://github.com/newlandsvalley/tunebank-node) - i.e. it is a (small) rewrite of [tunebank-frontend](https://github.com/newlandsvalley/tunebank-frontend) whilst attempting to keep the look-and-feel just about the same. The frontend for the older domain operated against the `musicrest` server which will eventually be deprecated. 
 
