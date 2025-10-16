@@ -803,6 +803,24 @@ div.thumbnail-highlighted > svg {
 	border:2px solid green;
 }
 
+/* highlighted errors in the ABC editor */
+#highlighted-abc-error {
+  width: auto;
+  float: left;
+  display: block;
+  font-size: 1.5em;
+  color: red;
+  margin: 4px 0 4px 0;
+} 
+
+/* unhighlighted errors in the ABC editor */
+#unhighlighted-abc-error {
+  display: inline-block;
+  font-size: 1.5em;
+  margin: 4px 0 4px 0;
+  margin: 4px 0 4px 4px;
+}
+
 
 /* mobile first stuff 
    on larger screens, deactivate the default values and replace with these.
