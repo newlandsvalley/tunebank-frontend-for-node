@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## vNext
+
+  * Sønderhoning added to Scandi rhythms
+
 ## v4.0.3 (2025-10-16)
 
   * Site is now a 'progressive web app'

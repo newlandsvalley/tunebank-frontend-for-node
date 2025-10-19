@@ -42,6 +42,7 @@ scandiRhythms =
   , "halling"
   , "hambo"
   , "sekstur"
+  , "sønderhoning"
   , "waltz"
   ]
 
