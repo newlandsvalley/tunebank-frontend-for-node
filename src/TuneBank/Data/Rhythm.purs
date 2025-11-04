@@ -85,6 +85,7 @@ irishRhythms =
     [ "highland"
     , "mazurka"
     , "slide"
+    , "slow air"
     ]
 
 scottishRhythms :: Array String
