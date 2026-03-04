@@ -9,7 +9,7 @@ import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
-import Prelude (Unit, Void, ($), (==), (>), (/=), bind, identity, pure, map, unit)
+import Prelude (Unit, Void, ($), (==), (>), bind, identity, pure, map, unit)
 import TuneBank.Data.Genre (Genre(..))
 import TuneBank.Data.Key (keySearchTerm)
 import TuneBank.Data.Key as K
@@ -122,20 +122,16 @@ component =
           searchParams = state.searchParams { title = Just title }
         H.modify_ (\st -> st { searchParams = searchParams })
       else pure unit
-    HandleKey keyName ->
-      if (keyName /= defaultOtherMenu) then do
-        state <- H.get
-        let
-          searchParams = state.searchParams { key = keySearchTerm keyName }
-        H.modify_ (\st -> st { searchParams = searchParams })
-      else pure unit
-    HandleRhythm rhythm ->
-      if (rhythm /= defaultOtherMenu) then do
-        state <- H.get
-        let
-          searchParams = state.searchParams { rhythm = Just rhythm }
-        H.modify_ (\st -> st { searchParams = searchParams })
-      else pure unit
+    HandleKey keyName -> do
+      state <- H.get
+      let
+        searchParams = state.searchParams { key = keySearchTerm keyName }        
+      H.modify_ (\st -> st { searchParams = searchParams, key = Just keyName })
+    HandleRhythm rhythm -> do
+      state <- H.get
+      let
+        searchParams = state.searchParams { rhythm = Just rhythm }
+      H.modify_ (\st -> st { searchParams = searchParams, rhythm = Just rhythm })
     HandleOrdering ordering -> do
       state <- H.get
       let
@@ -145,7 +141,7 @@ component =
           else
             defaultOrdering
         searchParams = state.searchParams { sort = sortKey }
-      H.modify_ (\st -> st { searchParams = searchParams })
+      H.modify_ (\st -> st { searchParams = searchParams, ordering = ordering })
     Search event -> do
       _ <- H.liftEffect $ preventDefault $ toEvent event
       state <- H.get
