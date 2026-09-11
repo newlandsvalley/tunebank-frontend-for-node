@@ -3,6 +3,7 @@
 ## vNext
 
   * Sønderhoning added to Scandi rhythms
+  * User actions requiring (slow) emails from the server now display a 'please wait' message
 
 ## v4.0.3 (2025-10-16)
 

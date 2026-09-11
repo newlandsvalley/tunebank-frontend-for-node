@@ -2,7 +2,6 @@ module TuneBank.Page.ChangePassword where
 
 import Control.Monad.Reader (class MonadAsk)
 import Data.Bifunctor (rmap)
-import Data.Const (Const)
 import Data.Either (Either(..), either, isLeft, isRight)
 import Data.Foldable (foldl)
 import Data.Maybe (Maybe(..))
@@ -39,9 +38,6 @@ type State =
   , changePasswordResult :: Either String String
   }
 
-type Query :: forall k. k -> Type
-type Query = (Const Void)
-
 type ChildSlots :: forall k. Row k
 type ChildSlots = ()
 
@@ -55,6 +51,13 @@ data Action
   | GetOTP MouseEvent
   | ChangeUserPassword MouseEvent
 
+-- We split the ChangePassword action into two stages because
+-- we need to issue a message both before and after the action
+-- this is because the issue of an OTP email by the server is slow
+data Query a
+  = IssueOTPEmail a
+  
+
 component
   :: ∀ i o m r
    . MonadAff m
@@ -67,6 +70,7 @@ component =
     , render
     , eval: H.mkEval $ H.defaultEval
         { handleAction = handleAction
+        , handleQuery = handleQuery
         , initialize = Just Initialize
         , finalize = Nothing
         }
@@ -253,18 +257,9 @@ component =
       H.modify_ (\st -> st { name = name })
     GetOTP event -> do
       _ <- H.liftEffect $ preventDefault $ toEvent event
-      state <- H.get
-      baseURL <- getBaseURL
-      let
-        otpSubmission :: OTPSubmission
-        otpSubmission =
-          { name: state.name
-          , otp: state.generatedOTP
-          }
-      -- reset any previous error text
-      _ <- H.modify_ (\st -> st { getOTPResult = Left "" })
-      getOTPResult <- postNewPasswordOTP baseURL otpSubmission
-      _ <- H.put state { getOTPResult = getOTPResult }
+      _ <- H.modify_ (\st -> st { getOTPResult = Left "Please wait" })
+      -- defer to the query so we can chain them and update state in between
+      _ <- handleQuery (IssueOTPEmail unit)
       pure unit
     HandleUserOTP otp -> do
       H.modify_ (\st -> st { userOTP = otp })
@@ -296,6 +291,23 @@ component =
           changePasswordResult <- postChangePassword baseURL changePasswordRecord
           H.put state { changePasswordResult = changePasswordResult }
       pure unit
+
+ 
+  handleQuery :: ∀ a. Query a -> H.HalogenM State Action ChildSlots o m (Maybe a)
+  handleQuery = case _ of
+    -- ask the server to issue an email to the user with the OTP we've just generated
+    IssueOTPEmail next -> do     
+      state <- H.get
+      baseURL <- getBaseURL
+      let
+        otpSubmission :: OTPSubmission
+        otpSubmission =
+          { name: state.name
+          , otp: state.generatedOTP
+          }
+      getOTPResult <- postNewPasswordOTP baseURL otpSubmission
+      _ <- H.put state { getOTPResult = getOTPResult }
+      pure (Just next)
 
 type ChangePassword1 =
   { name :: String

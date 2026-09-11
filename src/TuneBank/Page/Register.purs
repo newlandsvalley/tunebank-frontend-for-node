@@ -3,7 +3,6 @@ module TuneBank.Page.Register where
 import Prelude
 
 import Control.Monad.Reader (class MonadAsk)
-import Data.Const (Const)
 import Data.Either (Either(..), either)
 import Data.Foldable (foldl)
 import Data.Maybe (Maybe(..))
@@ -29,7 +28,7 @@ import TuneBank.Page.Utils.Environment (getBaseURL)
 import TuneBank.Page.Utils.UserValidation (validatePassword)
 
 -- type Slot = H.Slot Query Void
-type Slot = H.Slot (Const Void) Void
+type Slot = H.Slot Query Void
 
 type State =
   { submission :: Submission
@@ -37,9 +36,6 @@ type State =
   , errorText :: String -- validation errors
   , showPasswords :: Boolean  -- do we show the user input for her passwords?
   }
-
-type Query :: forall k. k -> Type
-type Query = (Const Void)
 
 type ChildSlots :: forall k. Row k
 type ChildSlots = ()
@@ -53,6 +49,13 @@ data Action
   | HandlePasswordConfirmation String
   | RegisterUser MouseEvent
 
+-- We split the RegisterUser action into two stages because we
+-- need to issue a message both before and after the action. This is
+-- because, after saving the user details, the server issues an email
+-- to the user to complete registration and this is slow
+data Query a
+  = SaveUserAndIssueEmail a
+
 component
   :: ∀ i o m r
    . MonadAff m
@@ -65,6 +68,7 @@ component =
     , render
     , eval: H.mkEval $ H.defaultEval
         { handleAction = handleAction
+        , handleQuery = handleQuery
         , initialize = Just Initialize
         , finalize = Nothing
         }
@@ -222,10 +226,19 @@ component =
       H.modify_ (\st -> st { submission = newSubmission })
     RegisterUser event -> do
       _ <- H.liftEffect $ preventDefault $ toEvent event
+      _ <- H.modify_ (\st -> st { userRegisterResult = Left "Please wait" })
+      -- defer to the query so we can chain them and update state in between
+      _ <- handleQuery (SaveUserAndIssueEmail unit)
+      pure unit
+
+
+  handleQuery :: ∀ a. Query a -> H.HalogenM State Action ChildSlots o m (Maybe a)
+  handleQuery = case _ of
+    -- ask the server to save the user details and issue an email to the user which asks him to complete
+    -- the registration
+    SaveUserAndIssueEmail next -> do
       state <- H.get
       baseURL <- getBaseURL
-      -- reset any previous error text
-      H.modify_ (\st -> st { userRegisterResult = Left "" })
       let
         validated = validate state.submission
         newState = validation
@@ -241,11 +254,10 @@ component =
       if (null newState.errorText) then do
         userRegisterResult <- postNewUser newState.submission baseURL
         _ <- H.put newState { userRegisterResult = userRegisterResult }
-        pure unit
+        pure (Just next)
       else do
         _ <- H.put newState
-        pure unit
-      pure unit
+        pure (Just next)
 
 -- validation
 validate :: Submission -> Validated Submission

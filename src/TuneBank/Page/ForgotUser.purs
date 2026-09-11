@@ -1,7 +1,6 @@
 module TuneBank.Page.ForgotUser where
 
 import Control.Monad.Reader (class MonadAsk)
-import Data.Const (Const)
 import Data.Either (Either(..), either)
 import Data.Maybe (Maybe(..))
 import Effect.Aff.Class (class MonadAff)
@@ -11,7 +10,7 @@ import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
 import Web.Event.Event (preventDefault)
 import Web.UIEvent.MouseEvent (MouseEvent, toEvent)
-import Prelude (Unit, Void, ($), bind, const, pure, unit)
+import Prelude (Unit, Void, ($), (<>), bind, const, pure, unit)
 import TuneBank.Api.Codec.Utils (showJsonErrorResponse)
 import TuneBank.Api.Request (postEmail)
 import TuneBank.Data.Session (Session)
@@ -27,15 +26,18 @@ type State =
   , forgotUserResult :: Either String String
   }
 
-type Query :: forall k. k -> Type
-type Query = (Const Void)
-
 type ChildSlots :: forall k. Row k
 type ChildSlots = ()
 
 data Action
   = HandleEmail String
   | ForgotUser MouseEvent
+
+-- We split the ForgotUser action into two stages because
+-- we need to issue a message both before and after the action
+data Query a
+  = IssueEmail a
+  
 
 component
   :: ∀ i o m r
@@ -49,6 +51,7 @@ component =
     , render
     , eval: H.mkEval $ H.defaultEval
         { handleAction = handleAction
+        , handleQuery = handleQuery
         , initialize = Nothing
         , finalize = Nothing
         }
@@ -110,7 +113,8 @@ component =
   renderForgotUserError :: State -> H.ComponentHTML Action ChildSlots m
   renderForgotUserError state =
     let
-      msg = " An email message has been sent to you with your user name."
+      msg = "An email message has been sent to you with your user name. "
+          <> " You may have to look in your spam folder."
       text = either showJsonErrorResponse (const msg) state.forgotUserResult
     in
       HH.div_
@@ -122,10 +126,19 @@ component =
       H.modify_ (\st -> st { email = email })
     ForgotUser event -> do
       _ <- H.liftEffect $ preventDefault $ toEvent event
+      _ <- H.modify_ (\st -> st { forgotUserResult = Left "Please wait" })
+      -- defer to the query so we can chain them and update state in between
+      _ <- handleQuery (IssueEmail unit)
+      pure unit
+
+  
+  handleQuery :: ∀ a. Query a -> H.HalogenM State Action ChildSlots o m (Maybe a)
+  handleQuery = case _ of
+    -- ask the server to issue an email which gives them the users's name
+    IssueEmail next -> do
       state <- H.get
       baseURL <- getBaseURL
-      -- reset any previous error text
-      _ <- H.modify_ (\st -> st { forgotUserResult = Left "" })
       forgotUserResult <- postEmail baseURL state.email
       _ <- H.put state { forgotUserResult = forgotUserResult }
-      pure unit
+      pure (Just next)
+
