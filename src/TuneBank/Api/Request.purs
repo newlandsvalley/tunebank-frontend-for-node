@@ -17,6 +17,7 @@ module TuneBank.Api.Request
   , requestTuneAbc
   , requestTuneSearch
   , requestUsers
+  , validateUser
   ) where
 
 import Prelude
@@ -170,11 +171,24 @@ requestUsers baseUrl mCredentials pageParams = do
         usersPage = lmap printJsonDecodeError $ decodeUsersPage json
       pure $ usersPage
 
+
+-- | check that a logged in user has valid credentials
 checkUser :: forall m. MonadAff m => BaseURL -> Credentials -> m (Either String String)
 checkUser baseUrl credentials = do
   H.liftAff $ requestTheBody $ defaultStringGetRequest baseUrl (Just credentials) UserCheck (MediaType "text/plain; charset=UTF-8")
 
--- | check the MusicRest service is up by attempting to get a welcome message
+-- | allow an administrator to set the user's valid flag to 'Y'
+validateUser :: forall m. MonadAff m => BaseURL -> UserId -> Credentials -> m (Either String String)
+validateUser baseUrl userId credentials = do
+  res <- H.liftAff $ requestTheBody $ defaultStringGetRequest baseUrl (Just credentials) (UserValidate userId) (MediaType "text/plain; charset=UTF-8")
+  case res of
+    Left err ->
+      pure $ Left err
+    Right success -> do
+      pure $ Right success
+
+
+-- | check the tunebank service is up by attempting to get a welcome message
 -- | we never need to bother to decode the JSON
 checkService :: forall m. MonadAff m => BaseURL -> m (Either String Json)
 checkService baseUrl = H.liftAff do

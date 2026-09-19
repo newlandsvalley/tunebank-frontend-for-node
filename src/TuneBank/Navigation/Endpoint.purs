@@ -43,6 +43,7 @@ data Endpoint
   | UserName
   | UserPasswordOTP
   | UserPassword
+  | UserValidate UserId
   | Register
   | Tune Genre TuneId
   | NewTune Genre
@@ -77,6 +78,7 @@ endpointCodec = root $ sum
   , "UserName": "user" / "getName" / noArgs
   , "UserPasswordOTP": "user" / "newPasswordOTP" / noArgs
   , "UserPassword": "user" / "newPassword" / noArgs
+  , "UserValidate": "user" / "adminvalidate" / (userId segment)
   , "Register": "user" / noArgs
   , "Tune": "genre" / (genre segment) / "tune" / (tuneId segment)
   , "NewTune": "genre" / (genre segment) / "tune"

@@ -10,7 +10,7 @@ import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
 import Prelude (Unit, Void, ($), (<>), (<<<), (==), bind, discard, map, pure, show, unit)
 import TuneBank.Api.Codec.UsersPage (UsersPage, UserRef)
-import TuneBank.Api.Request (requestUsers, deleteUser)
+import TuneBank.Api.Request (requestUsers, deleteUser, validateUser)
 import TuneBank.Data.Credentials (Credentials)
 import TuneBank.Data.Session (Session)
 import TuneBank.Data.Types (BaseURL)
@@ -43,6 +43,7 @@ data Action
   = Initialize
   | HandleInput Input
   | DeleteUser UserId
+  | ValidateUser UserId
 
 component
   :: ∀ o m r
@@ -125,6 +126,8 @@ component =
             [ HH.text $ tsToDateString userRef.timestamp ]
         , HH.td_
             [ renderDeleteUser userRef ]
+        , HH.td_
+            [ renderValidateUser userRef ]
         ]
 
   -- | only the administrator can see this page, and we'll give him the option 
@@ -137,6 +140,19 @@ component =
         , HE.onClick \_ -> DeleteUser (UserId userRef.name)
         ]
         [ HH.text "delete user" ]
+    else
+      HH.text ""
+
+  -- | as above - only the administrator can see this page, and we'll give him the option 
+  -- | of validating a user if it's not been validated 
+  renderValidateUser :: UserRef -> H.ComponentHTML Action ChildSlots m
+  renderValidateUser userRef =
+    if (userRef.valid == "N") then
+      HH.a
+        [ css "a-internal-link"
+        , HE.onClick \_ -> ValidateUser (UserId userRef.name)
+        ]
+        [ HH.text "validate user" ]
     else
       HH.text ""
 
@@ -157,6 +173,23 @@ component =
       case currentUser of
         Just credentials -> do
           result <- deleteUser baseURL userId credentials
+          case result of
+            Right _ -> do
+              _ <- handleQuery (FetchResults unit)
+              pure unit
+            Left _err -> do
+              -- let 
+              -- _foo = spy "error on deleting user" err
+              pure unit
+        Nothing ->
+          pure unit
+      pure unit
+    ValidateUser userId -> do
+      baseURL <- getBaseURL
+      currentUser <- getUser
+      case currentUser of
+        Just credentials -> do
+          result <- validateUser baseURL userId credentials
           case result of
             Right _ -> do
               _ <- handleQuery (FetchResults unit)

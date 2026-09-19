@@ -27,5 +27,5 @@ about =
         , HH.text ". It represents a fair cross-section of tunes that are regularly played at the session."
         ]
     , HH.p_ 
-       [ HH.text "This site is a development of TradTuneDb version 3.0.0." ]
+       [ HH.text "This site is a development of TradTuneDb version 3.0.1." ]
     ]
