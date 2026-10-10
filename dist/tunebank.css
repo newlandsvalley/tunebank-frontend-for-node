@@ -373,7 +373,8 @@ input[type='submit'] {
   margin-right: auto;
 }
 
-#uploadform {
+#uploadform,
+#registrationvalidation {
   max-width: 400px;
   text-align: middle;
   margin-left: auto;
@@ -412,6 +413,17 @@ input[type='submit'] {
 	margin-top: 10px;
   margin-left: auto;
   margin-right: auto;
+}
+
+
+/* validation of user registration */
+
+#registration-validation-item-center {
+  margin-left: auto;
+  margin-right: auto;
+  width: 300px;
+  display: block;
+  font-size: 1.5em;
 }
 
 

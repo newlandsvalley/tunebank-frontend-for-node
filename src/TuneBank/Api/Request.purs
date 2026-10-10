@@ -1,5 +1,6 @@
 module TuneBank.Api.Request
   ( checkUser
+  , checkRegistration
   , checkService
   , deleteComment
   , deleteTune
@@ -53,6 +54,7 @@ import TuneBank.Data.Genre (Genre)
 import TuneBank.Data.TuneId (TuneId)
 import TuneBank.Data.Types (BaseURL(..))
 import TuneBank.Data.UserId (UserId)
+import TuneBank.Data.Uuid (Uuid)
 import TuneBank.Navigation.Endpoint (PageParams, Endpoint(..), endpointCodec)
 import TuneBank.Navigation.SearchParams (SearchParams)
 import Unsafe.Coerce (unsafeCoerce)
@@ -186,6 +188,13 @@ validateUser baseUrl userId credentials = do
       pure $ Left err
     Right success -> do
       pure $ Right success
+
+
+-- | check that a potential user who is registering has had a valid UUID emailed to her 
+-- | i.e. the user validates herself when she has the UUID
+checkRegistration :: forall m. MonadAff m => BaseURL -> Uuid -> m (Either String String)
+checkRegistration baseUrl uuid = do
+  H.liftAff $ requestTheBody $ defaultStringGetRequest baseUrl Nothing (UserRegistrationValidate uuid) (MediaType "text/plain; charset=UTF-8")
 
 
 -- | check the tunebank service is up by attempting to get a welcome message

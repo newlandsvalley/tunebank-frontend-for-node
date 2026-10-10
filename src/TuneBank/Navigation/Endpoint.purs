@@ -15,6 +15,7 @@ import Routing.Duplex.Generic (noArgs, sum)
 import Routing.Duplex.Generic.Syntax ((/), (?))
 import TuneBank.Data.TuneId (TuneId, tuneIdFromString, tuneIdToString)
 import TuneBank.Data.UserId (UserId, userIdFromString, userIdToString)
+import TuneBank.Data.Uuid (Uuid, uuidFromString, uuidToString)
 import TuneBank.Data.CommentId (CommentId, commentIdFromString, commentIdToString)
 import TuneBank.Navigation.SearchParams (SearchParams)
 import TuneBank.Data.Genre (Genre, genreFromString, genreToString)
@@ -34,6 +35,10 @@ genre = as genreToString genreFromString
 userId :: RouteDuplex' String -> RouteDuplex' UserId
 userId = as userIdToString userIdFromString
 
+-- | the uuid is an OTP code emailed to the user for her to return to the server for validation
+uuid :: RouteDuplex' String -> RouteDuplex' Uuid
+uuid = as uuidToString uuidFromString
+
 data Endpoint
   = Root
   | Search Genre SearchParams
@@ -45,6 +50,7 @@ data Endpoint
   | UserPassword
   | UserValidate UserId
   | Register
+  | UserRegistrationValidate Uuid
   | Tune Genre TuneId
   | NewTune Genre
   | Comments Genre TuneId
@@ -80,6 +86,7 @@ endpointCodec = root $ sum
   , "UserPassword": "user" / "newPassword" / noArgs
   , "UserValidate": "user" / "adminvalidate" / (userId segment)
   , "Register": "user" / noArgs
+  , "UserRegistrationValidate": "user" / "validate" / (uuid segment)
   , "Tune": "genre" / (genre segment) / "tune" / (tuneId segment)
   , "NewTune": "genre" / (genre segment) / "tune"
   , "Comments": "genre" / (genre segment) / "tune" / (tuneId segment) / "comments"

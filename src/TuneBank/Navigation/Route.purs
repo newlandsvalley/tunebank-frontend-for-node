@@ -13,6 +13,7 @@ import Routing.Duplex.Generic (noArgs, sum)
 import Routing.Duplex.Generic.Syntax ((/), (?))
 import TuneBank.Data.TuneId (TuneId, tuneIdFromString, tuneIdToString)
 import TuneBank.Data.CommentId (CommentId, commentIdFromString, commentIdToString)
+import TuneBank.Data.Uuid (Uuid, uuidFromString, uuidToString)
 import TuneBank.Navigation.SearchParams (SearchParams)
 import TuneBank.Navigation.Endpoint (PageParams)
 import TuneBank.Data.Genre (Genre, genreFromString, genreToString)
@@ -26,11 +27,15 @@ commentId = as commentIdToString commentIdFromString
 genre :: RouteDuplex' String -> RouteDuplex' Genre
 genre = as genreToString genreFromString
 
+uuid :: RouteDuplex' String -> RouteDuplex' Uuid
+uuid = as uuidToString uuidFromString
+
 data Route
   = Home
   | Genre
   | Login
   | Register
+  | ValidateRegistration Uuid
   | ForgotUserName
   | ChangePassword
   | Upload
@@ -64,6 +69,7 @@ routeCodec = root $ sum
   , "Login": "login" / noArgs
   , "Genre": "genre" / noArgs
   , "Register": "register" / noArgs
+  , "ValidateRegistration": "validateregistration" / (uuid segment)
   , "ForgotUserName": "forgotuser" / noArgs
   , "ChangePassword": "changepassword" / noArgs
   , "Upload": "upload" / noArgs

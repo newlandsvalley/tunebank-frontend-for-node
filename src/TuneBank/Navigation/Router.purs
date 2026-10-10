@@ -19,6 +19,7 @@ import TuneBank.Page.SearchForm as SearchForm
 import TuneBank.Page.AdvancedSearchForm as AdvancedSearchForm
 import TuneBank.Page.GenreMenu as GenreMenu
 import TuneBank.Page.Register as Register
+import TuneBank.Page.ValidateRegistration as ValidateRegistration
 import TuneBank.Page.ForgotUser as ForgotUser
 import TuneBank.Page.ChangePassword as ChangePassword
 import TuneBank.Page.Upload as Upload
@@ -60,6 +61,7 @@ type ChildSlots =
   , genre :: GenreMenu.Slot Unit
   , login :: Login.Slot Unit
   , register :: Register.Slot Unit
+  , validateregistration :: ValidateRegistration.Slot Unit
   , forgotuser :: ForgotUser.Slot Unit
   , changepassword :: ChangePassword.Slot Unit
   , upload :: Upload.Slot Unit
@@ -150,7 +152,7 @@ component =
   -- | child slot names AND the route codec initial URI name.
   renderRoute :: State -> H.ComponentHTML Action ChildSlots m
   renderRoute state =
-    {-}
+    {-
     let
       foo = spy "rendering route: " $ show state.route
     in
@@ -165,6 +167,8 @@ component =
           HH.slot (Proxy :: _ "login") unit Login.component { currentUser: state.currentUser } absurd
         Register ->
           HH.slot (Proxy :: _ "register") unit Register.component unit absurd
+        ValidateRegistration uuid ->
+          HH.slot (Proxy :: _ "validateregistration") unit ValidateRegistration.component { uuid } absurd
         ForgotUserName ->
           HH.slot (Proxy :: _ "forgotuser") unit ForgotUser.component unit absurd
         ChangePassword ->

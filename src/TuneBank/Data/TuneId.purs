@@ -34,8 +34,6 @@ decodeTuneIdURIComponent :: String -> TuneId
 decodeTuneIdURIComponent s =
   TuneId s
 
--- tuneIdFromString
-
 encodeTuneIdURIComponent :: TuneId -> String
 encodeTuneIdURIComponent =
   unsafeEncodeURIComponent <<< tuneIdToString
