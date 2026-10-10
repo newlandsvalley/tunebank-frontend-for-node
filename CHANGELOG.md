@@ -1,6 +1,10 @@
 # CHANGELOG
 
-## vNext
+## v4.0.5 (2026-0=10-10)
+
+  * Added a validate registration page.  This manages the URL contained in an email transmitted by the server to a newly registering user
+
+## v4.0.4 (2026-09-25)
 
   * Sønderhoning added to Scandi rhythms
   * User actions requiring (slow) emails from the server now display a 'please wait' message
